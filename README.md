@@ -1,3 +1,4 @@
+
 # 🧠 BORG — Bash Orchestrator for Reliable GitOps
 
 BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows using robust scripting practices.
@@ -33,20 +34,41 @@ borg/
 
 ---
 
+## 🛠️ Requirements
+
+Borg relies on a few modern terminal utilities to provide an interactive and user-friendly experience.
+
+| Tool   | Purpose                          | Install Command                |
+|--------|----------------------------------|--------------------------------|
+| `fzf`  | Fuzzy finder for file selection  | `winget install fzf`           |
+| `micro`| Terminal-based text editor       | `winget install micro`         |
+
+You can install both with:
+
+```powershell
+winget install fzf
+winget install micro
+```
+
+These tools are used for interactive prompts and editing operations. If not installed, Borg scripts may fall back to simpler prompts or raise an error.
+
+---
+
 ## 🧪 Getting Started
 
-> Windows PowerShell, Docker Desktop, and Git are required.
+> Windows PowerShell, and Docker Desktop are required.
 
 ```bash
-# Clone the repo
+# Optional, clone the repo
 git clone https://github.com/your-org/borg.git
-
+```
+> In terminal profile inject at the end the following:
+```bash
 # Setup environment
 # >>> BORG INITIALIZATION START <<<
 Import-Module Borg
 # <<< BORG INITIALIZATION END >>>
 ```
-
 ---
 
 ## 🛠️ How It Works
@@ -64,7 +86,7 @@ Import-Module Borg
 ## 🔒 Compatibility
 
 - Works with:
-  - SQL Server 2017–2022
+  - SQL Server 2022
   - PowerShell 5.1+
   - Docker (Windows, Linux)
   - ODBC Driver 18+ (auto handled)
