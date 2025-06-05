@@ -25,6 +25,10 @@ logs/
 .git/
 .gitignore
 
+# Nuget
+.nuget/
+.nuget/**
+
 # Compiled binaries
 *.exe
 *.dll

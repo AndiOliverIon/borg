@@ -6,7 +6,7 @@ BORG is a modular automation shell designed to manage SQL Server Docker containe
 
 ## 🚀 Features
 
-- 🔄 **Restore any `.bak` file** to any database name
+- 🔄 **Restore a `.bak` file with new proposal name or default of the file.
 - 📦 **Docker SQL Server orchestration** with automatic upload & provisioning
 - 🔐 Handles `sqlcmd` ODBC TLS issues (ODBC Driver 18+ safe)
 - 🧩 Modular architecture: scripts organized into `central`, `docker`, `database`
@@ -42,10 +42,9 @@ borg/
 git clone https://github.com/your-org/borg.git
 
 # Setup environment
-$env:BORG_ROOT = "C:\path\to\borg"
-
-# Run the restore utility
-.\scripts\win\docker\restore.ps1
+# >>> BORG INITIALIZATION START <<<
+Import-Module Borg
+# <<< BORG INITIALIZATION END >>>
 ```
 
 ---
@@ -74,11 +73,10 @@ $env:BORG_ROOT = "C:\path\to\borg"
 
 ## 🧭 Roadmap
 
-- [x] Restore any `.bak` file reliably
-- [ ] Add backup support
-- [ ] Add compare/diff tools
-- [ ] Borg AI integration via local LLM
-
+- [x] Restore any `.bak` file
+- [ ] Add backup/snapshot support
+- [ ] Jump between snapshots on container
+- [ ] Clean docker
 ---
 
 ## 📄 License

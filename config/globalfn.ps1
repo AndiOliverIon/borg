@@ -1,5 +1,9 @@
 # Define entry points
+if (-not $env:BORG_ROOT) {
+    throw "BORG_ROOT is not defined. Cannot proceed."
+}
 
+$dataRoot = Join-Path $env:BORG_ROOT 'data'
 function Global:GetBorgStoreValue {
     param(
         [Parameter(Mandatory)]

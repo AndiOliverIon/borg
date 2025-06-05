@@ -1,4 +1,5 @@
 # borg.ps1
+# Entrypoint for Borg CLI
 param (
     [string]$module,
     [string]$command,
