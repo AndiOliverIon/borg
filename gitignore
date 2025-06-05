@@ -1,0 +1,43 @@
+# Windows noise
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VSCode
+.vscode/
+
+# PowerShell artifacts
+*.ps1xml
+*.psd1
+*.pfx
+*.snk
+
+# Temp and logs
+temp/
+logs/
+*.log
+*.bak
+
+# OS metadata
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Compiled binaries
+*.exe
+*.dll
+*.obj
+*.pyc
+*.class
+*.o
+
+# Archives
+*.zip
+*.tar.gz
+*.7z
+
+# Env/config
+.env
+*.local
