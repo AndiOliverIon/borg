@@ -16,7 +16,7 @@ function CreateSqlDockerContainer {
 
     Write-Host "Creating Docker container: $ContainerName on port $HostPort from image: $ImageTag..." -ForegroundColor Cyan
     try {
-        docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$dockerSqlPwd" -p "2022:$HostPort" --name "$ContainerName" --user root -d $ImageTag  
+        docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$SqlPassword" -p "2022:$HostPort" --name "$ContainerName" --user root -d $ImageTag  
         Write-Host "Successfully created container: $ContainerName on port $HostPort" -ForegroundColor Green    
     }
     catch {
@@ -24,7 +24,7 @@ function CreateSqlDockerContainer {
     }
 }
 
-CreateSqlDockerContainer -ImageTag $imageTag -ContainerName $ContainerName -HostPort $HostPort
+CreateSqlDockerContainer -ImageTag $ImageTag -ContainerName $ContainerName -HostPort $HostPort
 
 Write-Host("Create backup folder on $ContainerName")
 docker exec $ContainerName mkdir -p $dockerBackupPath

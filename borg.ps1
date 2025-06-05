@@ -29,6 +29,7 @@ switch ($module) {
         switch ($command) {
             'clean' { & "$dockerFolder\clean.ps1" }
             'restore' { & "$dockerFolder\restore.ps1" }
+            'snapshot' { & "$dockerFolder\snapshot.ps1" @extraArgs }
         }        
     }
     default {

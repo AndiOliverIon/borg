@@ -4,9 +4,10 @@
     },
     "Docker": {
         "SqlContainer": "sqlserver-2022",
+        "SqlInstance": "localhost,2022",
         "SqlImageTag": "mcr.microsoft.com/mssql/server:2022-latest",
         "SqlPort": 1433,
         "SqlUser": "sa",
-        "SqlPassword": "somepwd"
+        "SqlPassword": "Open1147"
     }
 }

@@ -101,6 +101,16 @@ Import-Module Borg
 - [ ] Clean docker
 ---
 
+## Usage
+To create a docker container with provided bak file. Navigate where the bak file is with terminal then:
+```bash
+borg docker restore
+```
+To create a snapshot of a chosen database existing in container, optionally with a suffix (v1 in example)
+```bash
+borg docker snapshot v1
+```
+
 ## 📄 License
 
 MIT — see `LICENSE` for details.
