@@ -25,6 +25,36 @@ switch ($module) {
     'store' {
         micro $storePath
     }
+    'jump' {
+        switch ($command) {
+            'store' { & "$jumpFolder\store.ps1" @extraArgs }
+            default {
+                if (-not (Test-Path $storePath)) {
+                    Write-Host "❌ Config not found at $storePath"
+                    return
+                }
+
+                $config = Get-Content $storePath -Raw | ConvertFrom-Json
+                $match = $config.Bookmarks | Where-Object { $_.alias -eq $command }
+
+                if (-not $match) {
+                    Write-Host "❌ Bookmark alias '$command' not found."
+                    return
+                }
+
+                $targetPath = $match.path
+                if (-not (Test-Path $targetPath)) {
+                    Write-Host "⚠️ Bookmark path '$targetPath' does not exist."
+                    return
+                }
+
+                Set-Location $targetPath
+                Write-Host "📂 Jumped to '$command': $targetPath"
+            }
+        }
+
+    }
+
     'docker' {        
         switch ($command) {
             'clean' { & "$dockerFolder\clean.ps1" }

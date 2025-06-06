@@ -69,6 +69,20 @@ git clone https://github.com/your-org/borg.git
 Import-Module Borg
 # <<< BORG INITIALIZATION END >>>
 ```
+> Establish a configuration file instructing how should work with docker
+{
+    "General": {
+        "HostBackupFolder": "SomePathOnHostWhereBackupsAreKept"
+    },
+    "Docker": {
+        "SqlContainer": "sqlserver-2022",
+        "SqlInstance": "localhost,2022",
+        "SqlImageTag": "mcr.microsoft.com/mssql/server:2022-latest",
+        "SqlPort": 1433,
+        "SqlUser": "sa",
+        "SqlPassword": "SomePwd"
+    }
+}
 ---
 
 ## 🛠️ How It Works
@@ -96,17 +110,22 @@ Import-Module Borg
 ## 🧭 Roadmap
 
 - [x] Restore any `.bak` file
-- [ ] Add backup/snapshot support
+- [x] Add backup/snapshot support
+- [x] Jump between stored aliases folders
 - [ ] Jump between snapshots on container
 - [ ] Clean docker
 ---
 
 ## Usage
-To create a docker container with provided bak file. Navigate where the bak file is with terminal then:
+> Configure credentials for borg
+```bash
+borg store
+```
+> To create a docker container with provided bak file. Navigate where the bak file is with terminal then:
 ```bash
 borg docker restore
 ```
-To create a snapshot of a chosen database existing in container, optionally with a suffix (v1 in example)
+> To create a snapshot of a chosen database existing in container, optionally with a suffix (v1 in example)
 ```bash
 borg docker snapshot v1
 ```
