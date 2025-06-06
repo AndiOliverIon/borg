@@ -167,18 +167,24 @@ To clean it from your profile:
 - [x] Add backup/snapshot support
 - [x] Jump between stored aliases folders
 - [x] Clean docker
-- [ ] Jump between snapshots on container
+- [ ] Jump between snapshots inside the container
 - [ ] Download to host from container
+- [ ] Upload snapshots to the container's backup folder
+- [ ] Add `install.ps1` to configure execution policy and profile on first run
+- [ ] Add command aliases (`br`, `bdr`, or `borg d r`) for shortcut execution (TBD)
+- [ ] Add `borg help` to show available modules and commands
 - [ ] Restore database from snapshots already in container
-- [ ] Upload snapshots into container
-- [ ] Docker bash into the backup folder of the container
+- [ ] Open bash shell in the container's backup folder
+- [ ] Add `borg logs` to monitor last executions
 - [ ] Restore from bacpac
 - [ ] Use gdrive as cloud storage for files to work between stations
 - [ ] Schedule automatic shutdown of the working station
 - [ ] Start Visual Studio with sln found at the current location
 - [ ] Simple query from console to the sql container database
 - [ ] Service start/stop
-
+- [ ] Add version display and optional update hint on startup
+- [ ] Add `borg reset` to regenerate store.json from example
+- [ ] Add interactive `borg menu` powered by fzf
 ---
 
 ## 📄 License
