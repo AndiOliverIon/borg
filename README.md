@@ -40,7 +40,7 @@ Borg relies on a few modern terminal utilities to provide an interactive and use
 | Tool    | Purpose                          | Install Command          |
 |---------|----------------------------------|--------------------------|
 | `fzf`   | Fuzzy finder for file selection  | `winget install fzf`     |
-| `micro` | Terminal-based text editor       | `winget install micro`   |
+| `micro` | Terminal-based text editor       | `winget install micro` `winget install zyedidia.micro`   |
 
 These tools are used for interactive prompts and editing operations. If not installed, Borg scripts may fall back to simpler prompts or raise an error.
 
@@ -102,8 +102,10 @@ Example configuration:
 
 ## Known Issues
 Error: Profile cannot be loaded because running scripts is disabled on this system.
-Solution: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
-
+Solution:
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+```
 ---
 
 ## 🧾 Common Commands
@@ -116,6 +118,8 @@ Solution: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -
 | `borg docker restore`       | Restore a `.bak` file into Docker SQL        |
 | `borg docker snapshot <v>`  | Create a snapshot from an active container   |
 | `borg docker clean`         | Remove the SQL container and its volumes     |
+| `borg docker switch`        | Allow picking one of saved snapshot to be restored   |
+
 
 ---
 
