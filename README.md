@@ -166,8 +166,18 @@ To clean it from your profile:
 - [x] Restore any `.bak` file
 - [x] Add backup/snapshot support
 - [x] Jump between stored aliases folders
+- [x] Clean docker
 - [ ] Jump between snapshots on container
-- [ ] Clean docker
+- [ ] Download to host from container
+- [ ] Restore database from snapshots already in container
+- [ ] Upload snapshots into container
+- [ ] Docker bash into the backup folder of the container
+- [ ] Restore from bacpac
+- [ ] Use gdrive as cloud storage for files to work between stations
+- [ ] Schedule automatic shutdown of the working station
+- [ ] Start Visual Studio with sln found at the current location
+- [ ] Simple query from console to the sql container database
+- [ ] Service start/stop
 
 ---
 
