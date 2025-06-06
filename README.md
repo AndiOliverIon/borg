@@ -1,5 +1,4 @@
-
-# 🧠 BORG — Bash Orchestrator for Reliable GitOps
+# 🧠 BORG — Backup Orchestrator for Reliable Groundwork
 
 BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows using robust scripting practices.
 
@@ -7,8 +6,8 @@ BORG is a modular automation shell designed to manage SQL Server Docker containe
 
 ## 🚀 Features
 
-- 🔄 **Restore a `.bak` file with new proposal name or default of the file.
-- 📦 **Docker SQL Server orchestration** with automatic upload & provisioning
+- 🔄 Restore a `.bak` file using either its default name or a proposed alias
+- 📦 Docker SQL Server orchestration with automatic upload & provisioning
 - 🔐 Handles `sqlcmd` ODBC TLS issues (ODBC Driver 18+ safe)
 - 🧩 Modular architecture: scripts organized into `central`, `docker`, `database`
 - 💬 Clean terminal UI with emoji-enhanced logging
@@ -38,17 +37,10 @@ borg/
 
 Borg relies on a few modern terminal utilities to provide an interactive and user-friendly experience.
 
-| Tool   | Purpose                          | Install Command                |
-|--------|----------------------------------|--------------------------------|
-| `fzf`  | Fuzzy finder for file selection  | `winget install fzf`           |
-| `micro`| Terminal-based text editor       | `winget install micro`         |
-
-You can install both with:
-
-```powershell
-winget install fzf
-winget install micro
-```
+| Tool    | Purpose                          | Install Command          |
+|---------|----------------------------------|--------------------------|
+| `fzf`   | Fuzzy finder for file selection  | `winget install fzf`     |
+| `micro` | Terminal-based text editor       | `winget install micro`   |
 
 These tools are used for interactive prompts and editing operations. If not installed, Borg scripts may fall back to simpler prompts or raise an error.
 
@@ -56,54 +48,86 @@ These tools are used for interactive prompts and editing operations. If not inst
 
 ## 🧪 Getting Started
 
-> Windows PowerShell, and Docker Desktop are required.
+> Windows PowerShell and Docker Desktop are required.
 
+### Install via Git Clone
 ```bash
-# Optional, clone the repo
 git clone https://github.com/your-org/borg.git
 ```
-> In terminal profile inject at the end the following:
-```bash
-# Setup environment
+
+### Install via PowerShell Gallery (if published)
+```powershell
+Install-Module Borg -Scope CurrentUser
+```
+
+### Inject into your PowerShell profile
+```powershell
 # >>> BORG INITIALIZATION START <<<
 Import-Module Borg
 # <<< BORG INITIALIZATION END >>>
 ```
-> Establish a configuration file instructing how should work with docker
+
+### Initialize Configuration
+Upon first run, a default `store.json` will be created from `store.example.json` if it does not exist.
+
+Edit it with:
+```powershell
+micro $env:BORG_ROOT\data\store.json
+```
+
+Example configuration:
+```json
 {
-    "General": {
-        "HostBackupFolder": "SomePathOnHostWhereBackupsAreKept"
-    },
-    "Docker": {
-        "SqlContainer": "sqlserver-2022",
-        "SqlInstance": "localhost,2022",
-        "SqlImageTag": "mcr.microsoft.com/mssql/server:2022-latest",
-        "SqlPort": 1433,
-        "SqlUser": "sa",
-        "SqlPassword": "SomePwd"
-    }
+  "General": {
+    "HostBackupFolder": "C:\backups"
+  },
+  "Docker": {
+    "SqlContainer": "sqlserver-2022",
+    "SqlInstance": "localhost,2022",
+    "SqlImageTag": "mcr.microsoft.com/mssql/server:2022-latest",
+    "SqlPort": 1433,
+    "SqlUser": "sa",
+    "SqlPassword": "yourStrong(!)Password"
+  },
+  "Bookmarks": [
+    { "alias": "dtemp", "path": "D:\temp" },
+    { "alias": "kit",   "path": "C:\Users\youruser\kits" }
+  ]
 }
+```
+
 ---
 
-## 🛠️ How It Works
+## 🧾 Common Commands
+
+| Command                      | Description                                  |
+|-----------------------------|----------------------------------------------|
+| `borg store`                | Edit or review your configuration            |
+| `borg jump store`           | Bookmark current folder with an alias        |
+| `borg jump <alias>`         | Jump to a previously stored folder           |
+| `borg docker restore`       | Restore a `.bak` file into Docker SQL        |
+| `borg docker snapshot <v>`  | Create a snapshot from an active container   |
+| `borg docker clean`         | Remove the SQL container and its volumes     |
+
+---
+
+## 🔄 How It Works
 
 1. Starts SQL Server container (2022 by default)
 2. Prompts for `.bak` file and target name
 3. Uploads `.bak` to the container
-4. Executes an **internal `.sh` restore script**
-   - Dynamically builds `RESTORE DATABASE ... WITH MOVE`
-   - Handles all logical name mapping
-5. Done.
+4. Executes an internal `.sh` restore script
+5. Maps logical names automatically
+6. Done.
 
 ---
 
 ## 🔒 Compatibility
 
-- Works with:
-  - SQL Server 2022
-  - PowerShell 5.1+
-  - Docker (Windows, Linux)
-  - ODBC Driver 18+ (auto handled)
+- ✅ SQL Server 2022
+- ✅ PowerShell 5.1+
+- ✅ Docker (Windows, Linux)
+- ✅ ODBC Driver 18+ (TLS-safe)
 
 ---
 
@@ -114,21 +138,8 @@ Import-Module Borg
 - [x] Jump between stored aliases folders
 - [ ] Jump between snapshots on container
 - [ ] Clean docker
----
 
-## Usage
-> Configure credentials for borg
-```bash
-borg store
-```
-> To create a docker container with provided bak file. Navigate where the bak file is with terminal then:
-```bash
-borg docker restore
-```
-> To create a snapshot of a chosen database existing in container, optionally with a suffix (v1 in example)
-```bash
-borg docker snapshot v1
-```
+---
 
 ## 📄 License
 
