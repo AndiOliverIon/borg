@@ -20,8 +20,7 @@ function Global:GetBorgStoreValue {
     }
 
     $json = Get-Content $storePath -Raw | ConvertFrom-Json
-    $section = $json.$Chapter
-    #Write-Host "Raw key list in [$Chapter]: $($section.PSObject.Properties.Name -join ', ')"
+    $section = $json.$Chapter    
 
     if (-not $section) {
         Write-Error "Chapter '$Chapter' not found"
@@ -46,13 +45,15 @@ $dataRoot = Join-Path $borgRoot "data"
 # Host entry points
 $HostBackupFolder = GetBorgStoreValue -Chapter General -Key HostBackupFolder
 $dockerFolder = Join-Path $scriptsRoot "docker"
+$jumpFolder = Join-Path $scriptsRoot "jump"
 $dockerSqlFilesFolder = Join-Path $dockerFolder "sql"
 
 # Docker entry points
 $dockerSqlPath = "/var/opt/mssql"
 $dockerBackupPath = "$dockerSqlPath/backup"
 $ContainerName = GetBorgStoreValue -Chapter Docker -Key SqlContainer
+$SqlInstance = GetBorgStoreValue -Chapter Docker -Key SqlInstance
 $HostPort = GetBorgStoreValue -Chapter Docker -Key SqlPort
-$imageTag = GetBorgStoreValue -Chapter Docker -Key SqlImageTag
+$ImageTag = GetBorgStoreValue -Chapter Docker -Key SqlImageTag
 $SqlUser = GetBorgStoreValue -Chapter Docker -Key SqlUser
 $SqlPassword = GetBorgStoreValue -Chapter Docker -Key SqlPassword

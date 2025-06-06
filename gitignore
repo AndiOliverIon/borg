@@ -45,3 +45,5 @@ logs/
 # Env/config
 .env
 *.local
+
+store.json
