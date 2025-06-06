@@ -72,6 +72,10 @@ Upon first run, a default `store.json` will be created from `store.example.json`
 
 Edit it with:
 ```powershell
+# >>> USING BORG/Micro <<<
+borg store
+# >>> USING MICRO <<<
+$env:BORG_ROOT = (Get-Location).Path
 micro $env:BORG_ROOT\data\store.json
 ```
 
@@ -95,6 +99,10 @@ Example configuration:
   ]
 }
 ```
+
+## Known Issues
+Error: Profile cannot be loaded because running scripts is disabled on this system.
+Solution: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 ---
 
