@@ -1,11 +1,11 @@
 @{
     RootModule        = 'Borg.psm1'
-    ModuleVersion     = '0.1.12'
+    ModuleVersion     = '0.1.13'
     GUID              = 'f23e3f2e-a121-4c62-8913-ef4b1c946bcc'
     Author            = 'Andi Oliver Ion'
     CompanyName       = ''
     Copyright         = '(c) Andi Oliver Ion. All rights reserved.'
-    Description       = 'Modular PowerShell CLI toolkit for automating local and Docker workflows. GitHub here: https://github.com/AndiOliverIon/borg'
+    Description       = 'BORG — Backup Orchestrator for Reliable Groundwork. A modular PowerShell toolkit for automating SQL Server Docker container workflows, backup and restore operations, and local dev environment setup. GitHub: https://github.com/AndiOliverIon/borg'
     PowerShellVersion = '5.1'
     FunctionsToExport = @()
     CmdletsToExport   = @()

@@ -1,79 +1,27 @@
-# borg.ps1
-# Entrypoint for Borg CLI
+# borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
 param (
     [string]$module,
     [string]$command,
     [string[]]$extraArgs
 )
 
-# Assure existence of store.json
-$storeFolder = Join-Path $env:BORG_ROOT "data"
-$storePath = Join-Path $storeFolder "store.json"
-$examplePath = Join-Path $storeFolder "store.example.json"
+# Check PowerShell version
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Warning "BORG requires PowerShell 7.5.1 or later."
 
-if (-not (Test-Path $storePath) -and (Test-Path $examplePath)) {
-    Copy-Item $examplePath $storePath
-    Write-Host "📦 Created missing store.json from store.example.json"
+    Write-Host ""
+    Write-Host "You are currently running: PowerShell $($PSVersionTable.PSVersion)"
+    Write-Host ""
+    Write-Host "To use BORG properly, please do one of the following:"
+    Write-Host "  • Type 'pwsh' in this terminal to switch to PowerShell 7"
+    Write-Host "  • OR configure your terminal to launch PowerShell 7 by default"
+    Write-Host ""
+    Write-Host "If PowerShell 7 is not yet installed, you can run this command:"
+    Write-Host "  winget install --id Microsoft.PowerShell -e"
+    Write-Host ""
+    Write-Host "After installing, start a new terminal or type 'pwsh' to re-enter."
+    exit 1
 }
 
-. "$env:BORG_ROOT\config\globalfn.ps1"
-
-# Assure files
-if (-not (Test-Path $storePath)) {
-    New-Item -ItemType File -Path $storePath -Force | Out-Null
-    '{}' | Set-Content $storePath -Encoding UTF8
-}
-
-# No args = show help
-if (-not $module) {
-    Write-Host "Usage: borg <module> <command> [...args]"
-    Write-Host "Built-in modules: store"
-    exit 0
-}
-
-switch ($module) {
-    'store' {
-        micro $storePath
-    }
-    'jump' {
-        switch ($command) {
-            'store' { & "$jumpFolder\store.ps1" @extraArgs }
-            default {
-                if (-not (Test-Path $storePath)) {
-                    Write-Host "❌ Config not found at $storePath"
-                    return
-                }
-
-                $config = Get-Content $storePath -Raw | ConvertFrom-Json
-                $match = $config.Bookmarks | Where-Object { $_.alias -eq $command }
-
-                if (-not $match) {
-                    Write-Host "❌ Bookmark alias '$command' not found."
-                    return
-                }
-
-                $targetPath = $match.path
-                if (-not (Test-Path $targetPath)) {
-                    Write-Host "⚠️ Bookmark path '$targetPath' does not exist."
-                    return
-                }
-
-                Set-Location $targetPath
-                Write-Host "📂 Jumped to '$command': $targetPath"
-            }
-        }
-
-    }
-
-    'docker' {        
-        switch ($command) {
-            'clean' { & "$dockerFolder\clean.ps1" }
-            'restore' { & "$dockerFolder\restore.ps1" }
-            'snapshot' { & "$dockerFolder\snapshot.ps1" @extraArgs }
-        }        
-    }
-    default {
-        Write-Error "Unknown module command."
-    }
-}
-
+# PowerShell 7+ confirmed — load main logic
+. "$PSScriptRoot\entry.ps1" -module $module -command $command -extraArgs $extraArgs
