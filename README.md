@@ -139,6 +139,28 @@ Solution: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -
 
 ---
 
+## 🧹 Uninstalling BORG
+
+If you want to remove the BORG module:
+
+```powershell
+Uninstall-Module Borg -AllVersions -Force
+```
+
+To remove it manually:
+
+```powershell
+Remove-Item "$env:USERPROFILE\Documents\PowerShell\Modules\Borg" -Recurse -Force
+```
+
+To clean it from your profile:
+
+```powershell
+(Get-Content $PROFILE) | Where-Object { $_ -notmatch 'Import-Module Borg' } | Set-Content $PROFILE
+```
+
+---
+
 ## 🧭 Roadmap
 
 - [x] Restore any `.bak` file
