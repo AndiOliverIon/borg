@@ -139,14 +139,52 @@ Solution: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -
 
 ---
 
+## 🧹 Uninstalling BORG
+
+If you want to remove the BORG module:
+
+```powershell
+Uninstall-Module Borg -AllVersions -Force
+```
+
+To remove it manually:
+
+```powershell
+Remove-Item "$env:USERPROFILE\Documents\PowerShell\Modules\Borg" -Recurse -Force
+```
+
+To clean it from your profile:
+
+```powershell
+(Get-Content $PROFILE) | Where-Object { $_ -notmatch 'Import-Module Borg' } | Set-Content $PROFILE
+```
+
+---
+
 ## 🧭 Roadmap
 
 - [x] Restore any `.bak` file
 - [x] Add backup/snapshot support
 - [x] Jump between stored aliases folders
-- [ ] Jump between snapshots on container
-- [ ] Clean docker
-
+- [x] Clean docker
+- [x] Jump between snapshots inside the container
+- [ ] Download to host from container
+- [ ] Upload snapshots to the container's backup folder
+- [ ] Add `install.ps1` to configure execution policy and profile on first run
+- [ ] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access (TBD)
+- [ ] Add `borg help` to show available modules and commands
+- [ ] Restore database from snapshots already in container
+- [ ] Open bash shell in the container's backup folder
+- [ ] Add `borg logs` to monitor last executions
+- [ ] Restore from bacpac
+- [ ] Integrate Google Drive as shared cloud storage between stations
+- [ ] Schedule automatic shutdown of the working station
+- [ ] Start Visual Studio with sln found at the current location
+- [ ] Execute ad-hoc SQL queries directly against the containerized database
+- [ ] Start/stop system or application services from the terminal
+- [ ] Add version display and optional update hint on startup
+- [ ] Add `borg reset` to regenerate store.json from example
+- [ ] Add interactive `borg menu` powered by fzf
 ---
 
 ## 📄 License
