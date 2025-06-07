@@ -121,7 +121,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker switch`        | Allow picking one of saved snapshot to be restored   |
 | `borg docker download`        | Allow picking one of saved snapshot from container to be downloaded on the host   |
 | `borg docker upload`        | Allow picking one backup file from host to be uploaded to container|
-| `borg docker query`        | Allow direct query in database of use.||
+| `borg docker query`        | Run SQL queries against a selected database inside the container|
 
 ---
 
