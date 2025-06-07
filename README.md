@@ -119,7 +119,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker snapshot <v>`  | Create a snapshot from an active container   |
 | `borg docker clean`         | Remove the SQL container and its volumes     |
 | `borg docker switch`        | Allow picking one of saved snapshot to be restored   |
-
+| `borg docker download`        | Allow picking one of saved snapshot from container to be downloaded on the host   |
 
 ---
 
@@ -172,7 +172,7 @@ To clean it from your profile:
 - [x] Jump between stored aliases folders
 - [x] Clean docker
 - [x] Jump between snapshots inside the container
-- [ ] Download to host from container
+- [x] Download to host from container
 - [ ] Upload snapshots to the container's backup folder
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 - [ ] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access (TBD)
