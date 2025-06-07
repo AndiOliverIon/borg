@@ -120,6 +120,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker clean`         | Remove the SQL container and its volumes     |
 | `borg docker switch`        | Allow picking one of saved snapshot to be restored   |
 | `borg docker download`        | Allow picking one of saved snapshot from container to be downloaded on the host   |
+| `borg docker upload`        | Allow picking one backup file from host to be uploaded to container|
 
 ---
 
@@ -173,7 +174,7 @@ To clean it from your profile:
 - [x] Clean docker
 - [x] Jump between snapshots inside the container
 - [x] Download to host from container
-- [ ] Upload snapshots to the container's backup folder
+- [x] Upload snapshots to the container's backup folder
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 - [ ] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access (TBD)
 - [ ] Add `borg help` to show available modules and commands
