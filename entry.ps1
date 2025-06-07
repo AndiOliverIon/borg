@@ -64,6 +64,7 @@ switch ($module) {
             'switch' { & "$dockerFolder\switch.ps1" }
             'download' { & "$dockerFolder\download.ps1" }
             'upload' { & "$dockerFolder\upload.ps1" }
+            'query' { & "$dockerFolder\query.ps1" }
         }        
     }
     default {

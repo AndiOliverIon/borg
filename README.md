@@ -121,6 +121,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker switch`        | Allow picking one of saved snapshot to be restored   |
 | `borg docker download`        | Allow picking one of saved snapshot from container to be downloaded on the host   |
 | `borg docker upload`        | Allow picking one backup file from host to be uploaded to container|
+| `borg docker query`        | Allow direct query in database of use.||
 
 ---
 
@@ -175,6 +176,7 @@ To clean it from your profile:
 - [x] Jump between snapshots inside the container
 - [x] Download to host from container
 - [x] Upload snapshots to the container's backup folder
+- [x] Execute ad-hoc SQL queries directly against the containerized database
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 - [ ] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access (TBD)
 - [ ] Add `borg help` to show available modules and commands
@@ -185,7 +187,6 @@ To clean it from your profile:
 - [ ] Integrate Google Drive as shared cloud storage between stations
 - [ ] Schedule automatic shutdown of the working station
 - [ ] Start Visual Studio with sln found at the current location
-- [ ] Execute ad-hoc SQL queries directly against the containerized database
 - [ ] Start/stop system or application services from the terminal
 - [ ] Add version display and optional update hint on startup
 - [ ] Add `borg reset` to regenerate store.json from example

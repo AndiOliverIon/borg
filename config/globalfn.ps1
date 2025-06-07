@@ -57,3 +57,4 @@ $HostPort = GetBorgStoreValue -Chapter Docker -Key SqlPort
 $ImageTag = GetBorgStoreValue -Chapter Docker -Key SqlImageTag
 $SqlUser = GetBorgStoreValue -Chapter Docker -Key SqlUser
 $SqlPassword = GetBorgStoreValue -Chapter Docker -Key SqlPassword
+$SqlUseDatabase = GetBorgStoreValue -Chapter Docker -Key UseDatabase
