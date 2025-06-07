@@ -23,5 +23,28 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     exit 1
 }
 
+if (-not (Get-Command fzf -ErrorAction SilentlyContinue)) {
+    Write-Warning "`fzf` is not installed. Run 'winget install fzf'."
+    exit 1
+}
+
+if (-not (Get-Command micro -ErrorAction SilentlyContinue)) {
+    Write-Warning "`micro` editor is missing. Run 'winget install micro'."
+    exit 1
+}
+
+if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+    Write-Warning "Docker is not installed or not in PATH. Visit https://www.docker.com/products/docker-desktop to install it."
+    exit 1
+}
+
+try {
+    docker info --format '{{.ServerVersion}}' | Out-Null
+}
+catch {
+    Write-Warning "Docker daemon does not appear to be running. Start Docker Desktop and try again."
+    exit 1
+}
+
 # PowerShell 7+ confirmed — load main logic
 . "$PSScriptRoot\entry.ps1" -module $module -command $command -extraArgs $extraArgs

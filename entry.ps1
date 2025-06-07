@@ -62,6 +62,7 @@ switch ($module) {
             'restore' { & "$dockerFolder\restore.ps1" }
             'snapshot' { & "$dockerFolder\snapshot.ps1" @extraArgs }
             'switch' { & "$dockerFolder\switch.ps1" }
+            'download' { & "$dockerFolder\download.ps1" }
         }        
     }
     default {
