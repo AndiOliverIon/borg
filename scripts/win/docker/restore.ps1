@@ -24,7 +24,7 @@ Write-Host "🚀 Step 1: Creating SQL Server $ContainerName container..." -Foreg
 
 # 📤 Step 2: Upload backup
 Write-Host "📤 Step 2: Uploading backup file to container..." -ForegroundColor Cyan
-$FileName = & "$dockerFolder\file-upload.ps1"
+$FileName = & "$dockerFolder\upload.ps1"
 
 # 🕒 Step 3: Wait for SQL to be ready
 Write-Host ""
