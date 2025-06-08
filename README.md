@@ -180,9 +180,9 @@ To clean it from your profile:
 - [x] Execute ad-hoc SQL queries directly against the containerized database
 - [x] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access
 - [x] Add `borg help` to show available modules and commands
+- [x] Open bash shell in the container's backup folder
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 - [ ] Restore database from snapshots already in container
-- [ ] Open bash shell in the container's backup folder
 - [ ] Add `borg logs` to monitor last executions
 - [ ] Restore from bacpac
 - [ ] Integrate Google Drive as shared cloud storage between stations
