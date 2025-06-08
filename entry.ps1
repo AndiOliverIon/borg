@@ -24,6 +24,9 @@ if (-not $module) {
 }
 
 switch ($module) {
+    'help' {
+        & "$env:BORG_ROOT\help.ps1"
+    }
     'store' {
         micro $storePath
     }
@@ -58,6 +61,7 @@ switch ($module) {
 
     'docker' {        
         switch ($command) {
+            'bash' { & "$dockerFolder\bash.ps1" }
             'clean' { & "$dockerFolder\clean.ps1" }
             'restore' { & "$dockerFolder\restore.ps1" }
             'snapshot' { & "$dockerFolder\snapshot.ps1" @extraArgs }

@@ -46,8 +46,8 @@ catch {
     exit 1
 }
 
-Write-Host "Module: $module"
-Write-Host "Command: $command"
+# Write-Host "Module: $module"
+# Write-Host "Command: $command"
 
 function ResolveBorgAlias {
     param(
@@ -58,6 +58,7 @@ function ResolveBorgAlias {
     )
 
     $map = @{
+        "db"    = "docker bash"
         "dr"    = "docker restore"
         "dq"    = "docker query"
         "dc"    = "docker clean"
@@ -72,23 +73,23 @@ function ResolveBorgAlias {
     $twoWords = if ($argsJoined.Count -ge 2) { "$($argsJoined[0]) $($argsJoined[1])".ToLower() } else { "" }
     $oneWord = if ($argsJoined.Count -ge 1) { $argsJoined[0].ToLower() } else { "" }
 
-    Write-Host "🧪 Testing oneWord: '$oneWord'"
-    Write-Host "🧪 Testing twoWords: '$twoWords'"
-    Write-Host "🧪 Available aliases: $($map.Keys -join ', ')"
+    # Write-Host "🧪 Testing oneWord: '$oneWord'"
+    # Write-Host "🧪 Testing twoWords: '$twoWords'"
+    # Write-Host "🧪 Available aliases: $($map.Keys -join ', ')"
 
     if ($map.ContainsKey($twoWords)) {
-        Write-Host "✅ Matched 2-word alias: $twoWords → $($map[$twoWords])"
+        #Write-Host "✅ Matched 2-word alias: $twoWords → $($map[$twoWords])"
         $repl = $map[$twoWords] -split ' '
         return $repl + $Args[2..($Args.Count - 1)]
     }
 
     if ($map.ContainsKey($oneWord)) {
-        Write-Host "✅ Matched 1-word alias: $oneWord → $($map[$oneWord])"
+        #Write-Host "✅ Matched 1-word alias: $oneWord → $($map[$oneWord])"
         $repl = $map[$oneWord] -split ' '
         return $repl + $Args[1..($Args.Count - 1)]
     }
-
-    Write-Host "⚠️ No alias match for: $argsJoined"
+    
+    #Write-Host "⚠️ No alias match for: $argsJoined"
     return $Args
 }
 
