@@ -1,4 +1,4 @@
-# 🧠 BORG — Backup Orchestrator for Reliable Groundwork
+# 🧠 BORG — Backup Orchestrator for Reliable Groundwork ![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
 
 BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows using robust scripting practices.
 
@@ -40,7 +40,7 @@ Borg relies on a few modern terminal utilities to provide an interactive and use
 | Tool    | Purpose                          | Install Command          |
 |---------|----------------------------------|--------------------------|
 | `fzf`   | Fuzzy finder for file selection  | `winget install fzf`     |
-| `micro` | Terminal-based text editor       | `winget install micro` `winget install zyedidia.micro`   |
+| `micro` | Terminal-based text editor       | `winget install zyedidia.micro`   |
 
 These tools are used for interactive prompts and editing operations. If not installed, Borg scripts may fall back to simpler prompts or raise an error.
 
@@ -48,7 +48,7 @@ These tools are used for interactive prompts and editing operations. If not inst
 
 ## 🧪 Getting Started
 
-> Windows PowerShell and Docker Desktop are required.
+> PowerShell 7.5.1 and Docker Desktop are required.
 
 ### Install via Git Clone
 ```bash
@@ -110,18 +110,19 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 ## 🧾 Common Commands
 
-| Command                      | Description                                  |
-|-----------------------------|----------------------------------------------|
-| `borg store`                | Edit or review your configuration            |
-| `borg jump store`           | Bookmark current folder with an alias        |
-| `borg jump <alias>`         | Jump to a previously stored folder           |
-| `borg docker restore`       | Restore a `.bak` file into Docker SQL        |
-| `borg docker snapshot <v>`  | Create a snapshot from an active container   |
-| `borg docker clean`         | Remove the SQL container and its volumes     |
-| `borg docker switch`        | Allow picking one of saved snapshot to be restored   |
-| `borg docker download`        | Allow picking one of saved snapshot from container to be downloaded on the host   |
-| `borg docker upload`        | Allow picking one backup file from host to be uploaded to container|
-| `borg docker query`        | Run SQL queries against a selected database inside the container|
+| Command                      | Alias(es)                | Description                                        |
+|-----------------------------|---------------------------|----------------------------------------------------|
+| `borg store`                | —                         | Edit or review your configuration                  |
+| `borg jump store`           | —                         | Bookmark current folder with an alias              |
+| `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
+| `borg docker restore`       | `bdr`, `borg d r`         | Restore a `.bak` file into Docker SQL              |
+| `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
+| `borg docker clean`         | `bdc`, `borg d c`         | Remove the SQL container and its volumes           |
+| `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
+| `borg docker download`      | `bdd`, `borg d d`         | Download a snapshot from container to host         |
+| `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
+| `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
+
 
 ---
 
@@ -139,7 +140,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 ## 🔒 Compatibility
 
 - ✅ SQL Server 2022
-- ✅ PowerShell 5.1+
+- ✅ PowerShell 7.5.1+ (Windows Powershell is not supported)
 - ✅ Docker (Windows, Linux)
 - ✅ ODBC Driver 18+ (TLS-safe)
 
@@ -177,8 +178,8 @@ To clean it from your profile:
 - [x] Download to host from container
 - [x] Upload snapshots to the container's backup folder
 - [x] Execute ad-hoc SQL queries directly against the containerized database
+- [x] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
-- [ ] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access (TBD)
 - [ ] Add `borg help` to show available modules and commands
 - [ ] Restore database from snapshots already in container
 - [ ] Open bash shell in the container's backup folder

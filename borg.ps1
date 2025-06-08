@@ -58,7 +58,6 @@ function ResolveBorgAlias {
     )
 
     $map = @{
-        "r"     = "docker restore"
         "dr"    = "docker restore"
         "dq"    = "docker query"
         "dc"    = "docker clean"
@@ -66,10 +65,7 @@ function ResolveBorgAlias {
         "du"    = "docker upload"
         "ds"    = "docker switch"
         "dsnap" = "docker snapshot"
-        "j s"   = "jump store"
-        "d r"   = "docker restore"
-        "d q"   = "docker query"
-        "d c"   = "docker clean"
+        "js"    = "jump store"
     }
 
     $argsJoined = $module, $command
