@@ -21,5 +21,8 @@
             "alias": "sqlbk",
             "path": "C:\\sqlbackups"
         }
-    ]
+    ],
+    "Network": {
+        "rclone": "C:\\utility-scripts"
+    }
 }

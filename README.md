@@ -41,6 +41,7 @@ Borg relies on a few modern terminal utilities to provide an interactive and use
 |---------|----------------------------------|--------------------------|
 | `fzf`   | Fuzzy finder for file selection  | `winget install fzf`     |
 | `micro` | Terminal-based text editor       | `winget install zyedidia.micro`   |
+| `rclone` | Google Drive integration    | Manual install from [rclone.org](https://rclone.org/downloads) |
 
 These tools are used for interactive prompts and editing operations. If not installed, Borg scripts may fall back to simpler prompts or raise an error.
 
@@ -122,7 +123,8 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
 | `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
-| `borg version`              | N/A                       | Show installed and latest version                  |
+| `borg --version`            | N/A                       | Show installed and latest version                  |
+| `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
  
 
 
@@ -147,6 +149,39 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 - ✅ ODBC Driver 18+ (TLS-safe)
 
 ---
+
+## ☁️ Google Drive Integration (via rclone)
+
+To enable file uploads to Google Drive, BORG relies on [rclone](https://rclone.org), a powerful CLI tool for managing cloud storage.
+
+### Setup Steps
+
+1. Download `rclone.exe` from [rclone.org/downloads](https://rclone.org/downloads) and place it in a known location (e.g. `C:\utility-scripts\rclone.exe`).
+
+2. Follow the [rclone Google Drive setup guide](https://rclone.org/drive/) to create a remote configuration and generate your `rclone.conf`.
+
+3. In your `store.json`, specify:
+   - The full path to `rclone.exe`
+   - The remote name and optional working path (e.g. subfolder)
+
+Example `store.json` snippet:
+```json
+"Rclone": {
+  "ExecutablePath": "C:\\utility-scripts\\rclone.exe",
+  "RemoteName": "gdrive",
+  "RemotePath": "borg-backups"
+}
+```
+
+Make sure your `rclone.conf` includes the credentials for the `gdrive` remote, and that you’ve granted it access to the intended Google Drive folder.
+
+Once configured, use:
+
+```powershell
+borg gdrive upload
+```
+
+to upload files interactively using `fzf` from the current directory.
 
 ## 🧹 Uninstalling BORG
 
@@ -184,17 +219,14 @@ To clean it from your profile:
 - [x] Add `borg help` to show available modules and commands
 - [x] Open bash shell in the container's backup folder
 - [x] Restore database from snapshots already in container
-- [x] Add version display and optional update hint on startup
+- [x] Add version command and info into borg help
 - [x] Add borg update command - for ease of use
+- [x] Upload chosen file to gdrive
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 - [ ] Add `borg logs` to monitor last executions
 - [ ] Restore from bacpac
-- [ ] Integrate Google Drive as shared cloud storage between stations
-- [ ] Schedule automatic shutdown of the working station
 - [ ] Start Visual Studio with sln found at the current location
 - [ ] Start/stop system or application services from the terminal
-
-- [ ] Add `borg reset` to regenerate store.json from example
 - [ ] Add interactive `borg menu` powered by fzf
 ---
 

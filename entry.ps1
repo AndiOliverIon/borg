@@ -71,6 +71,12 @@ switch ($module) {
             'query' { & "$dockerFolder\query.ps1" }
         }        
     }
+    'gdrive' {
+        switch ($command) {
+            'upload' { & "$networkRoot\gdrive-upload.ps1" }
+        }
+
+    }
     default {
         Write-Error "Unknown module command."
     }
