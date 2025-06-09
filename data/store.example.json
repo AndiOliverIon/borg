@@ -1,7 +1,4 @@
 {
-    "General": {
-        "HostBackupFolder": "SomePathOnHostWhereBackupsAreKept"
-    },
     "Docker": {
         "SqlContainer": "sqlserver-2022",
         "SqlInstance": "localhost,2022",
@@ -19,6 +16,10 @@
         {
             "alias": "kit",
             "path": "C:\\Users\\someuser\\kitts"
+        },
+        {
+            "alias": "sqlbk",
+            "path": "C:\\sqlbackups"
         }
     ]
 }

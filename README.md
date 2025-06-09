@@ -68,23 +68,22 @@ Import-Module Borg
 ```
 
 ### Initialize Configuration
-Upon first run, a default `store.json` will be created from `store.example.json` if it does not exist.
 
-Edit it with:
+When you run any BORG command for the first time, a default `store.json` file will be created in the `data/` folder using `store.example.json` as a template (if it doesn't already exist).
+
+To edit your configuration, you can use:
+
 ```powershell
-# >>> USING BORG/Micro <<<
+# Open the config file using Micro (or your preferred text editor):
 borg store
-# >>> USING MICRO <<<
-$env:BORG_ROOT = (Get-Location).Path
-micro $env:BORG_ROOT\data\store.json
 ```
+
+Alternatively, you can open `data\store.json` in any text editor like Notepad, VS Code, or others.
+
 
 Example configuration:
 ```json
-{
-  "General": {
-    "HostBackupFolder": "C:\backups"
-  },
+{  
   "Docker": {
     "SqlContainer": "sqlserver-2022",
     "SqlInstance": "localhost,2022",
@@ -112,7 +111,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
-| `borg store`                | —                         | Edit or review your configuration                  |
+| `borg store`                | —                         | Opens your `store.json` config in Micro            |
 | `borg jump store`           | —                         | Bookmark current folder with an alias              |
 | `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
 | `borg docker restore`       | `bdr`, `borg d r`         | Restore a `.bak` file into Docker SQL              |
@@ -122,6 +121,9 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker download`      | `bdd`, `borg d d`         | Download a snapshot from container to host         |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
 | `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
+| `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
+| `borg version`              | N/A                       | Show installed and latest version                  |
+ 
 
 
 ---
@@ -181,15 +183,17 @@ To clean it from your profile:
 - [x] Add shorthand aliases (e.g., `br`, `bdr`, `borg d r`) for faster command access
 - [x] Add `borg help` to show available modules and commands
 - [x] Open bash shell in the container's backup folder
+- [x] Restore database from snapshots already in container
+- [x] Add version display and optional update hint on startup
+- [x] Add borg update command - for ease of use
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
-- [ ] Restore database from snapshots already in container
 - [ ] Add `borg logs` to monitor last executions
 - [ ] Restore from bacpac
 - [ ] Integrate Google Drive as shared cloud storage between stations
 - [ ] Schedule automatic shutdown of the working station
 - [ ] Start Visual Studio with sln found at the current location
 - [ ] Start/stop system or application services from the terminal
-- [ ] Add version display and optional update hint on startup
+
 - [ ] Add `borg reset` to regenerate store.json from example
 - [ ] Add interactive `borg menu` powered by fzf
 ---
