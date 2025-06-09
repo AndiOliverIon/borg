@@ -43,7 +43,6 @@ $scriptsRoot = Join-Path $borgRoot "scripts\win"
 $dataRoot = Join-Path $borgRoot "data"
 
 # Host entry points
-$HostBackupFolder = GetBorgStoreValue -Chapter General -Key HostBackupFolder
 $dockerFolder = Join-Path $scriptsRoot "docker"
 $jumpFolder = Join-Path $scriptsRoot "jump"
 $dockerSqlFilesFolder = Join-Path $dockerFolder "sql"

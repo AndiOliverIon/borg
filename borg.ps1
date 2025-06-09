@@ -1,9 +1,13 @@
 # borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
-param (
-    [string]$module,
-    [string]$command,
-    [string[]]$extraArgs
-)
+
+# Use raw args instead of named parameters
+[string]$module = $null
+[string]$command = $null
+[string[]]$extraArgs = @()
+
+if ($args.Count -ge 1) { $module = $args[0] }
+if ($args.Count -ge 2) { $command = $args[1] }
+if ($args.Count -ge 3) { $extraArgs = $args[2..($args.Count - 1)] }
 
 # Check PowerShell version
 if ($PSVersionTable.PSVersion.Major -lt 7) {
@@ -46,8 +50,37 @@ catch {
     exit 1
 }
 
-# Write-Host "Module: $module"
-# Write-Host "Command: $command"
+# --version
+if ($args -contains '--version' -or $args -contains '-v') {
+    $moduleName = 'Borg'
+    $installed = (Get-Module $moduleName -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).Version
+    $latest = (Find-Module $moduleName -ErrorAction SilentlyContinue).Version
+
+    Write-Host "`n📦 BORG Version Info" -ForegroundColor Cyan
+    Write-Host "   • Installed: v$installed"
+    if ($latest -and $latest -ne $installed) {
+        Write-Host "   • Latest:    v$latest 🔔" -ForegroundColor Yellow
+        Write-Host "`nRun 'borg update' to get the latest version."
+    }
+    else {
+        Write-Host "   • Latest:    v$latest ✅"
+    }
+    exit
+}
+
+# update
+if ($args.Count -eq 1 -and $args[0] -eq 'update') {
+    Write-Host "`n⬆️  Updating BORG module from PowerShell Gallery..." -ForegroundColor Cyan
+    try {
+        Update-Module -Name Borg -Force -Scope CurrentUser -ErrorAction Stop
+        Write-Host "✅ Update complete. Please restart your terminal to use the new version." -ForegroundColor Green
+    }
+    catch {
+        Write-Host "❌ Update failed: $_" -ForegroundColor Red
+    }
+    exit
+}
+
 
 function ResolveBorgAlias {
     param(
@@ -92,6 +125,9 @@ function ResolveBorgAlias {
     #Write-Host "⚠️ No alias match for: $argsJoined"
     return $Args
 }
+
+
+
 
 $resolved = ResolveBorgAlias $module $command
 if ($resolved.Count -ge 2) {
