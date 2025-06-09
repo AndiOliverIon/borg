@@ -222,12 +222,8 @@ To clean it from your profile:
 - [x] Add version command and info into borg help
 - [x] Add borg update command - for ease of use
 - [x] Upload chosen file to gdrive
-- [ ] Add `install.ps1` to configure execution policy and profile on first run
-- [ ] Add `borg logs` to monitor last executions
 - [ ] Restore from bacpac
-- [ ] Start Visual Studio with sln found at the current location
-- [ ] Start/stop system or application services from the terminal
-- [ ] Add interactive `borg menu` powered by fzf
+- [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 
 ## 📄 License
