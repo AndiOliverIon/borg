@@ -57,3 +57,11 @@ $ImageTag = GetBorgStoreValue -Chapter Docker -Key SqlImageTag
 $SqlUser = GetBorgStoreValue -Chapter Docker -Key SqlUser
 $SqlPassword = GetBorgStoreValue -Chapter Docker -Key SqlPassword
 $SqlUseDatabase = GetBorgStoreValue -Chapter Docker -Key UseDatabase
+
+# Custom mappings folders
+$SqlBackupDefaultFolder = GetBorgStoreValue -Chapter CustomFolders -Key SqlBackupDefault
+$CustomScriptsFolder = GetBorgStoreValue -Chapter CustomFolders -Key CustomScripts
+
+# Network entry points
+$networkRoot = Join-Path $scriptsRoot "network"
+$rclonePath = GetBorgStoreValue -Chapter Network -Key rclone

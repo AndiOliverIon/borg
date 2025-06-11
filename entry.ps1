@@ -30,6 +30,9 @@ switch ($module) {
     'store' {
         micro $storePath
     }
+    'bookmark' {
+        & "$env:BORG_ROOT\bookmark.ps1"
+    }
     'jump' {
         switch ($command) {
             'store' { & "$jumpFolder\store.ps1" @extraArgs }
@@ -70,6 +73,17 @@ switch ($module) {
             'upload' { & "$dockerFolder\upload.ps1" }
             'query' { & "$dockerFolder\query.ps1" }
         }        
+    }
+
+    'run' {
+        & "$env:BORG_ROOT\run.ps1"
+    }
+
+    'gdrive' {
+        switch ($command) {
+            'upload' { & "$networkRoot\gdrive-upload.ps1" }
+        }
+
     }
     default {
         Write-Error "Unknown module command."

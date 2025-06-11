@@ -5,6 +5,7 @@
 [string]$command = $null
 [string[]]$extraArgs = @()
 
+
 if ($args.Count -ge 1) { $module = $args[0] }
 if ($args.Count -ge 2) { $command = $args[1] }
 if ($args.Count -ge 3) { $extraArgs = $args[2..($args.Count - 1)] }
@@ -91,6 +92,7 @@ function ResolveBorgAlias {
     )
 
     $map = @{
+        "b"     = "bookmark"
         "db"    = "docker bash"
         "dr"    = "docker restore"
         "dq"    = "docker query"
@@ -125,9 +127,6 @@ function ResolveBorgAlias {
     #Write-Host "⚠️ No alias match for: $argsJoined"
     return $Args
 }
-
-
-
 
 $resolved = ResolveBorgAlias $module $command
 if ($resolved.Count -ge 2) {
