@@ -5,12 +5,12 @@ param(
 
 Clear-Host
 
-# ╭──────────────────────────────────────────────────────────╮
-# │ 💣 Docker SQL Container Cleanup — Precision Strike Mode │
-# ╰──────────────────────────────────────────────────────────╯
-$separator = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
+# ╭────────────────────────────────────────────────────────────╮
+# │ 💣 Docker SQL Cleanup — BORG-Managed Containers Only      │
+# ╰────────────────────────────────────────────────────────────╯
+$separator = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 Write-Host $separator -ForegroundColor DarkRed
-Write-Host "💣  Docker SQL Container Cleanup — Precision Strike Mode" -ForegroundColor Red
+Write-Host "💣  Docker SQL Cleanup — BORG-Managed Containers Only" -ForegroundColor Red
 Write-Host $separator -ForegroundColor DarkRed
 Write-Host ""
 
@@ -30,18 +30,12 @@ function Remove-ContainerByName {
     }
 }
 
-# 🧠 Normalize SQL shorthand names
-if ($ContainerName -in @('2017', '2019', '2022')) {
-    Write-Host "🔄 Interpreting version shortcut → sqlserver-$ContainerName"
-    $ContainerName = "sqlserver-$ContainerName"
-}
-
 # 🔍 Main logic
 if ($ContainerName) {
     Write-Host "🔎 Checking for container: '$ContainerName'" -ForegroundColor Cyan
-    $containerExists = docker ps -a --filter "name=$ContainerName" --format "{{.Names}}"
+    $containerExists = docker ps -a --format "{{.Names}}" | Where-Object { $_ -eq $ContainerName }
 
-    if ($containerExists -eq $ContainerName) {
+    if ($containerExists) {
         Remove-ContainerByName -Name $ContainerName
     }
     else {
@@ -49,16 +43,16 @@ if ($ContainerName) {
     }
 }
 else {
-    Write-Host "🧹 No specific container passed. Targeting **all** containers..." -ForegroundColor Yellow
-    $allContainers = docker ps -a --format "{{.Names}}"
+    Write-Host "🧹 No specific container passed. Targeting all **BORG-managed** SQL Server containers..." -ForegroundColor Yellow
+    $allBorgSqlContainers = docker ps -a --format "{{.Names}}" | Where-Object { $_ -like "sqlserver-*" }
 
-    if ($allContainers) {
-        foreach ($container in $allContainers) {
+    if ($allBorgSqlContainers) {
+        foreach ($container in $allBorgSqlContainers) {
             Remove-ContainerByName -Name $container
         }
     }
     else {
-        Write-Host "✅ No containers found to remove. Clean slate!" -ForegroundColor Green
+        Write-Host "✅ No BORG-managed containers found to remove. Clean slate!" -ForegroundColor Green
     }
 }
 

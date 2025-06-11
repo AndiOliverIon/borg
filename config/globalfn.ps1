@@ -41,6 +41,7 @@ $borgRoot = $env:BORG_ROOT
 $storePath = Join-Path $dataRoot "store.json"
 $scriptsRoot = Join-Path $borgRoot "scripts\win"
 $dataRoot = Join-Path $borgRoot "data"
+$configRoot = Join-Path $borgRoot "config"
 
 # Host entry points
 $dockerFolder = Join-Path $scriptsRoot "docker"

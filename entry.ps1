@@ -24,6 +24,9 @@ if (-not $module) {
 }
 
 switch ($module) {
+    'doctor' {
+        & "$configRoot\doctor.ps1"
+    }
     'help' {
         & "$env:BORG_ROOT\help.ps1"
     }
@@ -84,6 +87,11 @@ switch ($module) {
             'upload' { & "$networkRoot\gdrive-upload.ps1" }
         }
 
+    }
+    'clean' {
+        switch ($command) {
+            'versions' { & "$configRoot\clean-versions.ps1" }
+        }
     }
     default {
         Write-Error "Unknown module command."
