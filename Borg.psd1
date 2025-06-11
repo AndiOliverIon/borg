@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Borg.psm1'
-    ModuleVersion     = '0.1.24'
+    ModuleVersion     = '0.1.25'
     GUID              = 'f23e3f2e-a121-4c62-8913-ef4b1c946bcc'
     Author            = 'Andi Oliver Ion'
     CompanyName       = ''
