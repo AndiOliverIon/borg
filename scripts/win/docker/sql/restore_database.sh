@@ -29,6 +29,12 @@ echo "📦 Preparing SQL restore script for database: $DB_NAME"
 
 # Generate the restore SQL script
 cat >"$SQL_FILE" <<EOF
+-- 🛑 Kill existing connections
+IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'$DB_NAME')
+BEGIN
+    EXEC('ALTER DATABASE [$DB_NAME] SET SINGLE_USER WITH ROLLBACK IMMEDIATE');
+END
+
 DECLARE @backupFile NVARCHAR(MAX) = N'$BACKUP_PATH';
 DECLARE @dbName NVARCHAR(MAX) = N'$DB_NAME';
 DECLARE @dataPath NVARCHAR(MAX) = N'$DATA_PATH';
@@ -73,6 +79,9 @@ SET @sql += ', RECOVERY, REPLACE, NOUNLOAD, STATS = 5';
 PRINT '🛠️ Executing SQL:';
 PRINT @sql;
 EXEC (@sql);
+
+-- 🔄 Revert to multi-user
+EXEC('ALTER DATABASE [' + @dbName + '] SET MULTI_USER');
 EOF
 
 # Execute the SQL script using encryption trust override
