@@ -71,6 +71,11 @@ switch ($module) {
             'query' { & "$dockerFolder\query.ps1" }
         }        
     }
+
+    'run' {
+        & "$env:BORG_ROOT\run.ps1"
+    }
+
     'gdrive' {
         switch ($command) {
             'upload' { & "$networkRoot\gdrive-upload.ps1" }

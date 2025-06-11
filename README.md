@@ -115,6 +115,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg store`                | —                         | Opens your `store.json` config in Micro            |
 | `borg jump store`           | —                         | Bookmark current folder with an alias              |
 | `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
+| `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
 | `borg docker restore`       | `bdr`, `borg d r`         | Restore a `.bak` file into Docker SQL              |
 | `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
 | `borg docker clean`         | `bdc`, `borg d c`         | Remove the SQL container and its volumes           |
@@ -223,8 +224,8 @@ To clean it from your profile:
 - [x] Add borg update command - for ease of use
 - [x] Upload chosen file to gdrive
 - [x] Fallback to predefined SQL backup folder when no valid backups are found in the current directory
-- [ ] On borg docker switch disrupt any existing connection to the database. 
-- [ ] Run user custom scripts
+- [x] Ensure clean restore: On borg docker switch, automatically terminate any existing connections to the target database to prevent restore failures.
+- [x] Run user custom scripts
 - [ ] Restore from bacpac
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
