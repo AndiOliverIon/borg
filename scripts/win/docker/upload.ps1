@@ -8,9 +8,62 @@ $backupPath = "$dockerSqlPath/backup"
 # 🔍 Scan for folders/files to upload
 Write-Host "`n🔍 Scanning current folder for upload candidates..." -ForegroundColor Yellow
 
-$items = @(Get-ChildItem -Directory) + @(Get-ChildItem -File | Where-Object {
-        $_.Extension -in ".bak", ".zip", ".mdf", ".ldf"
-    })
+# First gather uploadable files only
+$uploadableExtensions = ".bak", ".zip", ".mdf", ".ldf"
+$fileItems = Get-ChildItem -File | Where-Object { $_.Extension -in $uploadableExtensions }
+
+# If none found, fallback to default
+if (-not $fileItems -or $fileItems.Count -eq 0) {
+    Write-Host "📂 No uploadable files found in current folder. Trying fallback: $SqlBackupDefaultFolder" -ForegroundColor Yellow
+    Push-Location $SqlBackupDefaultFolder
+
+    $fileItems = Get-ChildItem -File | Where-Object { $_.Extension -in $uploadableExtensions }
+
+    if (-not $fileItems -or $fileItems.Count -eq 0) {
+        Write-Host "❌ No suitable files found in any location. Aborting." -ForegroundColor Red
+        Pop-Location
+        exit 1
+    }
+
+    $items = @(Get-ChildItem -Directory) + $fileItems
+    Write-Host "📁 Using fallback folder contents." -ForegroundColor Green
+
+    # Build mapping
+    $cleanToPath = @{}
+    $displayList = @()
+
+    foreach ($item in $items) {
+        $name = $item.Name
+        $icon = if ($item.PSIsContainer) { "📁" }
+        elseif ($item.Extension -eq ".zip") { "📦" }
+        else { "📄" }
+
+        $display = "$icon $name"
+        $displayList += $display
+        $cleanToPath[$name] = $item.FullName
+    }
+
+    Pop-Location
+}
+else {
+    # If we have files in current folder, combine with directories here
+    $items = @(Get-ChildItem -Directory) + $fileItems
+
+    $cleanToPath = @{}
+    $displayList = @()
+
+    foreach ($item in $items) {
+        $name = $item.Name
+        $icon = if ($item.PSIsContainer) { "📁" }
+        elseif ($item.Extension -eq ".zip") { "📦" }
+        else { "📄" }
+
+        $display = "$icon $name"
+        $displayList += $display
+        $cleanToPath[$name] = $item.FullName
+    }
+}
+
 
 if (-not $items) {
     Write-Host "❌ No suitable folders or files found in current directory." -ForegroundColor Red

@@ -24,5 +24,9 @@
     ],
     "Network": {
         "rclone": "C:\\utility-scripts"
+    },
+    "CustomFolders": {
+        "SqlBackupDefault": "C:\\sql-backups",
+        "CustomScripts": "C:\\custom-scripts"
     }
 }

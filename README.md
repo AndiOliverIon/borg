@@ -222,6 +222,9 @@ To clean it from your profile:
 - [x] Add version command and info into borg help
 - [x] Add borg update command - for ease of use
 - [x] Upload chosen file to gdrive
+- [x] Fallback to predefined SQL backup folder when no valid backups are found in the current directory
+- [ ] On borg docker switch disrupt any existing connection to the database. 
+- [ ] Run user custom scripts
 - [ ] Restore from bacpac
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
