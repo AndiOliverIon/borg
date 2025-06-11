@@ -24,6 +24,9 @@ if (-not $module) {
 }
 
 switch ($module) {
+    'doctor' {
+        & "$configRoot\doctor.ps1"
+    }
     'help' {
         & "$env:BORG_ROOT\help.ps1"
     }

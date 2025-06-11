@@ -114,6 +114,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
+| `borg doctor`                | N/A                      | Checks system environment for required tools, PowerShell version, and config health            |
 | `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
 | `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection.              |
 | `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
@@ -232,6 +233,7 @@ To clean it from your profile:
 - [x] Ensure clean restore: On borg docker switch, automatically terminate any existing connections to the target database to prevent restore failures.
 - [x] Run user custom scripts
 - [x] Choice to remove automatically older versions of BORG;
+- [x] Borg doctor (will check for mandatory and optional third-party tools required for operation)
 - [ ] Restore from bacpac
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
