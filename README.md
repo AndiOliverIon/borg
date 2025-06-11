@@ -65,6 +65,8 @@ Install-Module Borg -Scope CurrentUser
 ```powershell
 # >>> BORG INITIALIZATION START <<<
 Import-Module Borg
+# Optionally create a shortcut alias
+Set-Alias b borg
 # <<< BORG INITIALIZATION END >>>
 ```
 
