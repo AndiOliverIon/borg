@@ -113,7 +113,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
 | `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
-| `borg bookmark`             | N/A                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection.              |
+| `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection.              |
 | `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
 | `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
 | `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
