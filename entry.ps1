@@ -30,6 +30,9 @@ switch ($module) {
     'store' {
         micro $storePath
     }
+    'bookmark' {
+        & "$env:BORG_ROOT\bookmark.ps1"
+    }
     'jump' {
         switch ($command) {
             'store' { & "$jumpFolder\store.ps1" @extraArgs }

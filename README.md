@@ -112,8 +112,9 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
-| `borg store`                | —                         | Opens your `store.json` config in Micro            |
-| `borg jump store`           | —                         | Bookmark current folder with an alias              |
+| `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
+| `borg bookmark`             | N/A                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection.              |
+| `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
 | `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
 | `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
 | `borg docker restore`       | `bdr`, `borg d r`         | Restore a `.bak` file into Docker SQL              |
@@ -210,6 +211,7 @@ To clean it from your profile:
 
 - [x] Restore any `.bak` file
 - [x] Add backup/snapshot support
+- [x] Jump to bookmark defined in the store.json under the 'Bookmarks' chapter via interactive fzf selection.
 - [x] Jump between stored aliases folders
 - [x] Clean docker
 - [x] Jump between snapshots inside the container
