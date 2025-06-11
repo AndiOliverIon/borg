@@ -73,17 +73,15 @@ switch ($result.Type) {
         & "$dockerFolder\sql-restore-bacpac.ps1" -BacpacPath $result.Path
     }
     "bak" {
-        Write-Host "🧨 Step 4: Restoring database from bak: '$FileName'..." -ForegroundColor Cyan
-        & "$dockerFolder\sql-restore.ps1" $containerName $FileName        
+        $fileNameOnly = [System.IO.Path]::GetFileName($result.Path)
+        Write-Host "🧨 Step 4: Restoring database from bak: '$fileNameOnly'..." -ForegroundColor Cyan
+        & "$dockerFolder\sql-restore.ps1" $containerName $fileNameOnly
     }
     default {
         Write-Host "❌ Unknown restore type: $($result.Type)" -ForegroundColor Red
         exit 1
     }
 }
-
-# 🧨 Step 4: Restore the database
-
 
 # 🔚 Restore working location
 Set-Location $currentLocation
