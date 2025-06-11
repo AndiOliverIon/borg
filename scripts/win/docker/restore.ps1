@@ -24,7 +24,12 @@ Write-Host "🚀 Step 1: Creating SQL Server $ContainerName container..." -Foreg
 
 # 📤 Step 2: Upload backup
 Write-Host "📤 Step 2: Uploading backup file to container..." -ForegroundColor Cyan
-$FileName = & "$dockerFolder\upload.ps1"
+$result = & "$dockerFolder\upload.ps1"
+
+if (-not $result) {
+    Write-Host "❌ Upload or selection failed." -ForegroundColor Red
+    exit 1
+}
 
 # 🕒 Step 3: Wait for SQL to be ready
 Write-Host ""
@@ -62,9 +67,23 @@ while (-not $ready) {
 
 Start-Sleep -Seconds 2
 
+switch ($result.Type) {
+    "bacpac" {
+        Write-Host "🧨 Step 4: Restoring database from bacpac: '$result.Path'..." -ForegroundColor Cyan
+        & "$dockerFolder\sql-restore-bacpac.ps1" -BacpacPath $result.Path
+    }
+    "bak" {
+        Write-Host "🧨 Step 4: Restoring database from bak: '$FileName'..." -ForegroundColor Cyan
+        & "$dockerFolder\sql-restore.ps1" $containerName $FileName        
+    }
+    default {
+        Write-Host "❌ Unknown restore type: $($result.Type)" -ForegroundColor Red
+        exit 1
+    }
+}
+
 # 🧨 Step 4: Restore the database
-Write-Host "🧨 Step 4: Restoring database from '$FileName'..." -ForegroundColor Cyan
-& "$dockerFolder\sql-restore.ps1" $containerName $FileName
+
 
 # 🔚 Restore working location
 Set-Location $currentLocation

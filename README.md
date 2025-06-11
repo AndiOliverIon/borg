@@ -234,7 +234,7 @@ To clean it from your profile:
 - [x] Run user custom scripts
 - [x] Choice to remove automatically older versions of BORG;
 - [x] Borg doctor (will check for mandatory and optional third-party tools required for operation)
-- [ ] Restore from bacpac
+- [x] Restore from bacpac
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 

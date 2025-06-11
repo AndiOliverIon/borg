@@ -9,7 +9,7 @@ $backupPath = "$dockerSqlPath/backup"
 Write-Host "`n🔍 Scanning current folder for upload candidates..." -ForegroundColor Yellow
 
 # First gather uploadable files only
-$uploadableExtensions = ".bak", ".zip", ".mdf", ".ldf"
+$uploadableExtensions = ".bak", ".zip", ".mdf", ".ldf", ".bacpac"
 $fileItems = Get-ChildItem -File | Where-Object { $_.Extension -in $uploadableExtensions }
 
 # If none found, fallback to default
@@ -104,9 +104,19 @@ if (-not $cleanToPath.ContainsKey($cleanName)) {
 $FilePath = $cleanToPath[$cleanName]
 $OriginalFileName = [System.IO.Path]::GetFileName($FilePath)
 
+# Determine file type, if bacpac return from upload, this will suffice here.
+$ext = [System.IO.Path]::GetExtension($FilePath).ToLowerInvariant()
+$isBacPac = 0;
+$proposedExtension = ".bak"
+if ($ext -eq ".bacpac") {
+    $isBacPac = 1;
+    $proposedExtension = ".bacpac"
+}
+
+
 # 🧠 Auto-propose based on filename (first word before `_` or `-`)
 $baseName = [System.IO.Path]::GetFileNameWithoutExtension($OriginalFileName)
-$proposedName = ($baseName -split '[-_]')[0] + ".bak"
+$proposedName = ($baseName -split '[-_]')[0] + $proposedExtension
 
 # 🎯 Rename choices (emoji + label) → key map
 $renameLabelToKey = @{}
@@ -160,18 +170,22 @@ switch ($renameLabelToKey[$cleanRenameKey]) {
 
 $TargetFilePath = "$backupPath/$FileName"
 
-Write-Host "`n📤 Uploading to container '$dockerContainerName' → $TargetFilePath..." -ForegroundColor Cyan
-
-try {
-    Write-Host("Target: $backupPath")
-    Write-Host("FilePath: $TargetFilePath")
-    Write-Host("FileName: $FileName")
-    docker exec $dockerContainerName mkdir -p $dockerSqlPath | Out-Null
-    docker cp "$FilePath" "$($dockerContainerName):$TargetFilePath"
-    Write-Host "✅ Upload successful: $FileName → $TargetFilePath" -ForegroundColor Green
+if ($isBacPac -eq 0) {
+    Write-Host "`n📤 Uploading to container '$dockerContainerName' → $TargetFilePath..." -ForegroundColor Cyan
+    try {
+        Write-Host("Target: $backupPath")
+        Write-Host("FilePath: $TargetFilePath")
+        Write-Host("FileName: $FileName")
+        docker exec $dockerContainerName mkdir -p $dockerSqlPath | Out-Null
+        docker cp "$FilePath" "$($dockerContainerName):$TargetFilePath"
+        Write-Host "✅ Upload successful: $FileName → $TargetFilePath" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "❌ Upload failed. Error: $_" -ForegroundColor Red
+    }
 }
-catch {
-    Write-Host "❌ Upload failed. Error: $_" -ForegroundColor Red
-}
 
-$FileName
+return @{
+    Type = if ($isBacPac) { "bacpac" } else { "bak" }
+    Path = if ($isBacPac) { $FilePath } else { $TargetFilePath }
+}
