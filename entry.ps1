@@ -85,6 +85,11 @@ switch ($module) {
         }
 
     }
+    'clean' {
+        switch ($command) {
+            'versions' { & "$configRoot\clean-versions.ps1" }
+        }
+    }
     default {
         Write-Error "Unknown module command."
     }
