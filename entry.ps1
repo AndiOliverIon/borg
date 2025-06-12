@@ -93,6 +93,11 @@ switch ($module) {
             'versions' { & "$configRoot\clean-versions.ps1" }
         }
     }
+    'network' {
+        switch ($command) {
+            'kill' { & "$networkRoot\kill.ps1" $extraArgs }
+        }
+    }
     default {
         Write-Error "Unknown module command."
     }

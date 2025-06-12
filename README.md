@@ -128,6 +128,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
 | `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
+| `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
 | `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest|
 | `borg --version`            | N/A                       | Show installed and latest version                  |
@@ -235,6 +236,7 @@ To clean it from your profile:
 - [x] Choice to remove automatically older versions of BORG;
 - [x] Borg doctor (will check for mandatory and optional third-party tools required for operation)
 - [x] Restore from bacpac
+- [x] Kill process by port or name, optionally prompting for confirmation
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 
