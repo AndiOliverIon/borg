@@ -28,5 +28,11 @@
     "CustomFolders": {
         "SqlBackupDefault": "C:\\sql-backups",
         "CustomScripts": "C:\\custom-scripts"
-    }
+    },
+    "SqlServers": [
+        {
+            "Name": "ThanatosDocker",
+            "ConnectionString": "Server=someaddress;Database=SomeDbs;User Id=someuser;Password=somepwd;MultipleActiveResultSets=True;TrustServerCertificate=True"
+        }
+    ]
 }

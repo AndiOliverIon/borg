@@ -33,17 +33,25 @@ borg/
 
 ---
 
-## 🛠️ Requirements
+## 🛠️ Required & Optional Tools for Borg
 
-Borg relies on a few modern terminal utilities to provide an interactive and user-friendly experience.
+#### ✅ Mandatory Tools
+These are essential for Borg commands to work as intended:
 
-| Tool    | Purpose                          | Install Command          |
-|---------|----------------------------------|--------------------------|
-| `fzf`   | Fuzzy finder for file selection  | `winget install fzf`     |
-| `micro` | Terminal-based text editor       | `winget install zyedidia.micro`   |
-| `rclone` | Google Drive integration    | Manual install from [rclone.org](https://rclone.org/downloads) |
+| Tool    | Purpose                          | Install Command                    |
+|---------|----------------------------------|------------------------------------|
+| `fzf`   | Fuzzy finder for selections      | `winget install fzf`               |
+| `micro` | Terminal-based text editor       | `winget install zyedidia.micro`    |
 
-These tools are used for interactive prompts and editing operations. If not installed, Borg scripts may fall back to simpler prompts or raise an error.
+---
+
+#### 🧩 Optional Tools
+These tools enable specific Borg commands. If missing, affected features will be unavailable, but Borg remains functional.
+
+| Tool        | Purpose                            | Install Command / Source                                          |
+|-------------|------------------------------------|-------------------------------------------------------------------|
+| `rclone`    | Google Drive integration            | Manual install from [rclone.org](https://rclone.org/downloads)   |
+| `sqlpackage`| Export `.bacpac` SQL snapshots      | `choco install sqlpackage` or install from [Microsoft Docs](https://learn.microsoft.com/sql/tools/sqlpackage/sqlpackage-download) |
 
 ---
 
@@ -130,6 +138,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
 | `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
+| `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder|
 | `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest|
 | `borg --version`            | N/A                       | Show installed and latest version                  |
  
@@ -237,6 +246,7 @@ To clean it from your profile:
 - [x] Borg doctor (will check for mandatory and optional third-party tools required for operation)
 - [x] Restore from bacpac
 - [x] Kill process by port or name, optionally prompting for confirmation
+- [x] Obtain a .bacpac snapshot from a database selected via connection strings defined in `store.json → SqlServers`.
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 
