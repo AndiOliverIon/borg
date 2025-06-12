@@ -76,8 +76,7 @@ switch ($module) {
             'upload' { & "$dockerFolder\upload.ps1" }
             'query' { & "$dockerFolder\query.ps1" }
         }        
-    }
-
+    }    
     'run' {
         & "$env:BORG_ROOT\run.ps1"
     }
@@ -96,7 +95,11 @@ switch ($module) {
     'network' {
         switch ($command) {
             'kill' { & "$networkRoot\kill.ps1" $extraArgs }
+            'bacpac' { & "$networkRoot\database\export-bacpac.ps1" }
         }
+    }
+    'q' {
+        & "$env:BORG_ROOT\q.ps1"
     }
     default {
         Write-Error "Unknown module command."
