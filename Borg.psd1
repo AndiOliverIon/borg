@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Borg.psm1'
-    ModuleVersion     = '0.1.30'
+    ModuleVersion     = '0.1.31'
     GUID              = 'f23e3f2e-a121-4c62-8913-ef4b1c946bcc'
     Author            = 'Andi Oliver Ion'
     CompanyName       = ''
@@ -13,7 +13,11 @@
     AliasesToExport   = @('borg')
     PrivateData       = @{
         PSData = @{
-            Tags       = @('automation', 'cli', 'docker', 'jira', 'sql', 'borg')
+            Tags       = @(
+                'borg', 'automation', 'cli', 'powershell', 'psmodule',
+                'docker', 'container', 'sql', 'database', 'backup', 'restore',
+                'jira', 'gdrive', 'devops', 'tools', 'productivity'
+            )
             LicenseUri = 'https://github.com/AndiOliverIon/borg/blob/main/LICENSE'
             ProjectUri = 'https://github.com/AndiOliverIon/borg'
         }
