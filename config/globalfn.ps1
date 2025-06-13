@@ -66,3 +66,9 @@ $CustomScriptsFolder = GetBorgStoreValue -Chapter CustomFolders -Key CustomScrip
 # Network entry points
 $networkRoot = Join-Path $scriptsRoot "network"
 $rclonePath = GetBorgStoreValue -Chapter Network -Key rclone
+
+# Jira entry points
+$jiraRoot = Join-Path $scriptsRoot "jira"
+$jiraDomain = GetBorgStoreValue -Chapter Jira -Key Domain
+$jiraEmail = GetBorgStoreValue -Chapter Jira -Key Email
+$jiraAPIToken = GetBorgStoreValue -Chapter Jira -Key APIToken

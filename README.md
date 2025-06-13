@@ -247,6 +247,7 @@ To clean it from your profile:
 - [x] Restore from bacpac
 - [x] Kill process by port or name, optionally prompting for confirmation
 - [x] Obtain a .bacpac snapshot from a database selected via connection strings defined in `store.json → SqlServers`.
+- [x] Jira workflow spent time today
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 

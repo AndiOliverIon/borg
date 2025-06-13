@@ -34,5 +34,10 @@
             "Name": "ThanatosDocker",
             "ConnectionString": "Server=someaddress;Database=SomeDbs;User Id=someuser;Password=somepwd;MultipleActiveResultSets=True;TrustServerCertificate=True"
         }
-    ]
+    ],
+    "Jira": {
+        "Domain": "https://yourdomain.atlassian.net",
+        "Email": "youremail@atwork.so",
+        "ApiToken": "YourAtlassianApiGeneratedToken"
+    }
 }
