@@ -1,6 +1,3 @@
-# Assume these are already set by Borg
-# $jiraDomain, $jiraEmail, $jiraAPIToken
-
 # ---- Auth header ----
 $authHeader = @{
     Authorization = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${jiraEmail}:${jiraAPIToken}"))
@@ -63,6 +60,11 @@ if ($results.Count -eq 0) {
 else {
     $results | Sort-Object Logged | Format-Table -AutoSize
 
-    $totalMinutes = ($results | Measure-Object -Property Seconds -Sum).Sum / 60
-    Write-Host "`n🕒 Total logged today: $([math]::Round($totalMinutes)) minutes" -ForegroundColor Green
+    $totalSeconds = ($results | Measure-Object -Property Seconds -Sum).Sum
+    $totalMinutes = [math]::Floor($totalSeconds / 60)
+    $totalHours = [math]::Floor($totalMinutes / 60)
+    $remainingMinutes = $totalMinutes % 60
+
+    Write-Host "`n🕒 Total logged today: $totalMinutes minutes" -ForegroundColor Green
+    Write-Host "⏱️  That’s $totalHours hours $remainingMinutes minutes" -ForegroundColor DarkCyan
 }

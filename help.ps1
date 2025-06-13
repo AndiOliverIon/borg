@@ -42,6 +42,12 @@ Write-Host "📦 network`n" -ForegroundColor Yellow
 Write-Host "     gdrive`n"
 Write-Host "     Offers choice by fzf to select one file at current location to be uploaded into gdrive.`n"
 
+Write-Host "📦 jira`n" -ForegroundColor Yellow
+Write-Host "     jira today`n"
+Write-Host "     Shows your Jira worklogs for today, grouped by issue.`n"
+Write-Host "     jira week`n"
+Write-Host "     Shows your Jira worklogs for the current week .`n"
+
 Write-Host "📦 help`n" -ForegroundColor Yellow
 
 Write-Host "   • help"

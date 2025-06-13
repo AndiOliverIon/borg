@@ -139,10 +139,12 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
 | `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder|
+| `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
+| `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week         |
+
 | `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest|
 | `borg --version`            | N/A                       | Show installed and latest version                  |
  
-
 
 ---
 

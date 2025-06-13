@@ -13,7 +13,7 @@
     AliasesToExport   = @('borg')
     PrivateData       = @{
         PSData = @{
-            Tags       = @('automation', 'cli', 'docker', 'borg')
+            Tags       = @('automation', 'cli', 'docker', 'jira', 'sql', 'borg')
             LicenseUri = 'https://github.com/AndiOliverIon/borg/blob/main/LICENSE'
             ProjectUri = 'https://github.com/AndiOliverIon/borg'
         }
