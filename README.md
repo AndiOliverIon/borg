@@ -104,8 +104,8 @@ Example configuration:
     "SqlPassword": "yourStrong(!)Password"
   },
   "Bookmarks": [
-    { "alias": "dtemp", "path": "D:\temp" },
-    { "alias": "kit",   "path": "C:\Users\youruser\kits" }
+    { "alias": "dtemp", "path": "D:\\temp" },
+    { "alias": "kit",   "path": "C:\\Users\\youruser\\kits" }
   ]
 }
 ```
@@ -139,10 +139,12 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
 | `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder|
+| `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
+| `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week         |
+
 | `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest|
 | `borg --version`            | N/A                       | Show installed and latest version                  |
  
-
 
 ---
 
@@ -169,6 +171,26 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 ## ☁️ Google Drive Integration (via rclone)
 
 To enable file uploads to Google Drive, BORG relies on [rclone](https://rclone.org), a powerful CLI tool for managing cloud storage.
+
+## 📋 Jira Integration
+
+BORG provides two built-in commands to view your worklog activity in Jira:
+
+- `borg jira today`: Shows today's worklogs grouped by issue
+- `borg jira week`: Displays the worklogs for the current week
+
+To use these, you'll need to:
+
+1. Create a [Jira API token](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Store the following information in your `store.json`:
+
+```json
+"Jira": {
+  "Domain": "https://yourcompany.atlassian.net",
+  "Email": "your.email@company.com",
+  "APIToken": "your-api-token"
+}
+```
 
 ### Setup Steps
 
@@ -247,6 +269,8 @@ To clean it from your profile:
 - [x] Restore from bacpac
 - [x] Kill process by port or name, optionally prompting for confirmation
 - [x] Obtain a .bacpac snapshot from a database selected via connection strings defined in `store.json → SqlServers`.
+- [x] Jira workflow spent time today
+- [x] Jira workflow spent time week
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 

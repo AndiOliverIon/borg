@@ -98,6 +98,12 @@ switch ($module) {
             'bacpac' { & "$networkRoot\database\export-bacpac.ps1" }
         }
     }
+    'jira' {
+        switch ($command) {
+            'today' { & "$jiraRoot\workflow-today.ps1" $extraArgs }
+            'week' { & "$jiraRoot\workflow-week.ps1" $extraArgs }
+        }
+    }
     'q' {
         & "$env:BORG_ROOT\q.ps1"
     }
