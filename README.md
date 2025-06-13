@@ -104,8 +104,8 @@ Example configuration:
     "SqlPassword": "yourStrong(!)Password"
   },
   "Bookmarks": [
-    { "alias": "dtemp", "path": "D:\temp" },
-    { "alias": "kit",   "path": "C:\Users\youruser\kits" }
+    { "alias": "dtemp", "path": "D:\\temp" },
+    { "alias": "kit",   "path": "C:\\Users\\youruser\\kits" }
   ]
 }
 ```
