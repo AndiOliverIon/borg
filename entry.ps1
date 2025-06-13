@@ -1,13 +1,3 @@
-# Assure existence of store.json
-$storeFolder = Join-Path $env:BORG_ROOT "data"
-$storePath = Join-Path $storeFolder "store.json"
-$examplePath = Join-Path $storeFolder "store.example.json"
-
-if (-not (Test-Path $storePath) -and (Test-Path $examplePath)) {
-    Copy-Item $examplePath $storePath
-    Write-Host "📦 Created missing store.json from store.example.json"
-}
-
 . "$env:BORG_ROOT\config\globalfn.ps1"
 
 # Assure files
