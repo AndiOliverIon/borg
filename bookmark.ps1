@@ -1,12 +1,5 @@
 # 📁 Jump to Bookmark Script
 
-# Load the store
-$storePath = Join-Path $env:BORG_ROOT "data\store.json"
-if (-not (Test-Path $storePath)) {
-    Write-Error "❌ store.json not found at $storePath"
-    exit 1
-}
-
 # Parse JSON
 $json = Get-Content $storePath -Raw | ConvertFrom-Json
 $bookmarks = $json.Bookmarks

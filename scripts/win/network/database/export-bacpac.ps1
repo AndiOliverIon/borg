@@ -6,11 +6,6 @@ param()
 Clear-Host
 
 # 🧠 Load Borg store
-$storePath = "$env:BORG_ROOT\data\store.json"
-if (-not (Test-Path $storePath)) {
-    Write-Error "❌ store.json not found at $storePath"
-    exit 1
-}
 $store = Get-Content $storePath | ConvertFrom-Json
 
 # 📁 Ensure backup folder exists

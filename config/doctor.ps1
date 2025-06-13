@@ -49,7 +49,6 @@ Check-Tool -ToolName "sqlcmd"
 Check-Tool -ToolName "docker"
 
 # 🔍 Check store.json readability
-$storePath = "$env:BORG_ROOT\data\store.json"
 Write-Host "`n📄 Checking config: store.json"
 if (Test-Path $storePath) {
     try {
