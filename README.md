@@ -78,18 +78,32 @@ Set-Alias b borg
 # <<< BORG INITIALIZATION END >>>
 ```
 
-### Initialize Configuration
+### 🔧 Initialize Configuration
 
-When you run any BORG command for the first time, a default `store.json` file will be created in the `data/` folder using `store.example.json` as a template (if it doesn't already exist).
+When you run any `borg` command (including `borg --version`) for the first time, BORG will automatically initialize your personal configuration by copying `store.example.json` into your user profile folder:
 
-To edit your configuration, you can use:
+```
+%APPDATA%\borg\store.json
+```
+
+This file stores your custom settings, such as SQL container names, backup paths, credentials, and more.
+
+To edit your configuration, run:
 
 ```powershell
-# Open the config file using Micro (or your preferred text editor):
 borg store
 ```
 
-Alternatively, you can open `data\store.json` in any text editor like Notepad, VS Code, or others.
+This will open your `store.json` in your preferred editor (e.g. Micro, Notepad, or VS Code depending on how you've configured `borg store` internally).
+
+Alternatively, you can manually edit:
+
+```
+%APPDATA%\borg\store.json
+```
+
+Any changes you make here will be picked up immediately by all BORG commands.
+
 
 
 Example configuration:

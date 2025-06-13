@@ -108,10 +108,6 @@ function ResolveBorgAlias {
     $twoWords = if ($argsJoined.Count -ge 2) { "$($argsJoined[0]) $($argsJoined[1])".ToLower() } else { "" }
     $oneWord = if ($argsJoined.Count -ge 1) { $argsJoined[0].ToLower() } else { "" }
 
-    # Write-Host "🧪 Testing oneWord: '$oneWord'"
-    # Write-Host "🧪 Testing twoWords: '$twoWords'"
-    # Write-Host "🧪 Available aliases: $($map.Keys -join ', ')"
-
     if ($map.ContainsKey($twoWords)) {
         #Write-Host "✅ Matched 2-word alias: $twoWords → $($map[$twoWords])"
         $repl = $map[$twoWords] -split ' '
