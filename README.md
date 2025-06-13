@@ -1,6 +1,6 @@
 # 🧠 BORG — Backup Orchestrator for Reliable Groundwork ![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
 
-BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows using robust scripting practices.
+BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows.
 
 ---
 
@@ -167,12 +167,17 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 ## 🔄 How It Works
 
-1. Starts SQL Server container (2022 by default)
-2. Prompts for `.bak` file and target name
-3. Uploads `.bak` to the container
-4. Executes an internal `.sh` restore script
-5. Maps logical names automatically
-6. Done.
+BORG is a modular CLI automation toolkit. It works by chaining interactive PowerShell scripts and terminal tools to manage and orchestrate tasks like:
+
+- ⛴️ Starting and managing SQL Server containers
+- 📤 Uploading and restoring `.bak` and `.bacpac` files
+- 🧠 Extracting or comparing database schemas
+- 🔁 Syncing files with Google Drive via `rclone`
+- 🗂️ Browsing and exporting Jira worklogs or issues
+- 📦 Backing up local SQL Server instances
+
+Each command guides you interactively, uses fuzzy navigation (via `fzf`), and integrates with tools like `sqlpackage`, `rclone`, and `less` when available.
+
 
 ---
 

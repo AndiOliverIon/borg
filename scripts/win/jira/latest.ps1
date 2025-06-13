@@ -18,8 +18,8 @@ if ($extraArgs.Count -gt 0 -and $extraArgs[0] -as [int]) {
     $Days = [int]$extraArgs[0]
 }
 
-Write-Host "`n🔍 Debug: jiraEmail = $jiraEmail"
-Write-Host "`n🔍 Debug: jiraDisplayName = $jiraDisplayName"
+#Write-Host "`n🔍 Debug: jiraEmail = $jiraEmail"
+#Write-Host "`n🔍 Debug: jiraDisplayName = $jiraDisplayName"
 Write-Host "🧠 Scanning updated issues for mentions or assignments in the last $Days days..." -ForegroundColor Cyan
 
 # Get current user's accountId
@@ -77,6 +77,10 @@ Write-Host ""
 Write-Host "📋 Assigned or Mentioned Issues — Sorted by Last Update" -ForegroundColor Cyan
 Write-Host "═════════════════════════════════════════════════════════════════════"
 
+Write-Host ""
+Write-Host "📋 Assigned or Mentioned Issues — Sorted by Last Update" -ForegroundColor Yellow
+Write-Host "═════════════════════════════════════════════════════════════════════"
+
 $rendered = $sorted | ForEach-Object {
     $i = $_.issue
     $reason = $_.reason
@@ -90,11 +94,12 @@ $rendered = $sorted | ForEach-Object {
     📅 Updated: $updated
     🏷️ Status : $status
     🔍 Reason : $reason
+─────────────────────────────────────────────────────────────────────
 "@
 }
 
 # Join all as one text block
 $finalText = $rendered -join "`n"
 
-# Pipe to less for full paging control
+# Page the output with full keyboard support
 $finalText | less
