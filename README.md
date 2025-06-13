@@ -293,6 +293,7 @@ To clean it from your profile:
 - [x] Obtain a .bacpac snapshot from a database selected via connection strings defined in `store.json → SqlServers`.
 - [x] Jira workflow spent time today
 - [x] Jira workflow spent time week
+- [x] Jira workflow spent time latest
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 
