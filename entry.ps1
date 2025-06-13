@@ -91,6 +91,7 @@ switch ($module) {
     'jira' {
         switch ($command) {
             'today' { & "$jiraRoot\workflow-today.ps1" $extraArgs }
+            'latest' { & "$jiraRoot\latest.ps1" $extraArgs }
             'week' { & "$jiraRoot\workflow-week.ps1" $extraArgs }
         }
     }
