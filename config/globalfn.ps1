@@ -88,3 +88,4 @@ $jiraRoot = Join-Path $scriptsRoot "jira"
 $jiraDomain = GetBorgStoreValue -Chapter Jira -Key Domain
 $jiraEmail = GetBorgStoreValue -Chapter Jira -Key Email
 $jiraAPIToken = GetBorgStoreValue -Chapter Jira -Key APIToken
+$jiraDisplayName = GetBorgStoreValue -Chapter Jira -Key DisplayName
