@@ -172,6 +172,26 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 To enable file uploads to Google Drive, BORG relies on [rclone](https://rclone.org), a powerful CLI tool for managing cloud storage.
 
+## 📋 Jira Integration
+
+BORG provides two built-in commands to view your worklog activity in Jira:
+
+- `borg jira today`: Shows today's worklogs grouped by issue
+- `borg jira week`: Displays the worklogs for the current week
+
+To use these, you'll need to:
+
+1. Create a [Jira API token](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Store the following information in your `store.json`:
+
+```json
+"Jira": {
+  "Domain": "https://yourcompany.atlassian.net",
+  "Email": "your.email@company.com",
+  "APIToken": "your-api-token"
+}
+```
+
 ### Setup Steps
 
 1. Download `rclone.exe` from [rclone.org/downloads](https://rclone.org/downloads) and place it in a known location (e.g. `C:\utility-scripts\rclone.exe`).
