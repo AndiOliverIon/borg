@@ -1,11 +1,11 @@
-# 📁 Jump to Bookmark Script
+#   Jump to Bookmark Script
 
 # Parse JSON
 $json = Get-Content $storePath -Raw | ConvertFrom-Json
 $bookmarks = $json.Bookmarks
 
 if (-not $bookmarks -or $bookmarks.Count -eq 0) {
-    Write-Error "❌ No bookmarks found in store.json"
+    Write-Error "  No bookmarks found in store.json"
     exit 1
 }
 
@@ -17,14 +17,14 @@ $displayList = $bookmarks | ForEach-Object {
 # Let user pick
 $selection = $displayList | fzf --prompt "📌 Choose a bookmark: " --height 40% --border
 if (-not $selection) {
-    Write-Host "❌ No selection. Aborting."
+    Write-Host "  No selection. Aborting."
     exit 1
 }
 
 # Extract path from selection
 $parts = $selection -split ' : '
 if ($parts.Count -lt 2) {
-    Write-Error "❌ Could not parse selected line: $selection"
+    Write-Error "  Could not parse selected line: $selection"
     exit 1
 }
 
@@ -33,8 +33,8 @@ $selectedPath = $parts[1].Trim()
 # Jump
 if (Test-Path $selectedPath) {
     Set-Location $selectedPath
-    Write-Host "`n📂 Jumped to: $selectedPath" -ForegroundColor Green
+    Write-Host "`n  Jumped to: $selectedPath" -ForegroundColor Green
 }
 else {
-    Write-Error "❌ Path not found: $selectedPath"
+    Write-Error "  Path not found: $selectedPath"
 }

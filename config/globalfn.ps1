@@ -3,12 +3,12 @@ if (-not $env:BORG_ROOT) {
     throw "BORG_ROOT is not defined. Cannot proceed."
 }
 
-# 📦 Main entry points
+#   Main entry points
 
 $borgRoot = $env:BORG_ROOT
 $dataRoot = Join-Path $borgRoot "data"
 
-# 📦 External user store location
+#   External user store location
 $userStoreFolder = Join-Path $env:APPDATA 'borg'
 $storePath = Join-Path $userStoreFolder 'store.json'
 
@@ -20,8 +20,8 @@ if (-not (Test-Path $storePath)) {
         throw "Missing default store.example.json at $examplePath"
     }
     Copy-Item $examplePath $storePath -Force
-    Write-Host "✅ Initialized user store at $storePath" -ForegroundColor Green
-    Write-Host "✅ Configure it before continuing $storePath" -ForegroundColor Green
+    Write-Host "  Initialized user store at $storePath" -ForegroundColor Green
+    Write-Host "  Configure it before continuing $storePath" -ForegroundColor Green
 }
 
 $dataRoot = Join-Path $env:BORG_ROOT 'data'

@@ -10,7 +10,7 @@ $me = Invoke-RestMethod -Uri $meUrl -Headers $authHeader
 $accountId = $me.accountId
 
 Write-Host ""
-Write-Host "📅 Jira Worklog Summary — Today ($(Get-Date -Format 'yyyy-MM-dd'))" -ForegroundColor Magenta
+Write-Host "Jira Worklog Summary — Today ($(Get-Date -Format 'yyyy-MM-dd'))" -ForegroundColor Magenta
 Write-Host ""
 
 # ---- Build JQL: assigned to me ----
@@ -19,7 +19,7 @@ $encodedJql = [uri]::EscapeDataString($jql)
 $searchUrl = "$jiraDomain/rest/api/2/search?jql=$encodedJql&fields=key,summary&maxResults=50"
 $response = Invoke-RestMethod -Uri $searchUrl -Headers $authHeader -Method Get
 
-Write-Host "✅ Request succeeded. Issues returned: $($response.issues.Count)" -ForegroundColor Cyan
+Write-Host "Request succeeded. Issues returned: $($response.issues.Count)" -ForegroundColor Cyan
 
 # ---- Define today's date ----
 $today = (Get-Date).ToString("yyyy-MM-dd")
@@ -35,7 +35,7 @@ foreach ($issue in $response.issues) {
         $worklogs = Invoke-RestMethod -Uri $worklogUrl -Headers $authHeader -Method Get
     }
     catch {
-        Write-Warning "⚠️ Skipped $issueKey (no access or failed)."
+        Write-Warning "Skipped $issueKey (no access or failed)."
         continue
     }
 
@@ -55,7 +55,7 @@ foreach ($issue in $response.issues) {
 
 # ---- Output results ----
 if ($results.Count -eq 0) {
-    Write-Host "⛔ No worklogs found for today." -ForegroundColor Yellow
+    Write-Host "No worklogs found for today." -ForegroundColor Yellow
 }
 else {
     $results | Sort-Object Logged | Format-Table -AutoSize
@@ -65,6 +65,6 @@ else {
     $totalHours = [math]::Floor($totalMinutes / 60)
     $remainingMinutes = $totalMinutes % 60
 
-    Write-Host "`n🕒 Total logged today: $totalMinutes minutes" -ForegroundColor Green
-    Write-Host "⏱️  That’s $totalHours hours $remainingMinutes minutes" -ForegroundColor DarkCyan
+    Write-Host "`nTotal logged today: $totalMinutes minutes" -ForegroundColor Green
+    Write-Host "  That’s $totalHours hours $remainingMinutes minutes" -ForegroundColor DarkCyan
 }

@@ -1,20 +1,20 @@
-# 🧠 BORG — Backup Orchestrator for Reliable Groundwork ![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
+#   BORG — Backup Orchestrator for Reliable Groundwork ![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
 
 BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows.
 
 ---
 
-## 🚀 Features
+##   Features
 
-- 🔄 Restore a `.bak` file using either its default name or a proposed alias
-- 📦 Docker SQL Server orchestration with automatic upload & provisioning
-- 🔐 Handles `sqlcmd` ODBC TLS issues (ODBC Driver 18+ safe)
+-   Restore a `.bak` file using either its default name or a proposed alias
+-   Docker SQL Server orchestration with automatic upload & provisioning
+-   Handles `sqlcmd` ODBC TLS issues (ODBC Driver 18+ safe)
 - 🧩 Modular architecture: scripts organized into `central`, `docker`, `database`
 - 💬 Clean terminal UI with emoji-enhanced logging
 
 ---
 
-## 📁 Project Structure
+##   Project Structure
 
 ```
 borg/
@@ -33,9 +33,9 @@ borg/
 
 ---
 
-## 🛠️ Required & Optional Tools for Borg
+##   Required & Optional Tools for Borg
 
-#### ✅ Mandatory Tools
+####   Mandatory Tools
 These are essential for Borg commands to work as intended:
 
 | Tool    | Purpose                          | Install Command                    |
@@ -165,16 +165,16 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 ---
 
-## 🔄 How It Works
+##   How It Works
 
 BORG is a modular CLI automation toolkit. It works by chaining interactive PowerShell scripts and terminal tools to manage and orchestrate tasks like:
 
 - ⛴️ Starting and managing SQL Server containers
-- 📤 Uploading and restoring `.bak` and `.bacpac` files
-- 🧠 Extracting or comparing database schemas
+-   Uploading and restoring `.bak` and `.bacpac` files
+-   Extracting or comparing database schemas
 - 🔁 Syncing files with Google Drive via `rclone`
 - 🗂️ Browsing and exporting Jira worklogs or issues
-- 📦 Backing up local SQL Server instances
+-   Backing up local SQL Server instances
 
 Each command guides you interactively, uses fuzzy navigation (via `fzf`), and integrates with tools like `sqlpackage`, `rclone`, and `less` when available.
 
@@ -183,10 +183,10 @@ Each command guides you interactively, uses fuzzy navigation (via `fzf`), and in
 
 ## 🔒 Compatibility
 
-- ✅ SQL Server 2022
-- ✅ PowerShell 7.5.1+ (Windows Powershell is not supported)
-- ✅ Docker (Windows, Linux)
-- ✅ ODBC Driver 18+ (TLS-safe)
+-   SQL Server 2022
+-   PowerShell 7.5.1+ (Windows Powershell is not supported)
+-   Docker (Windows, Linux)
+-   ODBC Driver 18+ (TLS-safe)
 
 ---
 
@@ -194,7 +194,7 @@ Each command guides you interactively, uses fuzzy navigation (via `fzf`), and in
 
 To enable file uploads to Google Drive, BORG relies on [rclone](https://rclone.org), a powerful CLI tool for managing cloud storage.
 
-## 📋 Jira Integration
+##   Jira Integration
 
 BORG provides two built-in commands to view your worklog activity in Jira:
 
@@ -265,7 +265,7 @@ To clean it from your profile:
 
 ---
 
-## 🧭 Roadmap
+##   Roadmap
 
 - [x] Restore any `.bak` file
 - [x] Add backup/snapshot support
@@ -297,6 +297,6 @@ To clean it from your profile:
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 
-## 📄 License
+##   License
 
 MIT — see `LICENSE` for details.

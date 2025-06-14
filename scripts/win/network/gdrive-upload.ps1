@@ -73,22 +73,22 @@ function Select-LocalItem {
     return $displayMap[$selected]
 }
 
-# 🧭 Step 1: Select local file or folder
+#   Step 1: Select local file or folder
 $localItem = Select-LocalItem
 if (-not $localItem) {
-    Write-Host "❌ No local file or folder selected." -ForegroundColor Yellow
+    Write-Host "  No local file or folder selected." -ForegroundColor Yellow
     exit 1
 }
 
 # ☁️ Step 2: Browse cloud destination
 $cloudTarget = Browse-CloudDestination
 if (-not $cloudTarget) {
-    Write-Host "❌ No cloud destination selected." -ForegroundColor Yellow
+    Write-Host "  No cloud destination selected." -ForegroundColor Yellow
     exit 1
 }
 
 # 🎯 Final upload
 $destination = "$remoteBase$($cloudTarget.Path)"
-Write-Host "`n📤 Uploading '$localItem' to '$destination'..." -ForegroundColor Cyan
+Write-Host "`n  Uploading '$localItem' to '$destination'..." -ForegroundColor Cyan
 
 & $rclone --config $config copy "$localItem" "$destination" --progress

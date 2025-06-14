@@ -21,7 +21,7 @@ if (-not $dbList) {
 # Let user choose with fzf
 $db = $dbList | fzf
 if (-not $db) {
-    Write-Host "❌ No database selected. Aborting."
+    Write-Host "  No database selected. Aborting."
     exit 1
 }
 
@@ -48,7 +48,7 @@ WITH NOFORMAT, NOINIT, NAME = 'Snapshot Backup', SKIP, NOREWIND, NOUNLOAD, STATS
 sqlcmd -S $SqlInstance -U $SqlUser -P $SqlPassword -Q $backupSql
 
 # Final log
-Write-Host "`n✅ Snapshot created:"
+Write-Host "`n  Snapshot created:"
 Write-Host "   Server:   $ContainerName"
 Write-Host "   Database: $db"
 Write-Host "   File (inside container): $backupPath"

@@ -12,7 +12,7 @@ $config = Get-Content $storePath -Raw | ConvertFrom-Json
 
 # Check if alias already exists
 if ($config.Bookmarks | Where-Object { $_.alias -eq $alias }) {
-    Write-Host "⚠️ Alias '$alias' already exists. Aborting."
+    Write-Host "  Alias '$alias' already exists. Aborting."
     return
 }
 
@@ -24,4 +24,4 @@ $config.Bookmarks += [pscustomobject]@{
 
 # Save changes
 $config | ConvertTo-Json -Depth 3 | Set-Content $storePath -Encoding UTF8
-Write-Host "✅ Bookmark '$alias' → '$($currentFolder.Path)' added."
+Write-Host "  Bookmark '$alias' → '$($currentFolder.Path)' added."

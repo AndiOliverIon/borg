@@ -23,14 +23,14 @@ function Remove-ContainerByName {
     try {
         docker stop $Name | Out-Null
         docker rm $Name | Out-Null
-        Write-Host "✅ Container '$Name' removed successfully." -ForegroundColor Green
+        Write-Host "  Container '$Name' removed successfully." -ForegroundColor Green
     }
     catch {
-        Write-Host "❌ Error removing container '$Name': $_" -ForegroundColor Red
+        Write-Host "  Error removing container '$Name': $_" -ForegroundColor Red
     }
 }
 
-# 🔍 Main logic
+#   Main logic
 if ($ContainerName) {
     Write-Host "🔎 Checking for container: '$ContainerName'" -ForegroundColor Cyan
     $containerExists = docker ps -a --format "{{.Names}}" | Where-Object { $_ -eq $ContainerName }
@@ -52,11 +52,11 @@ else {
         }
     }
     else {
-        Write-Host "✅ No BORG-managed containers found to remove. Clean slate!" -ForegroundColor Green
+        Write-Host "  No BORG-managed containers found to remove. Clean slate!" -ForegroundColor Green
     }
 }
 
-# 🏁 Outro
+#   Outro
 Write-Host ""
 Write-Host "🎯 Cleanup routine complete. System standing by." -ForegroundColor Cyan
 Write-Host $separator -ForegroundColor DarkRed

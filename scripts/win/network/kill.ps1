@@ -1,4 +1,4 @@
-# 📂 BORG Network — kill.ps1
+#   BORG Network — kill.ps1
 param([string[]]$inputArgs)
 
 . "$env:BORG_ROOT\config\globalfn.ps1"
@@ -9,10 +9,10 @@ function Stop-ProcessById {
     foreach ($processId in $PIDs) {
         try {
             taskkill /PID $processId /F | Out-Null
-            Write-Host "✅ Killed PID ${processId}" -ForegroundColor Green
+            Write-Host "  Killed PID ${processId}" -ForegroundColor Green
         }
         catch {
-            Write-Warning "⚠️ Could not kill PID ${processId}: $_"
+            Write-Warning "  Could not kill PID ${processId}: $_"
         }
     }
 }
@@ -48,11 +48,11 @@ if ($isPort) {
     Write-Host "[debug] Final matched PIDs: $($pids -join ', ')" -ForegroundColor DarkGray
 
     if (-not $pids -or $pids.Count -eq 0) {
-        Write-Host "❌ No active connections found on port ${target}" -ForegroundColor Yellow
+        Write-Host "  No active connections found on port ${target}" -ForegroundColor Yellow
         exit 1
     }
 
-    Write-Host "🔍 Found PIDs using port ${target}:" -ForegroundColor Cyan
+    Write-Host "  Found PIDs using port ${target}:" -ForegroundColor Cyan
     foreach ($procId in $pids) {
         $proc = Get-Process -Id $procId -ErrorAction SilentlyContinue
         if ($proc) {
@@ -76,18 +76,18 @@ if ($isPort) {
         Stop-ProcessById -PIDs $pids
     }
     else {
-        Write-Host "❌ No PID selected. Aborting." -ForegroundColor Red
+        Write-Host "  No PID selected. Aborting." -ForegroundColor Red
     }
 }
 else {
     Write-Host "[debug] Target is string, treating as process name" -ForegroundColor DarkGray
     $foundProcs = Get-Process | Where-Object { $_.Name -like "*${target}*" }
     if (-not $foundProcs) {
-        Write-Host "❌ No processes found matching '${target}'" -ForegroundColor Red
+        Write-Host "  No processes found matching '${target}'" -ForegroundColor Red
         exit 1
     }
 
-    Write-Host "🔍 Found processes matching '${target}':" -ForegroundColor Cyan
+    Write-Host "  Found processes matching '${target}':" -ForegroundColor Cyan
     foreach ($proc in $foundProcs) {
         Write-Host "• PID: $($proc.Id) → $($proc.Name)" -ForegroundColor DarkGray
     }
@@ -100,7 +100,7 @@ else {
         }
 
         if (-not $pids) {
-            Write-Host "❌ No PID selected. Aborting." -ForegroundColor Red
+            Write-Host "  No PID selected. Aborting." -ForegroundColor Red
             exit 1
         }
     }

@@ -9,8 +9,8 @@ if ($toRemove) {
         Write-Host "🗑️ Removing version $($_.Version)..." -ForegroundColor Yellow
         Uninstall-Module Borg -RequiredVersion $_.Version -Force
     }
-    Write-Host "✅ Cleanup complete. Kept version $($latest.Version)." -ForegroundColor Green
+    Write-Host "  Cleanup complete. Kept version $($latest.Version)." -ForegroundColor Green
 }
 else {
-    Write-Host "✅ Only the latest version is installed. Nothing to remove." -ForegroundColor Green
+    Write-Host "  Only the latest version is installed. Nothing to remove." -ForegroundColor Green
 }

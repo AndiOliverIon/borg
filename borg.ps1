@@ -57,27 +57,27 @@ if ($args -contains '--version' -or $args -contains '-v') {
     $installed = (Get-Module $moduleName -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).Version
     $latest = (Find-Module $moduleName -ErrorAction SilentlyContinue).Version
 
-    Write-Host "`n📦 BORG Version Info" -ForegroundColor Cyan
+    Write-Host "`n  BORG Version Info" -ForegroundColor Cyan
     Write-Host "   • Installed: v$installed"
     if ($latest -and $latest -ne $installed) {
-        Write-Host "   • Latest:    v$latest 🔔" -ForegroundColor Yellow
+        Write-Host "   • Latest:    v$latest  " -ForegroundColor Yellow
         Write-Host "`nRun 'borg update' to get the latest version."
     }
     else {
-        Write-Host "   • Latest:    v$latest ✅"
+        Write-Host "   • Latest:    v$latest  "
     }
     exit
 }
 
 # update
 if ($args.Count -eq 1 -and $args[0] -eq 'update') {
-    Write-Host "`n⬆️  Updating BORG module from PowerShell Gallery..." -ForegroundColor Cyan
+    Write-Host "`n   Updating BORG module from PowerShell Gallery..." -ForegroundColor Cyan
     try {
         Update-Module -Name Borg -Force -Scope CurrentUser -ErrorAction Stop
-        Write-Host "✅ Update complete. Please restart your terminal to use the new version." -ForegroundColor Green
+        Write-Host "  Update complete. Please restart your terminal to use the new version." -ForegroundColor Green
     }
     catch {
-        Write-Host "❌ Update failed: $_" -ForegroundColor Red
+        Write-Host "  Update failed: $_" -ForegroundColor Red
     }
     exit
 }
@@ -109,18 +109,18 @@ function ResolveBorgAlias {
     $oneWord = if ($argsJoined.Count -ge 1) { $argsJoined[0].ToLower() } else { "" }
 
     if ($map.ContainsKey($twoWords)) {
-        #Write-Host "✅ Matched 2-word alias: $twoWords → $($map[$twoWords])"
+        #Write-Host "  Matched 2-word alias: $twoWords → $($map[$twoWords])"
         $repl = $map[$twoWords] -split ' '
         return $repl + $Args[2..($Args.Count - 1)]
     }
 
     if ($map.ContainsKey($oneWord)) {
-        #Write-Host "✅ Matched 1-word alias: $oneWord → $($map[$oneWord])"
+        #Write-Host "  Matched 1-word alias: $oneWord → $($map[$oneWord])"
         $repl = $map[$oneWord] -split ' '
         return $repl + $Args[1..($Args.Count - 1)]
     }
     
-    #Write-Host "⚠️ No alias match for: $argsJoined"
+    #Write-Host "  No alias match for: $argsJoined"
     return $Args
 }
 

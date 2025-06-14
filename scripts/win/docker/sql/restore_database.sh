@@ -18,14 +18,14 @@ if [[ -z "$BACKUP_FILE" || -z "$SA_PASSWORD" ]]; then
 fi
 
 if [[ ! -f "$BACKUP_PATH" ]]; then
-    echo "❌ Backup file not found: $BACKUP_PATH"
+    echo "  Backup file not found: $BACKUP_PATH"
     exit 1
 fi
 
 # Determine final database name
 DB_NAME="${PROPOSED_DATABASE_NAME:-${BACKUP_FILE%%.*}}"
 
-echo "📦 Preparing SQL restore script for database: $DB_NAME"
+echo "  Preparing SQL restore script for database: $DB_NAME"
 
 # Generate the restore SQL script
 cat >"$SQL_FILE" <<EOF
@@ -76,22 +76,22 @@ FROM @files;
 
 SET @sql += ', RECOVERY, REPLACE, NOUNLOAD, STATS = 5';
 
-PRINT '🛠️ Executing SQL:';
+PRINT '  Executing SQL:';
 PRINT @sql;
 EXEC (@sql);
 
--- 🔄 Revert to multi-user
+--   Revert to multi-user
 EXEC('ALTER DATABASE [' + @dbName + '] SET MULTI_USER');
 EOF
 
 # Execute the SQL script using encryption trust override
-echo "🚀 Restoring database..."
+echo "  Restoring database..."
 $SQLCMD -S localhost -U sa -P "$SA_PASSWORD" -C -N -i "$SQL_FILE"
 
 if [[ $? -eq 0 ]]; then
-    echo "✅ Database '$DB_NAME' restored successfully."
+    echo "  Database '$DB_NAME' restored successfully."
     exit 0
 else
-    echo "❌ Restore failed."
+    echo "  Restore failed."
     exit 1
 fi
