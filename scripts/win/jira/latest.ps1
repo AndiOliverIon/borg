@@ -18,9 +18,9 @@ if ($extraArgs.Count -gt 0 -and $extraArgs[0] -as [int]) {
     $Days = [int]$extraArgs[0]
 }
 
-Write-Host "`n🔍 Debug: jiraEmail = $jiraEmail"
-Write-Host "`n🔍 Debug: jiraDisplayName = $jiraDisplayName"
-Write-Host "🧠 Scanning updated issues for mentions or assignments in the last $Days days..." -ForegroundColor Cyan
+#Write-Host "`n  Debug: jiraEmail = $jiraEmail"
+#Write-Host "`n  Debug: jiraDisplayName = $jiraDisplayName"
+Write-Host "  Scanning updated issues for mentions or assignments in the last $Days days..." -ForegroundColor Cyan
 
 # Get current user's accountId
 $meUrl = "$jiraDomain/rest/api/2/myself"
@@ -57,7 +57,7 @@ foreach ($issue in $response.issues) {
         }
     }
     catch {
-        Write-Warning "❌ Failed to fetch comments for ${key}: $_"
+        Write-Warning "  Failed to fetch comments for ${key}: $_"
     }
 
     if ($reason.Count -gt 0) {
@@ -69,12 +69,16 @@ foreach ($issue in $response.issues) {
 }
 
 # Display results
-Write-Host "`n📦 Total relevant issues: $($allIssues.Count)" -ForegroundColor Green
+Write-Host "`n  Total relevant issues: $($allIssues.Count)" -ForegroundColor Green
 
 $sorted = $allIssues.Values | Sort-Object { $_.issue.fields.updated } -Descending
 
 Write-Host ""
-Write-Host "📋 Assigned or Mentioned Issues — Sorted by Last Update" -ForegroundColor Cyan
+Write-Host "  Assigned or Mentioned Issues — Sorted by Last Update" -ForegroundColor Cyan
+Write-Host "═════════════════════════════════════════════════════════════════════"
+
+Write-Host ""
+Write-Host "  Assigned or Mentioned Issues — Sorted by Last Update" -ForegroundColor Yellow
 Write-Host "═════════════════════════════════════════════════════════════════════"
 
 $rendered = $sorted | ForEach-Object {
@@ -87,14 +91,15 @@ $rendered = $sorted | ForEach-Object {
 
     @"
 🔹 $key — $summary
-    📅 Updated: $updated
+      Updated: $updated
     🏷️ Status : $status
-    🔍 Reason : $reason
+      Reason : $reason
+─────────────────────────────────────────────────────────────────────
 "@
 }
 
 # Join all as one text block
 $finalText = $rendered -join "`n"
 
-# Pipe to less for full paging control
+# Page the output with full keyboard support
 $finalText | less

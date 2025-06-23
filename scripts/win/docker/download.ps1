@@ -15,11 +15,11 @@ try {
     $entries = docker exec "$ContainerName" ls -1 "$dockerBackupPath"
 
     if (-not $entries) {
-        Write-Host "❌ No files or folders found in '$dockerBackupPath'." -ForegroundColor Yellow
+        Write-Host "  No files or folders found in '$dockerBackupPath'." -ForegroundColor Yellow
         exit 1
     }
 
-    # 📋 Format entries with icons
+    #   Format entries with icons
     $displayToEntry = @{}
     $displayList = @()
 
@@ -27,10 +27,10 @@ try {
         $icon = switch -Wildcard ($entry) {
             "*.bak" { "🗃️" }
             "*.bacpac" { "🧱" }
-            "*.zip" { "📦" }
+            "*.zip" { " " }
             "*.mdf" { "🧬" }
-            "*.ldf" { "📄" }
-            default { "📁" }
+            "*.ldf" { " " }
+            default { " " }
         }
 
         $display = "$icon $entry"
@@ -41,7 +41,7 @@ try {
     $selectedDisplay = $displayList | fzf --ansi --prompt "📥 Select an item to download: " --height 40% --reverse | ForEach-Object { $_.Trim() }
 
     if (-not $selectedDisplay) {
-        Write-Host "❌ No selection made. Aborting." -ForegroundColor Red
+        Write-Host "  No selection made. Aborting." -ForegroundColor Red
         exit 1
     }
 
@@ -54,14 +54,14 @@ try {
     docker cp "${ContainerName}:$sourcePath" "$destinationPath"
 
     if (Test-Path $destinationPath) {
-        Write-Host "✅ Downloaded to: '$destinationPath'" -ForegroundColor Green
+        Write-Host "  Downloaded to: '$destinationPath'" -ForegroundColor Green
     }
     else {
-        Write-Host "⚠️  docker cp reported success, but destination not found: '$destinationPath'" -ForegroundColor Yellow
+        Write-Host "   docker cp reported success, but destination not found: '$destinationPath'" -ForegroundColor Yellow
     }
 
-    Write-Host "`n🏁 Done." -ForegroundColor Cyan
+    Write-Host "`n  Done." -ForegroundColor Cyan
 }
 catch {
-    Write-Host "❌ Error retrieving files from container. $_" -ForegroundColor Red
+    Write-Host "  Error retrieving files from container. $_" -ForegroundColor Red
 }

@@ -39,5 +39,11 @@
         "Domain": "https://yourdomain.atlassian.net",
         "Email": "youremail@atwork.so",
         "ApiToken": "YourAtlassianApiGeneratedToken"
-    }
+    },
+    "CleanFolders": [
+        {
+            "alias": "main-logs",
+            "path": "C:\\logs"
+        }
+    ]
 }

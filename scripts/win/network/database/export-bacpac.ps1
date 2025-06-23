@@ -1,20 +1,20 @@
 # ╭─────────────────────────────────────────────╮
-# │ 📦 Export SQL Server Database to .bacpac   │
+# │   Export SQL Server Database to .bacpac   │
 # ╰─────────────────────────────────────────────╯
 param()
 
 Clear-Host
 
-# 🧠 Load Borg store
+#   Load Borg store
 $store = Get-Content $storePath | ConvertFrom-Json
 
-# 📁 Ensure backup folder exists
+#   Ensure backup folder exists
 $backupFolder = $store.CustomFolders.SqlBackupDefault
 if (-not (Test-Path $backupFolder)) {
     New-Item -ItemType Directory -Path $backupFolder | Out-Null
 }
 
-# 📋 FZF pick from SqlServers (just names)
+#   FZF pick from SqlServers (just names)
 $nameMap = @{}
 $store.SqlServers | ForEach-Object {
     $nameMap[$_.Name] = $_.ConnectionString
@@ -22,11 +22,11 @@ $store.SqlServers | ForEach-Object {
 $selectedName = $nameMap.Keys | fzf --prompt "Select SQL connection for BACPAC export: "
 
 if (-not $selectedName) {
-    Write-Host "❌ No selection made. Aborting." -ForegroundColor Red
+    Write-Host "  No selection made. Aborting." -ForegroundColor Red
     exit 1
 }
 
-# 🔍 Get connection string
+#   Get connection string
 $connString = $nameMap[$selectedName]
 $builder = [System.Data.SqlClient.SqlConnectionStringBuilder]::new($connString)
 $dbName = $builder.InitialCatalog
@@ -34,8 +34,8 @@ $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $bacpacFile = "${dbName}-${timestamp}.bacpac"
 $targetPath = Join-Path $backupFolder $bacpacFile
 
-# 🛠️ Locate SqlPackage
-# 🛠️ Locate SqlPackage.exe
+#   Locate SqlPackage
+#   Locate SqlPackage.exe
 $sqlPackage = Get-Command "sqlpackage.exe" -ErrorAction SilentlyContinue
 
 if (-not $sqlPackage) {
@@ -55,13 +55,13 @@ if (-not $sqlPackage) {
 }
 
 if (-not $sqlPackage) {
-    Write-Error "❌ SqlPackage.exe not found. Please install SQL Server Data Tools (SSDT) or DacFx."
+    Write-Error "  SqlPackage.exe not found. Please install SQL Server Data Tools (SSDT) or DacFx."
     exit 1
 }
 
-# 🚀 Execute export
+#   Execute export
 Write-Host ""
-Write-Host "📦 Exporting '$dbName' to '$targetPath'..." -ForegroundColor Cyan
+Write-Host "  Exporting '$dbName' to '$targetPath'..." -ForegroundColor Cyan
 
 & $sqlPackage `
     /Action:Export `
@@ -69,11 +69,11 @@ Write-Host "📦 Exporting '$dbName' to '$targetPath'..." -ForegroundColor Cyan
     /TargetFile:$targetPath `
     /Quiet
 
-# ✅ Report result
+#   Report result
 if (Test-Path $targetPath) {
-    Write-Host "`n✅ Export complete:" -ForegroundColor Green
+    Write-Host "`n  Export complete:" -ForegroundColor Green
     Write-Host "   $targetPath" -ForegroundColor Yellow
 }
 else {
-    Write-Host "`n❌ Export failed." -ForegroundColor Red
+    Write-Host "`n  Export failed." -ForegroundColor Red
 }

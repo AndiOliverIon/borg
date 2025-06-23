@@ -1,3 +1,11 @@
+if (-not $env:BORG_ROOT) {
+    $env:BORG_ROOT = 'C:\borg'
+}
+
+if (-not $env:APPDATA -or -not (Test-Path $env:APPDATA)) {
+    $env:APPDATA = "C:\Users\$env:USERNAME\AppData\Roaming"
+}
+
 . "$env:BORG_ROOT\config\globalfn.ps1"
 
 # Assure files
@@ -31,7 +39,7 @@ switch ($module) {
             'store' { & "$jumpFolder\store.ps1" @extraArgs }
             default {
                 if (-not (Test-Path $storePath)) {
-                    Write-Host "❌ Config not found at $storePath"
+                    Write-Host "  Config not found at $storePath"
                     return
                 }
 
@@ -39,18 +47,18 @@ switch ($module) {
                 $match = $config.Bookmarks | Where-Object { $_.alias -eq $command }
 
                 if (-not $match) {
-                    Write-Host "❌ Bookmark alias '$command' not found."
+                    Write-Host "  Bookmark alias '$command' not found."
                     return
                 }
 
                 $targetPath = $match.path
                 if (-not (Test-Path $targetPath)) {
-                    Write-Host "⚠️ Bookmark path '$targetPath' does not exist."
+                    Write-Host "  Bookmark path '$targetPath' does not exist."
                     return
                 }
 
                 Set-Location $targetPath
-                Write-Host "📂 Jumped to '$command': $targetPath"
+                Write-Host "  Jumped to '$command': $targetPath"
             }
         }
     }
@@ -93,6 +101,12 @@ switch ($module) {
             'today' { & "$jiraRoot\workflow-today.ps1" $extraArgs }
             'latest' { & "$jiraRoot\latest.ps1" $extraArgs }
             'week' { & "$jiraRoot\workflow-week.ps1" $extraArgs }
+        }
+    }
+    'io' {
+        switch ($command) {
+            'folder-clear' { & "$ioFolder\folder-clean.ps1" $extraArgs }
+            'fc' { & "$ioFolder\folder-clean.ps1" $extraArgs }
         }
     }
     'q' {

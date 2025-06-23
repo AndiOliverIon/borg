@@ -10,11 +10,11 @@ $tools = @(
 
 foreach ($tool in $tools) {
     if (-not (Get-Command $tool.Command -ErrorAction SilentlyContinue)) {
-        Write-Host "❌ Missing: $($tool.Name)" -ForegroundColor Red
+        Write-Host "  Missing: $($tool.Name)" -ForegroundColor Red
         $missing += $tool
     }
     else {
-        Write-Host "✅ Found: $($tool.Name)" -ForegroundColor Green
+        Write-Host "  Found: $($tool.Name)" -ForegroundColor Green
     }
 }
 
@@ -24,14 +24,14 @@ $fontRegistry = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\Curr
 
 foreach ($key in $fontRegistry.PSObject.Properties.Name) {
     if ($key -match "Cascadia Code") {
-        Write-Host "✅ Compatible font found: $key" -ForegroundColor Green
+        Write-Host "  Compatible font found: $key" -ForegroundColor Green
         $fontInstalled = $true
         break
     }
 }
 
 if (-not $fontInstalled) {
-    Write-Host "⚠️  Cascadia Code font not found in registry." -ForegroundColor Yellow
+    Write-Host "   Cascadia Code font not found in registry." -ForegroundColor Yellow
     Write-Host "🤔 But if icons display correctly, you may already be using a patched font or Nerd Font." -ForegroundColor DarkGray
     Write-Host "💡 Proceeding with optional font install just in case..." -ForegroundColor Cyan
     $missing += @{ Name = "Cascadia Code"; Font = $true }
@@ -47,9 +47,9 @@ if ($missing.Count -eq 0) {
 Write-Host "`n⚙️  The following components are missing and can be installed:" -ForegroundColor Yellow
 $missing | ForEach-Object { Write-Host " - $($_.Name)" }
 
-$confirm = Read-Host "`n🛠️  Do you want to install them now? (Y/n)"
+$confirm = Read-Host "`n   Do you want to install them now? (Y/n)"
 if ($confirm -ne "" -and $confirm.ToLower() -ne "y") {
-    Write-Host "❌ Skipping installation."
+    Write-Host "  Skipping installation."
     exit 1
 }
 
@@ -73,15 +73,15 @@ foreach ($item in $missing) {
                 }
 
                 $fontItem.InvokeVerb("Install")
-                Write-Host "✅ Font installation triggered. Please restart your terminal to apply changes." -ForegroundColor Green
+                Write-Host "  Font installation triggered. Please restart your terminal to apply changes." -ForegroundColor Green
             }
             catch {
-                Write-Host "❌ Failed to trigger font install: $_" -ForegroundColor Red
+                Write-Host "  Failed to trigger font install: $_" -ForegroundColor Red
                 $global:borgInstallFailed = $true
             }
         }
         else {
-            Write-Host "❌ Font file not found at $localFontPath. Skipping font install." -ForegroundColor Red
+            Write-Host "  Font file not found at $localFontPath. Skipping font install." -ForegroundColor Red
             $global:borgInstallFailed = $true
         }
     }
@@ -103,11 +103,11 @@ foreach ($item in $missing) {
 }
 
 if ($global:borgInstallFailed) {
-    Write-Host "`n⚠️  Some components failed to install. Please check logs or try again." -ForegroundColor Yellow
+    Write-Host "`n   Some components failed to install. Please check logs or try again." -ForegroundColor Yellow
     exit 1
 }
 else {
-    Write-Host "`n✅ All selected components were installed successfully." -ForegroundColor Green
+    Write-Host "`n  All selected components were installed successfully." -ForegroundColor Green
     Write-Host "🔁 You may need to restart your terminal session to see all changes." -ForegroundColor Cyan
     exit 0
 }

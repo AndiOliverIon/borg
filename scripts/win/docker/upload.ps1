@@ -1,12 +1,12 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 📤 File Upload to Docker Container — Interactive 🎯
+#   File Upload to Docker Container — Interactive 🎯
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 $dockerSqlPath = "/var/opt/mssql"
 $backupPath = "$dockerSqlPath/backup"
 
-# 🔍 Scan for folders/files to upload
-Write-Host "`n🔍 Scanning current folder for upload candidates..." -ForegroundColor Yellow
+#   Scan for folders/files to upload
+Write-Host "`n  Scanning current folder for upload candidates..." -ForegroundColor Yellow
 
 # First gather uploadable files only
 $uploadableExtensions = ".bak", ".zip", ".mdf", ".ldf", ".bacpac"
@@ -14,19 +14,19 @@ $fileItems = Get-ChildItem -File | Where-Object { $_.Extension -in $uploadableEx
 
 # If none found, fallback to default
 if (-not $fileItems -or $fileItems.Count -eq 0) {
-    Write-Host "📂 No uploadable files found in current folder. Trying fallback: $SqlBackupDefaultFolder" -ForegroundColor Yellow
+    Write-Host "  No uploadable files found in current folder. Trying fallback: $SqlBackupDefaultFolder" -ForegroundColor Yellow
     Push-Location $SqlBackupDefaultFolder
 
     $fileItems = Get-ChildItem -File | Where-Object { $_.Extension -in $uploadableExtensions }
 
     if (-not $fileItems -or $fileItems.Count -eq 0) {
-        Write-Host "❌ No suitable files found in any location. Aborting." -ForegroundColor Red
+        Write-Host "  No suitable files found in any location. Aborting." -ForegroundColor Red
         Pop-Location
         exit 1
     }
 
     $items = @(Get-ChildItem -Directory) + $fileItems
-    Write-Host "📁 Using fallback folder contents." -ForegroundColor Green
+    Write-Host "  Using fallback folder contents." -ForegroundColor Green
 
     # Build mapping
     $cleanToPath = @{}
@@ -34,9 +34,9 @@ if (-not $fileItems -or $fileItems.Count -eq 0) {
 
     foreach ($item in $items) {
         $name = $item.Name
-        $icon = if ($item.PSIsContainer) { "📁" }
-        elseif ($item.Extension -eq ".zip") { "📦" }
-        else { "📄" }
+        $icon = if ($item.PSIsContainer) { " " }
+        elseif ($item.Extension -eq ".zip") { " " }
+        else { " " }
 
         $display = "$icon $name"
         $displayList += $display
@@ -54,9 +54,9 @@ else {
 
     foreach ($item in $items) {
         $name = $item.Name
-        $icon = if ($item.PSIsContainer) { "📁" }
-        elseif ($item.Extension -eq ".zip") { "📦" }
-        else { "📄" }
+        $icon = if ($item.PSIsContainer) { " " }
+        elseif ($item.Extension -eq ".zip") { " " }
+        else { " " }
 
         $display = "$icon $name"
         $displayList += $display
@@ -66,7 +66,7 @@ else {
 
 
 if (-not $items) {
-    Write-Host "❌ No suitable folders or files found in current directory." -ForegroundColor Red
+    Write-Host "  No suitable folders or files found in current directory." -ForegroundColor Red
     exit 1
 }
 
@@ -76,20 +76,20 @@ $displayList = @()
 
 foreach ($item in $items) {
     $name = $item.Name
-    $icon = if ($item.PSIsContainer) { "📁" }
-    elseif ($item.Extension -eq ".zip") { "📦" }
-    else { "📄" }
+    $icon = if ($item.PSIsContainer) { " " }
+    elseif ($item.Extension -eq ".zip") { " " }
+    else { " " }
 
     $display = "$icon $name"
     $displayList += $display
     $cleanToPath[$name] = $item.FullName
 }
 
-# 🧠 fzf shows pretty Display
-$selectedDisplay = $displayList | fzf --ansi --prompt "📤 Select a file/folder to upload: " --height 40% --reverse | ForEach-Object { $_.Trim() }
+#   fzf shows pretty Display
+$selectedDisplay = $displayList | fzf --ansi --prompt "  Select a file/folder to upload: " --height 40% --reverse | ForEach-Object { $_.Trim() }
 
 if (-not $selectedDisplay) {
-    Write-Host "❌ No selection made. Aborting." -ForegroundColor Red
+    Write-Host "  No selection made. Aborting." -ForegroundColor Red
     exit 1
 }
 
@@ -97,7 +97,7 @@ if (-not $selectedDisplay) {
 $cleanName = $selectedDisplay -replace '^[^\s]+\s+', ''
 
 if (-not $cleanToPath.ContainsKey($cleanName)) {
-    Write-Host "❌ Could not find the selected item. Aborting." -ForegroundColor Red
+    Write-Host "  Could not find the selected item. Aborting." -ForegroundColor Red
     exit 1
 }
 
@@ -114,7 +114,7 @@ if ($ext -eq ".bacpac") {
 }
 
 
-# 🧠 Auto-propose based on filename (first word before `_` or `-`)
+#   Auto-propose based on filename (first word before `_` or `-`)
 $baseName = [System.IO.Path]::GetFileNameWithoutExtension($OriginalFileName)
 $proposedName = ($baseName -split '[-_]')[0] + $proposedExtension
 
@@ -125,13 +125,13 @@ $renameLabels = @()
 $renameLabels += "📛 Use proposed: $proposedName"
 $renameLabelToKey["Use proposed: $proposedName"] = "proposed"
 
-$renameLabels += "📂 Keep original: $OriginalFileName"
+$renameLabels += "  Keep original: $OriginalFileName"
 $renameLabelToKey["Keep original: $OriginalFileName"] = "original"
 
 $renameLabels += "✏️ Propose new name..."
 $renameLabelToKey["Propose new name..."] = "custom"
 
-# 🧠 fzf for rename decision
+#   fzf for rename decision
 $renameOptions = $renameLabels | ForEach-Object {
     $label = $_
     $emoji = $label.Substring(0, 2).Trim()
@@ -142,7 +142,7 @@ $renameOptions = $renameLabels | ForEach-Object {
 $selectedRename = $renameOptions | fzf --ansi --prompt "✏️ Rename before upload? " --height 10 --reverse | ForEach-Object { $_.Trim() }
 
 if (-not $selectedRename) {
-    Write-Host "❌ Rename option not selected. Aborting." -ForegroundColor Red
+    Write-Host "  Rename option not selected. Aborting." -ForegroundColor Red
     exit 1
 }
 
@@ -150,7 +150,7 @@ if (-not $selectedRename) {
 $cleanRenameKey = $selectedRename -replace '^[^\s]+\s+', ''
 
 if (-not $renameLabelToKey.ContainsKey($cleanRenameKey)) {
-    Write-Host "❌ Unknown rename option. Aborting." -ForegroundColor Red
+    Write-Host "  Unknown rename option. Aborting." -ForegroundColor Red
     exit 1
 }
 
@@ -162,7 +162,7 @@ switch ($renameLabelToKey[$cleanRenameKey]) {
         $FileName = $OriginalFileName
     }
     "custom" {
-        $inputPrompt = "📝 Enter new name to use inside container [`default: $OriginalFileName`]"
+        $inputPrompt = "  Enter new name to use inside container [`default: $OriginalFileName`]"
         $entered = Read-Host -Prompt $inputPrompt
         $FileName = if ([string]::IsNullOrWhiteSpace($entered)) { $OriginalFileName } else { $entered }
     }
@@ -171,17 +171,17 @@ switch ($renameLabelToKey[$cleanRenameKey]) {
 $TargetFilePath = "$backupPath/$FileName"
 
 if ($isBacPac -eq 0) {
-    Write-Host "`n📤 Uploading to container '$dockerContainerName' → $TargetFilePath..." -ForegroundColor Cyan
+    Write-Host "`n  Uploading to container '$dockerContainerName' → $TargetFilePath..." -ForegroundColor Cyan
     try {
         Write-Host("Target: $backupPath")
         Write-Host("FilePath: $TargetFilePath")
         Write-Host("FileName: $FileName")
         docker exec $dockerContainerName mkdir -p $dockerSqlPath | Out-Null
         docker cp "$FilePath" "$($dockerContainerName):$TargetFilePath"
-        Write-Host "✅ Upload successful: $FileName → $TargetFilePath" -ForegroundColor Green
+        Write-Host "  Upload successful: $FileName → $TargetFilePath" -ForegroundColor Green
     }
     catch {
-        Write-Host "❌ Upload failed. Error: $_" -ForegroundColor Red
+        Write-Host "  Upload failed. Error: $_" -ForegroundColor Red
     }
 }
 

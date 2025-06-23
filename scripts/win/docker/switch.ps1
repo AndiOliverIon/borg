@@ -1,8 +1,8 @@
 # ╭──────────────────────────────────────────────╮
-# │ 🧠  SQL Docker Jump between snapshots initiated     │
+# │    SQL Docker Jump between snapshots initiated     │
 # ╰──────────────────────────────────────────────╯
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkCyan
-Write-Host "🧠  SQL Docker Jump between snapshots Initiated" -ForegroundColor Cyan
+Write-Host "   SQL Docker Jump between snapshots Initiated" -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkCyan
 Write-Host ""
 
@@ -13,7 +13,7 @@ try {
     $backupList = docker exec $ContainerName bash -c $backupListCommand
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "❌ Failed to retrieve backup list: $backupList" -ForegroundColor Red
+        Write-Host "  Failed to retrieve backup list: $backupList" -ForegroundColor Red
         return
     }
 
@@ -24,17 +24,17 @@ try {
         return
     }
 
-    Write-Host "`n📋 Available backups in container:" -ForegroundColor Green
+    Write-Host "`n  Available backups in container:" -ForegroundColor Green
     $backupFiles | ForEach-Object {
         $fileName = Split-Path $_ -Leaf
-        Write-Host "📁 $fileName"
+        Write-Host "  $fileName"
     }
 
     Write-Host "`n🔎 Select a backup using fzf..." -ForegroundColor Yellow
     $selectedFile = $backupFiles | ForEach-Object { Split-Path $_ -Leaf } | fzf --height 40%
 
     if (-not $selectedFile) {
-        Write-Host "❌ No selection made. Exiting." -ForegroundColor Red
+        Write-Host "  No selection made. Exiting." -ForegroundColor Red
         return
     }
 
@@ -42,7 +42,7 @@ try {
     $proposed = $BackupFile -split '_' | Select-Object -First 1
 }
 catch {
-    Write-Host "💥 Error retrieving backup list. Details: $_" -ForegroundColor Red
+    Write-Host "  Error retrieving backup list. Details: $_" -ForegroundColor Red
     return
 }
 
@@ -52,7 +52,7 @@ if ($BackupFile -match '_') {
     $backupFilePath = "$dockerBackupPath/$baseBackupFile"
     $compositeBackupFilePath = "$dockerBackupPath/$BackupFile"
 
-    Write-Host "`n🔄 Detected composite backup: '$BackupFile'" -ForegroundColor Cyan
+    Write-Host "`n  Detected composite backup: '$BackupFile'" -ForegroundColor Cyan
     try {
         Write-Host "🧹 Removing existing base backup (if any): $baseBackupFile" -ForegroundColor Gray
         $deleteCommand = "if [ -f '$backupFilePath' ]; then rm '$backupFilePath'; fi"
@@ -65,42 +65,42 @@ if ($BackupFile -match '_') {
         $BackupFile = $baseBackupFile
     }
     catch {
-        Write-Host "❌ Composite handling failed. $_" -ForegroundColor Red
+        Write-Host "  Composite handling failed. $_" -ForegroundColor Red
         return
     }
 }
 
 # 🎯 Confirmation
 Write-Host "`n🎯 Selected backup file: '$BackupFile'" -ForegroundColor Green
-Write-Host "🛠️ Starting restore in container: '$ContainerName'" -ForegroundColor Cyan
+Write-Host "  Starting restore in container: '$ContainerName'" -ForegroundColor Cyan
 
-# 🚀 Execute restore
+#   Execute restore
 try {
     $executeCommand = "$dockerBackupPath/restore_database.sh '$BackupFile' '$SqlPassword' '$proposed'"
-    Write-Host "`n🚀 Executing restore command:" -ForegroundColor Yellow
+    Write-Host "`n  Executing restore command:" -ForegroundColor Yellow
     Write-Host "   $executeCommand" -ForegroundColor DarkGray
     Write-Host "🔧 Running script inside container..." -ForegroundColor Yellow
 
     $executionResult = docker exec $ContainerName bash -c $executeCommand
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "`n❌ Restore script failed:" -ForegroundColor Red
+        Write-Host "`n  Restore script failed:" -ForegroundColor Red
         Write-Host $executionResult
         return
     }
 
     # 💬 Output from restore
-    Write-Host "`n📤 Output:" -ForegroundColor Gray
+    Write-Host "`n  Output:" -ForegroundColor Gray
     Write-Host "──────────────────────────────────────────────" -ForegroundColor DarkGray
     Write-Host $executionResult
     Write-Host "──────────────────────────────────────────────" -ForegroundColor DarkGray
 
-    Write-Host "`n✅ Restore completed successfully!" -ForegroundColor Green
+    Write-Host "`n  Restore completed successfully!" -ForegroundColor Green
 }
 catch {
-    Write-Host "💥 Unexpected error during execution: $_" -ForegroundColor Red
+    Write-Host "  Unexpected error during execution: $_" -ForegroundColor Red
 }
 
-# 🏁 Done
-Write-Host "`n🏁 SQL Restore Flow Complete" -ForegroundColor Cyan
+#   Done
+Write-Host "`n  SQL Restore Flow Complete" -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkCyan

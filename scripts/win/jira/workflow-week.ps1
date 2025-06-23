@@ -17,7 +17,7 @@ $searchUrl = "$jiraDomain/rest/api/2/search?jql=$([uri]::EscapeDataString($jql))
 $response = Invoke-RestMethod -Uri $searchUrl -Headers $authHeader
 
 Write-Host ""
-Write-Host "📅 Jira Worklog Summary — This Week" -ForegroundColor Cyan
+Write-Host "  Jira Worklog Summary — This Week" -ForegroundColor Cyan
 Write-Host ""
 
 # ---- Build list of weekdays from Monday to today ----
