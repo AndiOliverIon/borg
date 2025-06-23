@@ -294,6 +294,7 @@ To clean it from your profile:
 - [x] Jira workflow spent time today
 - [x] Jira workflow spent time week
 - [x] Jira workflow spent time latest
+- [x] Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` with a single command.
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 

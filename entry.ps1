@@ -103,6 +103,12 @@ switch ($module) {
             'week' { & "$jiraRoot\workflow-week.ps1" $extraArgs }
         }
     }
+    'io' {
+        switch ($command) {
+            'folder-clear' { & "$ioFolder\folder-clean.ps1" $extraArgs }
+            'fc' { & "$ioFolder\folder-clean.ps1" $extraArgs }
+        }
+    }
     'q' {
         & "$env:BORG_ROOT\q.ps1"
     }
