@@ -158,8 +158,8 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
 | `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week        |
 | `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
-
-| `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest|
+| `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders`|
+| `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest |
 | `borg --version`            | N/A                       | Show installed and latest version                  |
  
 
