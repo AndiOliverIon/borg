@@ -105,8 +105,7 @@ switch ($module) {
     }
     'io' {
         switch ($command) {
-            'folder-clear' { & "$ioFolder\folder-clean.ps1" $extraArgs }
-            'fc' { & "$ioFolder\folder-clean.ps1" $extraArgs }
+            'folder-clean' { & "$ioFolder\folder-clean.ps1" $extraArgs }
         }
     }
     'q' {
