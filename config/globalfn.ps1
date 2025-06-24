@@ -64,6 +64,7 @@ $dockerFolder = Join-Path $scriptsRoot "docker"
 $jumpFolder = Join-Path $scriptsRoot "jump"
 $dockerSqlFilesFolder = Join-Path $dockerFolder "sql"
 $ioFolder = Join-Path $scriptsRoot "io"
+$sysFolder = Join-Path $scriptsRoot "system"
 
 # Docker entry points
 $dockerSqlPath = "/var/opt/mssql"

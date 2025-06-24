@@ -108,6 +108,12 @@ switch ($module) {
             'folder-clean' { & "$ioFolder\folder-clean.ps1" $extraArgs }
         }
     }
+    'sys' {
+        switch ($command) {
+            'shutdown' { & "$sysFolder\shutdown.ps1" $extraArgs }
+            'restart' { & "$sysFolder\restart.ps1" $extraArgs }
+        }
+    }
     'q' {
         & "$env:BORG_ROOT\q.ps1"
     }

@@ -41,6 +41,9 @@ BOOKMARKING COMMANDS:
     borg jump <alias>            (bj <alias>)        → Jump to folder via alias
 
 CUSTOM SCRIPTS:
-    borg run                                          → Fuzzy-run any script from your custom folder
+    borg run                                         → Fuzzy-run any script from your custom folder
 
+SYSTEM COMMANDS:
+    borg shutdown                (ssd)               → Shut down the station gracefully
+    borg restart                 (sr)                → Restart the station gracefully
 '@
