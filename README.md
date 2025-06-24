@@ -158,8 +158,10 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
 | `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week        |
 | `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
-
-| `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest|
+| `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders`|
+| `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
+| `borg sys restart`          | `sr`                     | Gracefully restarts the current station; useful for mobile-triggered restarts |
+| `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest |
 | `borg --version`            | N/A                       | Show installed and latest version                  |
  
 
@@ -178,6 +180,20 @@ BORG is a modular CLI automation toolkit. It works by chaining interactive Power
 
 Each command guides you interactively, uses fuzzy navigation (via `fzf`), and integrates with tools like `sqlpackage`, `rclone`, and `less` when available.
 
+
+---
+
+## 📱 Mobile Companion App
+
+A mobile app is currently in development to make BORG even more accessible when you're away from your workstation.
+
+It focuses on quick, practical interactions — such as:
+
+- Checking the status of your stations
+- Running key commands with a few taps
+- Shutting down a station remotely
+
+Designed to be lightweight and efficient, the app brings core BORG workflows into your pocket without overwhelming you with options.
 
 ---
 
@@ -295,6 +311,8 @@ To clean it from your profile:
 - [x] Jira workflow spent time week
 - [x] Jira workflow spent time latest
 - [x] Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` with a single command.
+- [x] Shutdown of the stations, especially to be used from mobile app
+- [x] Restart of the stations, especially to be used from mobile app
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 

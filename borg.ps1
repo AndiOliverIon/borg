@@ -102,6 +102,9 @@ function ResolveBorgAlias {
         "ds"    = "docker switch"
         "dsnap" = "docker snapshot"
         "js"    = "jump store"
+        "iofc"  = "io folder-clean"
+        "ssd"   = "sys shutdown"
+        "sr"    = "sys restart"
     }
 
     $argsJoined = $module, $command

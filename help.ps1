@@ -1,65 +1,49 @@
-# 📘 BORG Help — Enriched, grouped, and user-friendly help output
-Write-Host "`n  Available BORG modules and commands:`n" -ForegroundColor Cyan
+@'
+BORG HELP — Available Commands
 
-Write-Host "  docker`n" -ForegroundColor Yellow
+USAGE:
+    borg <module> <command> [options]
 
-Write-Host "   • restore (alias: dr)"
-Write-Host "     Restores a chosen .bak SQL Server backup file into the Docker SQL container."
-Write-Host "     You can rename the database or overwrite an existing one interactively."
-Write-Host "     Note: Support for .zip, .bacpac, or MDF+LDF is planned but not yet implemented.`n"
+DOCKER COMMANDS:
+    borg docker restore         (bdr | borg d r)     → Restore a `.bak` file into Docker SQL
+    borg docker snapshot        (bds | borg d s)     → Create a snapshot from current container
+    borg docker clean           (bdc | borg d c)     → Remove container + volume
+    borg docker switch          (bdsw | borg d sw)   → Restore from snapshot (kills open connections)
+    borg docker download        (bdd | borg d d)     → Download snapshot from container to host
+    borg docker upload          (bdu | borg d u)     → Upload `.bak` file from host to container
+    borg docker query           (bdq | borg d q)     → Execute ad-hoc SQL queries inside container
+    borg docker shell                                → Open bash inside SQL container
 
-Write-Host "   • query (alias: dq)"
-Write-Host "     Executes a custom SQL query inside the active Docker SQL container."
-Write-Host "     Useful for quick inspection or manipulation of live data.`n"
+GDRIVE COMMANDS:
+    borg gdrive upload                               → Upload file from current folder to GDrive using fzf
 
-Write-Host "   • clean (alias: dc)"
-Write-Host "     Cleans up backup files and removes Docker SQL containers."
-Write-Host "       WARNING: This removes all running containers, not just sqlserver-2022.`n"
+NETWORK COMMANDS:
+    borg network bacpac                              → Export `.bacpac` from defined SqlServer to local
+    borg network kill                                → Kill process by port or name (optional -c to confirm)
 
-Write-Host "   • download (alias: dl)"
-Write-Host "     Downloads a file or folder from the Docker container's backup directory"
-Write-Host "     to your local machine, interactively.`n"
+JIRA COMMANDS:
+    borg jira today                                  → Show today’s worklog
+    borg jira week                                   → Show worklogs for current week
+    borg jira latest [days]                          → Recently updated issues (default: 7 days)
 
-Write-Host "   • upload (alias: du)"
-Write-Host "     Uploads a .bak SQL Server backup file from your PC to the Docker container’s backup folder."
-Write-Host "     Note: Support for .zip, .bacpac, or MDF+LDF is planned but not yet implemented.`n"
+UTILITY COMMANDS:
+    borg doctor                                      → Validate environment & requirements
+    borg store                                       → Open store.json config in editor
+    borg update                                      → Update BORG module from gallery
+    borg help                                        → Show this help page
+    borg --version                                   → Show current + latest version
+    borg clean versions                              → Remove older versions of BORG
+    borg io folder-clean         (fc)                → Clean folders from store.json → CleanFolders
 
-Write-Host "   • switch (alias: ds)"
-Write-Host "     Switches the active Docker snapshot name used for upcoming restore operations."
-Write-Host "     Useful when you maintain multiple named snapshots and want to restore a specific one.`n"
+BOOKMARKING COMMANDS:
+    borg bookmark                (b)                 → Fuzzy-jump to predefined bookmarks
+    borg jump store                                  → Add current folder as bookmark (with alias)
+    borg jump <alias>            (bj <alias>)        → Jump to folder via alias
 
-Write-Host "   • snapshot (alias: dsnap)"
-Write-Host "     Creates a named snapshot of all user databases inside the Docker container."
-Write-Host "     You will be prompted to enter a name. There is no automatic timestamping.`n"
+CUSTOM SCRIPTS:
+    borg run                                         → Fuzzy-run any script from your custom folder
 
-Write-Host "  jump`n" -ForegroundColor Yellow
-
-Write-Host "   • store (alias: js)"
-Write-Host "     Jumps to a predefined folder (like a dev or data directory) using a memorable alias."
-Write-Host "     Useful for quick terminal navigation.`n"
-
-Write-Host "  network`n" -ForegroundColor Yellow
-Write-Host "     gdrive`n"
-Write-Host "     Offers choice by fzf to select one file at current location to be uploaded into gdrive.`n"
-
-Write-Host "  jira`n" -ForegroundColor Yellow
-Write-Host "     jira today`n"
-Write-Host "     Shows your Jira worklogs for today, grouped by issue.`n"
-Write-Host "     jira week`n"
-Write-Host "     Shows your Jira worklogs for the current week .`n"
-
-Write-Host "  help`n" -ForegroundColor Yellow
-
-Write-Host "   • help"
-Write-Host "     Shows this help screen."
-
-$moduleName = 'Borg'
-$installed = (Get-Module $moduleName -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).Version
-$latest = (Find-Module $moduleName -ErrorAction SilentlyContinue).Version
-Write-Host "BORG v$installed — Installed" -ForegroundColor Green
-if ($latest -and $latest -ne $installed) {
-    Write-Host "  New version available: v$latest — run 'borg update' to upgrade" -ForegroundColor Yellow
-}
-else {
-    Write-Host "  Up to date with version v$latest" -ForegroundColor Green
-}
+SYSTEM COMMANDS:
+    borg shutdown                (ssd)               → Shut down the station gracefully
+    borg restart                 (sr)                → Restart the station gracefully
+'@
