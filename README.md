@@ -316,6 +316,83 @@ To clean it from your profile:
 - [ ] Add `install.ps1` to configure execution policy and profile on first run
 ---
 
+## 🖧 SSH Setup for Borg on Windows Stations
+
+To ensure remote SSH sessions land in **PowerShell 7+** and automatically load the Borg module, follow these steps on each station:
+
+### ✅ 1. Install Borg system-wide
+Run from an **elevated PowerShell 7+ terminal**:
+```powershell
+Install-Module Borg -Scope AllUsers -Force
+```
+
+---
+
+### ✅ 2. Add PowerShell 7 to the system PATH (if not already)
+```powershell
+[Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\Program Files\PowerShell", "Machine")
+```
+
+> 📌 This ensures `pwsh` is discoverable in all contexts, including system services like `sshd`.
+
+---
+
+### ✅ 3. Set PowerShell 7 as the default shell for SSH
+```powershell
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" `
+  -Name DefaultShell `
+  -Value "C:\Program Files\PowerShell\7\pwsh.exe" `
+  -PropertyType String -Force
+```
+
+Then apply the change:
+```powershell
+Restart-Service sshd
+```
+
+---
+
+### ✅ 4. Verify SSH opens `pwsh`
+From a remote machine:
+```bash
+ssh yourUser@stationName
+```
+
+Then confirm:
+```powershell
+$PSVersionTable.PSVersion
+```
+
+You should see PowerShell 7.x.
+
+---
+
+### ✅ 5. Add Borg auto-import to PowerShell profile
+
+Run inside the `pwsh` session to determine the correct profile path:
+```powershell
+$PROFILE
+```
+
+Then open the file locally or remotely and append:
+```powershell
+# >>> BORG INITIALIZATION START <<<
+Import-Module Borg
+# Optionally create a shortcut alias
+Set-Alias b borg
+# <<< BORG INITIALIZATION END <<<
+```
+
+> 💡 Use `$PROFILE.AllUsersCurrentHost` to apply it for all users on the station.
+
+---
+
+Once complete, any SSH session will:
+- Start in PowerShell 7+
+- Load the Borg module
+- Enable quick access via `borg` or `b` commands
+
+
 ##   License
 
 MIT — see `LICENSE` for details.
