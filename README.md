@@ -1,7 +1,9 @@
 #   BORG — Backup Orchestrator for Reliable Groundwork ![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
+![Built with 🛠️ and ❤️ by Artanis & Andi](https://img.shields.io/badge/built%20by-Artanis%20%26%20Andi-blueviolet)
 
-BORG is a modular automation shell designed to manage SQL Server Docker containers and automate backup/restore workflows.
+BORG is a modular automation shell I originally built to simplify the repetitive tasks I face every day — restoring Docker SQL containers, uploading backups, switching between snapshots.
 
+It’s not trying to be more than it is — but if your workflow looks anything like mine, it might just save you time too.
 ---
 
 ##   Features
@@ -65,7 +67,7 @@ These tools enable specific Borg commands. If missing, affected features will be
 
 ## 🎥 Live Demos
 
-See BORG in action — each demo showcases a real workflow you can automate and streamline using BORG:
+Here are a few short demos showing how BORG handles common tasks — nothing fancy, just practical workflows I use daily:
 
 ### 🛠️ Restore a SQL Snapshot in Seconds
 [<img src="docs/gifs/borg-docker-restore.gif" width="500"/>](docs/gifs/borg-docker-restore.gif)
@@ -196,8 +198,7 @@ BORG is a modular CLI automation toolkit. It works by chaining interactive Power
 - 🗂️ Browsing and exporting Jira worklogs or issues
 -   Backing up local SQL Server instances
 
-Each command guides you interactively, uses fuzzy navigation (via `fzf`), and integrates with tools like `sqlpackage`, `rclone`, and `less` when available.
-
+Each command runs interactively with fuzzy navigation (fzf) and uses common tools like sqlpackage or rclone if they’re available.
 
 ---
 
@@ -336,9 +337,9 @@ To clean it from your profile:
 
 ## 🖧 SSH Setup for Borg on Windows Stations
 
-To ensure remote SSH sessions land in **PowerShell 7+** and automatically load the Borg module, follow these steps on each station:
+If you’d like SSH sessions to start in PowerShell 7+ and auto-load Borg, here’s one way to set that up:
 
-### ✅ 1. Install Borg system-wide
+### ✅ 1. Install Borg system-wide (or just for your user — whatever suits your setup).
 Run from an **elevated PowerShell 7+ terminal**:
 ```powershell
 Install-Module Borg -Scope AllUsers -Force
