@@ -1,9 +1,13 @@
-#   BORG — Backup Orchestrator for Reliable Groundwork ![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
+#   BORG — Backup Orchestrator for Reliable Groundwork 
+
+![PowerShell 7.5.1+](https://img.shields.io/badge/PowerShell-7.5.1%2B-blue)
+
 ![Built with 🛠️ and ❤️ by Artanis & Andi](https://img.shields.io/badge/built%20by-Artanis%20%26%20Andi-blueviolet)
 
 BORG is a modular automation shell I originally built to simplify the repetitive tasks I face every day — restoring Docker SQL containers, uploading backups, switching between snapshots.
 
 It’s not trying to be more than it is — but if your workflow looks anything like mine, it might just save you time too.
+
 ---
 
 ##   Features
