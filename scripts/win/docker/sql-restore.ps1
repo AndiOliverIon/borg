@@ -101,7 +101,9 @@ Write-Host "  Starting restore in container: '$ContainerName'" -ForegroundColor 
 try {
     $executeCommand = "$dockerBackupPath/restore_database.sh '$BackupFile' '$SqlPassword' '$proposed'"
     Write-Host "`n  Executing restore command:" -ForegroundColor Yellow
-    Write-Host "   $executeCommand" -ForegroundColor DarkGray
+    if (-not $demoMode) {
+        Write-Host "   $executeCommand" -ForegroundColor DarkGray
+    }
     Write-Host "🔧 Running script inside container..." -ForegroundColor Yellow
 
     $executionResult = docker exec $ContainerName bash -c $executeCommand

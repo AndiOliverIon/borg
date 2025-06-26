@@ -61,6 +61,24 @@ These tools enable specific Borg commands. If missing, affected features will be
 
 > PowerShell 7.5.1 and Docker Desktop are required.
 
+---
+
+## 🎥 Live Demos
+
+See BORG in action — each demo showcases a real workflow you can automate and streamline using BORG:
+
+### 🛠️ Restore a SQL Snapshot in Seconds
+[<img src="docs/gifs/borg-docker-restore.gif" width="500"/>](docs/gifs/borg-docker-restore.gif)
+
+### 🧷 Create Snapshots During Work to Capture Key States
+[<img src="docs/gifs/borg-docker-snapshot.gif" width="500"/>](docs/gifs/borg-docker-snapshot.gif)
+
+### 🔁 Instantly Switch Between Snapshots Within the Same Session
+[<img src="docs/gifs/borg-docker-switch.gif" width="500"/>](docs/gifs/borg-docker-switch.gif)
+
+---
+
+
 ### Install via Git Clone
 ```bash
 git clone https://github.com/your-org/borg.git
