@@ -3,8 +3,10 @@ if (-not $env:BORG_ROOT) {
     throw "BORG_ROOT is not defined. Cannot proceed."
 }
 
-#   Main entry points
+# If runnind is in demo mode (some things has to not be displayed)
+$demoMode = $false
 
+#   Main entry points
 $borgRoot = $env:BORG_ROOT
 $dataRoot = Join-Path $borgRoot "data"
 
