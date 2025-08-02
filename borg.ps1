@@ -90,8 +90,7 @@ function _Invoke-BorgEntry {
 
             [string]$command
         )
-
-        Write-Host ('himmm')
+        
         $map = @{
             "b"     = "bookmark"
             "db"    = "docker bash"

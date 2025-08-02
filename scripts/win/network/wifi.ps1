@@ -1,24 +1,10 @@
-# Ensure fzf is installed
-if (-not (Get-Command fzf -ErrorAction SilentlyContinue)) {
-    Write-Error "fzf is not installed or not in PATH."
-    return
-}
+#   BORG Network — wifi.ps1
+param([string[]]$inputArgs)
 
-# Get saved Wi-Fi profiles
-$profiles = netsh wlan show profiles | Where-Object { $_ -match 'All User Profile' } |
-ForEach-Object { ($_ -split ':')[1].Trim() }
+. "$env:BORG_ROOT\config\globalfn.ps1"
 
-if (-not $profiles) {
-    Write-Host "No saved Wi-Fi profiles found."
-    return
-}
-
-# Use fzf to select a profile
-$selectedProfile = $profiles | fzf --prompt="Select Wi-Fi Profile > "
-if (-not $selectedProfile) {
-    Write-Host "No profile selected."
-    return
-}
+# 🔍 DEBUG: Show received arguments
+Write-Host "[debug] inputArgs: $($inputArgs -join ' ')" -ForegroundColor DarkGray
 
 function Get-CurrentSSID {
     netsh wlan show interfaces |
@@ -29,6 +15,53 @@ function Get-CurrentSSID {
 function IsYes($input) {
     $str = "$input"
     return ($str -eq '' -or $str.ToLower() -eq 'y')
+}
+
+# 🟢 If a single argument is provided, treat it as target SSID
+if ($inputArgs.Count -eq 1) {
+    $targetSSID = $inputArgs[0]
+    Write-Host "[debug] Auto-connect mode for SSID: $targetSSID" -ForegroundColor DarkGray
+
+    $current = Get-CurrentSSID
+    if ($current -eq $targetSSID) {
+        Write-Host "✅ Already connected to [$targetSSID]"
+        exit 0
+    }
+
+    Write-Host "🔁 Attempting to connect to [$targetSSID]..."
+    netsh wlan connect name="$targetSSID" | Out-Null
+    Start-Sleep -Seconds 3
+
+    $after = Get-CurrentSSID
+    if ($after -eq $targetSSID) {
+        Write-Host "✅ Successfully connected to [$targetSSID]"
+        exit 0
+    }
+    else {
+        Write-Host "❌ Failed to connect to [$targetSSID]" -ForegroundColor Red
+        exit 1
+    }
+}
+
+# 🟡 Fallback to interactive mode via fzf
+
+if (-not (Get-Command fzf -ErrorAction SilentlyContinue)) {
+    Write-Error "fzf is not installed or not in PATH."
+    exit 1
+}
+
+$profiles = netsh wlan show profiles | Where-Object { $_ -match 'All User Profile' } |
+ForEach-Object { ($_ -split ':')[1].Trim() }
+
+if (-not $profiles) {
+    Write-Host "No saved Wi-Fi profiles found."
+    exit 1
+}
+
+$selectedProfile = $profiles | fzf --prompt="Select Wi-Fi Profile > "
+if (-not $selectedProfile) {
+    Write-Host "No profile selected."
+    exit 1
 }
 
 $currentSSID = Get-CurrentSSID

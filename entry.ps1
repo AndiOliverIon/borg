@@ -94,7 +94,7 @@ switch ($module) {
         switch ($command) {
             'kill' { & "$networkRoot\kill.ps1" $extraArgs }
             'bacpac' { & "$networkRoot\database\export-bacpac.ps1" }
-            'wifi' { & "$networkRoot\wifi.ps1" }
+            'wifi' { & "$networkRoot\wifi.ps1" $extraArgs }
         }
     }
     'jira' {
