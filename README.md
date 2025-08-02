@@ -17,7 +17,7 @@ It’s not trying to be more than it is — but if your workflow looks anything 
 -   Handles `sqlcmd` ODBC TLS issues (ODBC Driver 18+ safe)
 - 🧩 Modular architecture: scripts organized into `central`, `docker`, `database`
 - 💬 Clean terminal UI with emoji-enhanced logging
-
+- 📶 Toggle known Wi-Fi networks on/off with confirmation and success check
 ---
 
 ##   Project Structure
@@ -179,6 +179,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
 | `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder|
+| `borg network wifi`         | 'b n wifi'                | Toggle saved Wi-Fi profiles (connect/disconnect with fzf & verification) |
 | `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
 | `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week        |
 | `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
@@ -336,7 +337,7 @@ To clean it from your profile:
 - [x] Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` with a single command.
 - [x] Shutdown of the stations, especially to be used from mobile app
 - [x] Restart of the stations, especially to be used from mobile app
-- [ ] Add `install.ps1` to configure execution policy and profile on first run
+- [x] Known wifi management up/down
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
