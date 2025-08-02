@@ -91,6 +91,7 @@ function _Invoke-BorgEntry {
             [string]$command
         )
 
+        Write-Host ('himmm')
         $map = @{
             "b"     = "bookmark"
             "db"    = "docker bash"
@@ -101,6 +102,7 @@ function _Invoke-BorgEntry {
             "du"    = "docker upload"
             "ds"    = "docker switch"
             "dsnap" = "docker snapshot"
+            "n"     = "network"
             "js"    = "jump store"
             "iofc"  = "io folder-clean"
             "ssd"   = "sys shutdown"

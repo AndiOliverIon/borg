@@ -336,7 +336,7 @@ To clean it from your profile:
 - [x] Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` with a single command.
 - [x] Shutdown of the stations, especially to be used from mobile app
 - [x] Restart of the stations, especially to be used from mobile app
-- [ ] Add `install.ps1` to configure execution policy and profile on first run
+- [x] Known wifi management up/down
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
