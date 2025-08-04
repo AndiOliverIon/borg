@@ -162,32 +162,34 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
-| `borg doctor`                | N/A                      | Checks system environment for required tools, PowerShell version, and config health            |
-| `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
-| `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection.              |
-| `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
-| `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
-| `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
+| `borg --version`            | N/A                       | Show installed and latest version                  |
+| `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection. |
+| `borg clean versions`       | N/A                       | Cleans up older BORG versions, keeping only the latest |
+| `borg doctor`               | N/A                       | Checks system environment for required tools, PowerShell version, and config health |
+| `borg docker clean`         | `bdc`, `borg d c`         | Remove the SQL container and its volumes           |
+| `borg docker download`      | `bdd`, `borg d d`         | Download a snapshot from container to host         |
+| `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
 | `borg docker restore`       | `bdr`, `borg d r`         | Restore a `.bak` file into Docker SQL              |
 | `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
-| `borg docker clean`         | `bdc`, `borg d c`         | Remove the SQL container and its volumes           |
 | `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
-| `borg docker download`      | `bdd`, `borg d d`         | Download a snapshot from container to host         |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
-| `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
-| `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
-| `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
-| `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder|
-| `borg network wifi`         | 'b n wifi'                | Toggle saved Wi-Fi profiles (connect/disconnect with fzf & verification) |
+| `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` |
+| `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
 | `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
 | `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week        |
-| `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
-| `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders`|
+| `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
+| `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
+| `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder |
+| `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
+| `borg network wifi`         | 'b n wifi'                | Toggle saved Wi-Fi profiles (connect/disconnect with fzf & verification) |
+| `borg process get`          | N/A                       | Get a friendly list of all processes that matches the name sent as parameter |
+| `borg process kill`         | N/A                       | Kills all processes, except the current one that matches the name sent as parameter |
+| `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
+| `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
+| `borg sys restart`          | `sr`                      | Gracefully restarts the current station; useful for mobile-triggered restarts |
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
-| `borg sys restart`          | `sr`                     | Gracefully restarts the current station; useful for mobile-triggered restarts |
-| `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest |
-| `borg --version`            | N/A                       | Show installed and latest version                  |
+| `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
  
 
 ---
@@ -390,6 +392,7 @@ To clean it from your profile:
 - [x] Shutdown of the stations, especially to be used from mobile app
 - [x] Restart of the stations, especially to be used from mobile app
 - [x] Known wifi management up/down
+- [x] List and terminate processes using name-based matching
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
