@@ -106,7 +106,7 @@ switch ($module) {
     'process' {
         switch ($command) {
             'get' { & "$sysFolder\process-get.ps1" $extraArgs }
-            'kill' { & "$sysFolder\process-kill.ps1" }
+            'kill' { & "$sysFolder\process-kill.ps1" $extraArgs }
         }        
     }
     'run' {

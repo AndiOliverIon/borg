@@ -129,7 +129,19 @@ while ($true) {
             try {
                 $psi = [System.Diagnostics.ProcessStartInfo]::new()
                 $psi.FileName = "pwsh"
-                $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -Command `$ErrorActionPreference='Stop'; $command"
+    
+                # Detect if it's a script execution (starts with pwsh -File ...)
+                if ($command -match '^-File\s+"?(.+?\.ps1)"?\s*(.*)') {
+                    $scriptPath = $matches[1]
+                    $scriptArgs = $matches[2]
+
+                    $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$scriptPath`" $scriptArgs"
+                }
+                else {
+                    # Treat as raw command
+                    $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -Command `"& { $command }`""
+                }
+
                 $psi.RedirectStandardOutput = $true
                 $psi.RedirectStandardError = $true
                 $psi.UseShellExecute = $false
