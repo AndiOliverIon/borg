@@ -22,17 +22,48 @@ if (-not $module) {
 }
 
 switch ($module) {
+    'bookmark' {
+        & "$env:BORG_ROOT\bookmark.ps1"
+    }
+    'clean' {
+        switch ($command) {
+            'versions' { & "$configRoot\clean-versions.ps1" }
+        }
+    }
     'doctor' {
         & "$configRoot\doctor.ps1"
+    }
+    'docker' {        
+        switch ($command) {
+            'bash' { & "$dockerFolder\bash.ps1" }
+            'clean' { & "$dockerFolder\clean.ps1" }
+            'restore' { & "$dockerFolder\restore.ps1" }
+            'snapshot' { & "$dockerFolder\snapshot.ps1" @extraArgs }
+            'switch' { & "$dockerFolder\switch.ps1" }
+            'download' { & "$dockerFolder\download.ps1" }
+            'upload' { & "$dockerFolder\upload.ps1" }
+            'query' { & "$dockerFolder\query.ps1" }
+        }        
+    }
+    'gdrive' {
+        switch ($command) {
+            'upload' { & "$networkRoot\gdrive-upload.ps1" }
+        }
     }
     'help' {
         & "$env:BORG_ROOT\help.ps1"
     }
-    'store' {
-        micro $storePath
+    'io' {
+        switch ($command) {
+            'folder-clean' { & "$ioFolder\folder-clean.ps1" $extraArgs }
+        }
     }
-    'bookmark' {
-        & "$env:BORG_ROOT\bookmark.ps1"
+    'jira' {
+        switch ($command) {
+            'today' { & "$jiraRoot\workflow-today.ps1" $extraArgs }
+            'latest' { & "$jiraRoot\latest.ps1" $extraArgs }
+            'week' { & "$jiraRoot\workflow-week.ps1" $extraArgs }
+        }
     }
     'jump' {
         switch ($command) {
@@ -62,34 +93,6 @@ switch ($module) {
             }
         }
     }
-
-    'docker' {        
-        switch ($command) {
-            'bash' { & "$dockerFolder\bash.ps1" }
-            'clean' { & "$dockerFolder\clean.ps1" }
-            'restore' { & "$dockerFolder\restore.ps1" }
-            'snapshot' { & "$dockerFolder\snapshot.ps1" @extraArgs }
-            'switch' { & "$dockerFolder\switch.ps1" }
-            'download' { & "$dockerFolder\download.ps1" }
-            'upload' { & "$dockerFolder\upload.ps1" }
-            'query' { & "$dockerFolder\query.ps1" }
-        }        
-    }    
-    'run' {
-        & "$env:BORG_ROOT\run.ps1"
-    }
-
-    'gdrive' {
-        switch ($command) {
-            'upload' { & "$networkRoot\gdrive-upload.ps1" }
-        }
-
-    }
-    'clean' {
-        switch ($command) {
-            'versions' { & "$configRoot\clean-versions.ps1" }
-        }
-    }
     'network' {
         switch ($command) {
             'kill' { & "$networkRoot\kill.ps1" $extraArgs }
@@ -97,17 +100,20 @@ switch ($module) {
             'wifi' { & "$networkRoot\wifi.ps1" $extraArgs }
         }
     }
-    'jira' {
-        switch ($command) {
-            'today' { & "$jiraRoot\workflow-today.ps1" $extraArgs }
-            'latest' { & "$jiraRoot\latest.ps1" $extraArgs }
-            'week' { & "$jiraRoot\workflow-week.ps1" $extraArgs }
-        }
+    'q' {
+        & "$env:BORG_ROOT\q.ps1"
     }
-    'io' {
+    'process' {
         switch ($command) {
-            'folder-clean' { & "$ioFolder\folder-clean.ps1" $extraArgs }
-        }
+            'get' { & "$sysFolder\process-get.ps1" $extraArgs }
+            'kill' { & "$sysFolder\process-kill.ps1" }
+        }        
+    }
+    'run' {
+        & "$env:BORG_ROOT\run.ps1"
+    }
+    'store' {
+        micro $storePath
     }
     'sys' {
         switch ($command) {
@@ -115,11 +121,7 @@ switch ($module) {
             'restart' { & "$sysFolder\restart.ps1" $extraArgs }
         }
     }
-    'q' {
-        & "$env:BORG_ROOT\q.ps1"
-    }
     default {
         Write-Error "Unknown module command."
     }
 }
-

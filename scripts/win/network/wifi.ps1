@@ -4,7 +4,7 @@ param([string[]]$inputArgs)
 . "$env:BORG_ROOT\config\globalfn.ps1"
 
 # 🔍 DEBUG: Show received arguments
-Write-Host "[debug] inputArgs: $($inputArgs -join ' ')" -ForegroundColor DarkGray
+# Write-Host "[debug] inputArgs: $($inputArgs -join ' ')" -ForegroundColor DarkGray
 
 function Get-CurrentSSID {
     netsh wlan show interfaces |
@@ -12,9 +12,14 @@ function Get-CurrentSSID {
     ForEach-Object { ($_ -split ':')[1].Trim() }
 }
 
-function IsYes($input) {
-    $str = "$input"
-    return ($str -eq '' -or $str.ToLower() -eq 'y')
+function IsYes($inArg) {
+    $in = "$inArg".Trim().ToLower()
+    return ($in -eq '' -or $in -eq 'y' -or $in -eq 'yes')
+}
+
+function IsNo($inArg) {
+    $in = "$inArg".Trim().ToLower()
+    return ($in -eq 'n' -or $in -eq 'no')
 }
 
 # 🟢 If a single argument is provided, treat it as target SSID
@@ -68,8 +73,9 @@ $currentSSID = Get-CurrentSSID
 
 if ($selectedProfile -eq $currentSSID) {
     Write-Host "`n[$selectedProfile] is currently connected." -ForegroundColor Yellow
-    $confirm = Read-Host "Do you want to disconnect from it? (Y/n)"
-    if (IsYes $confirm) {
+    $confirm = Read-Host "Do you want to disconnect from it? (Y/n)"    
+    
+    if (IsYes $confirm) {        
         netsh wlan disconnect | Out-Null
         Start-Sleep -Seconds 2
         $afterDisconnect = Get-CurrentSSID
@@ -80,13 +86,19 @@ if ($selectedProfile -eq $currentSSID) {
             Write-Host "❌ Failed to disconnect from [$selectedProfile]" -ForegroundColor Red
         }
     }
-    else {
+    elseif (IsNo $confirm) {
         Write-Host "Aborted. No changes made." -ForegroundColor Cyan
+        exit 0
+    }
+    else {
+        Write-Host "Invalid input. Aborted." -ForegroundColor Red
+        exit 1
     }
 }
 else {
     Write-Host "`n[$selectedProfile] is currently not connected." -ForegroundColor Yellow
     $confirm = Read-Host "Do you want to connect to it? (Y/n)"
+
     if (IsYes $confirm) {
         netsh wlan connect name="$selectedProfile" | Out-Null
         Start-Sleep -Seconds 3
@@ -98,7 +110,12 @@ else {
             Write-Host "❌ Failed to connect to [$selectedProfile]" -ForegroundColor Red
         }
     }
-    else {
+    elseif (IsNo $confirm) {
         Write-Host "Aborted. No changes made." -ForegroundColor Cyan
+        exit 0
+    }
+    else {
+        Write-Host "Invalid input. Aborted." -ForegroundColor Red
+        exit 1
     }
 }

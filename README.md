@@ -162,32 +162,34 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
-| `borg doctor`                | N/A                      | Checks system environment for required tools, PowerShell version, and config health            |
-| `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
-| `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection.              |
-| `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
-| `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
-| `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
+| `borg --version`            | N/A                       | Show installed and latest version                  |
+| `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection. |
+| `borg clean versions`       | N/A                       | Cleans up older BORG versions, keeping only the latest |
+| `borg doctor`               | N/A                       | Checks system environment for required tools, PowerShell version, and config health |
+| `borg docker clean`         | `bdc`, `borg d c`         | Remove the SQL container and its volumes           |
+| `borg docker download`      | `bdd`, `borg d d`         | Download a snapshot from container to host         |
+| `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
 | `borg docker restore`       | `bdr`, `borg d r`         | Restore a `.bak` file into Docker SQL              |
 | `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
-| `borg docker clean`         | `bdc`, `borg d c`         | Remove the SQL container and its volumes           |
 | `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
-| `borg docker download`      | `bdd`, `borg d d`         | Download a snapshot from container to host         |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
-| `borg docker query`         | `bdq`, `borg d q`         | Run SQL queries against a selected database        |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
-| `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
-| `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
-| `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder|
-| `borg network wifi`         | 'b n wifi'                | Toggle saved Wi-Fi profiles (connect/disconnect with fzf & verification) |
+| `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` |
+| `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
 | `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
 | `borg jira week`            | N/A                       | Shows your Jira worklogs for the current week        |
-| `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
-| `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders`|
+| `borg jump <alias>`         | `bj <alias>`              | Jump to a previously stored folder                 |
+| `borg jump store`           | N/A                       | Bookmark current folder with an alias              |
+| `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder |
+| `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
+| `borg network wifi`         | 'b n wifi'                | Toggle saved Wi-Fi profiles (connect/disconnect with fzf & verification) |
+| `borg process get`          | N/A                       | Get a friendly list of all processes that matches the name sent as parameter |
+| `borg process kill`         | N/A                       | Kills all processes, except the current one that matches the name sent as parameter |
+| `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
+| `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
+| `borg sys restart`          | `sr`                      | Gracefully restarts the current station; useful for mobile-triggered restarts |
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
-| `borg sys restart`          | `sr`                     | Gracefully restarts the current station; useful for mobile-triggered restarts |
-| `borg clean versions`       | N/A                       |  Cleans up older BORG versions, keeping only the latest |
-| `borg --version`            | N/A                       | Show installed and latest version                  |
+| `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
  
 
 ---
@@ -218,6 +220,58 @@ It focuses on quick, practical interactions — such as:
 - Shutting down a station remotely
 
 Designed to be lightweight and efficient, the app brings core BORG workflows into your pocket without overwhelming you with options.
+
+---
+
+## ⏲️ Background Task Ticker
+
+BORG includes a lightweight background ticker system that continuously runs in the background to automate tasks such as:
+
+- Checking Wi-Fi networks at regular intervals
+- Syncing files or executing health checks
+- Triggering Borg commands silently without user interaction
+
+### How It Works
+
+The ticker script (`ticker.ps1`) runs in the background and handles execution of scheduled logic using a simple `.time` file mechanism:
+
+1. On each cycle, it checks for a `.time` file in:
+   ```
+   %APPDATA%\Borg\ticker\
+   ```
+2. If found, it uses the file name to determine when the last action was executed.
+3. If due, it renames the `.time` file to the current timestamp and performs actions.
+4. Only one `.time` file should exist at a time.
+5. Log rotation is handled automatically: if the log file exceeds 1MB, it is archived.
+
+### How It's Started
+
+BORG initializes the ticker automatically from your PowerShell profile if not already running.
+
+```powershell
+# Setup scheduler ticker for BORG
+$borgTicker = "$env:BORG_ROOT\scripts\win\system\ticker.ps1"
+$pidFile = "$env:APPDATA\borg\borg-schedule.pid"
+
+if (Test-Path $pidFile) {
+    try {
+        $existingPid = Get-Content $pidFile
+        $proc = Get-Process -Id $existingPid -ErrorAction Stop
+        if ($proc.ProcessName -match "powershell") {
+            return  # Already running
+        }
+    } catch {
+        Remove-Item $pidFile -Force  # Stale PID
+    }
+}
+
+# Launch ticker hidden in background
+Start-Process powershell `
+    -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$borgTicker`"" `
+     -WindowStyle Hidden
+```
+
+This design ensures the ticker is only launched once per session and runs silently in the background without requiring Windows Task Scheduler.
 
 ---
 
@@ -338,6 +392,7 @@ To clean it from your profile:
 - [x] Shutdown of the stations, especially to be used from mobile app
 - [x] Restart of the stations, especially to be used from mobile app
 - [x] Known wifi management up/down
+- [x] List and terminate processes using name-based matching
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations

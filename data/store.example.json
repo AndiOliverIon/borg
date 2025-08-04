@@ -45,5 +45,16 @@
             "alias": "main-logs",
             "path": "C:\\logs"
         }
+    ],
+    "Scheduler": [
+        {
+            "name": "Wifi",
+            "enabled": true,
+            "from": "07:00",
+            "to": "23:00",
+            "interval": "5m",
+            "lastexecution": "2025-08-03T09:35:00",
+            "action": "borg network wifi AccessPointName"
+        }
     ]
 }
