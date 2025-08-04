@@ -227,9 +227,9 @@ Designed to be lightweight and efficient, the app brings core BORG workflows int
 
 BORG includes a lightweight background ticker system that continuously runs in the background to automate tasks such as:
 
-- Checking Wi-Fi networks at regular intervals
-- Syncing files or executing health checks
-- Triggering Borg commands silently without user interaction
+- Checking Wi-Fi networks at regular intervals  
+- Syncing files or executing health checks  
+- Triggering Borg commands silently without user interaction  
 
 ### How It Works
 
@@ -239,14 +239,14 @@ The ticker script (`ticker.ps1`) runs in the background and handles execution of
    ```
    %APPDATA%\Borg\ticker\
    ```
-2. If found, it uses the file name to determine when the last action was executed.
-3. If due, it renames the `.time` file to the current timestamp and performs actions.
-4. Only one `.time` file should exist at a time.
+2. If found, it uses the file name to determine when the last action was executed.  
+3. If due, it renames the `.time` file to the current timestamp and performs actions.  
+4. Only one `.time` file should exist at a time.  
 5. Log rotation is handled automatically: if the log file exceeds 1MB, it is archived.
 
 ### How It's Started
 
-BORG initializes the ticker automatically from your PowerShell profile if not already running.
+BORG initializes the ticker automatically from your PowerShell profile if not already running:
 
 ```powershell
 # Setup scheduler ticker for BORG
@@ -268,10 +268,37 @@ if (Test-Path $pidFile) {
 # Launch ticker hidden in background
 Start-Process powershell `
     -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$borgTicker`"" `
-     -WindowStyle Hidden
+    -WindowStyle Hidden
 ```
 
-This design ensures the ticker is only launched once per session and runs silently in the background without requiring Windows Task Scheduler.
+This ensures the ticker is launched once per session and runs silently without requiring Windows Task Scheduler.
+
+### 📁 Configure Scheduled Tasks in `store.json`
+
+To define what the ticker should run and when, you must update your `store.json` file with a `Scheduler` section. Here's an example:
+
+```json
+"Scheduler": [
+    {
+        "name": "Wifi",
+        "enabled": true,
+        "from": "07:00",
+        "to": "23:00",
+        "interval": "5m",
+        "lastexecution": "2025-08-03T09:35:00",
+        "action": "borg network wifi AccessPointName"
+    }
+]
+```
+
+Each entry defines a scheduled task:
+- `name`: A label for the task.
+- `enabled`: Set to `true` to activate.
+- `from` / `to`: Time range during which the task can execute.
+- `interval`: Minimum duration between two runs.
+- `action`: The Borg command to execute.
+
+➡️ Make sure this section is placed **inside your main `store.json`** configuration file for BORG to pick it up during ticker execution.
 
 ---
 
