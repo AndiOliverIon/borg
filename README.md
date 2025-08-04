@@ -221,6 +221,58 @@ Designed to be lightweight and efficient, the app brings core BORG workflows int
 
 ---
 
+## ⏲️ Background Task Ticker
+
+BORG includes a lightweight background ticker system that continuously runs in the background to automate tasks such as:
+
+- Checking Wi-Fi networks at regular intervals
+- Syncing files or executing health checks
+- Triggering Borg commands silently without user interaction
+
+### How It Works
+
+The ticker script (`ticker.ps1`) runs in the background and handles execution of scheduled logic using a simple `.time` file mechanism:
+
+1. On each cycle, it checks for a `.time` file in:
+   ```
+   %APPDATA%\Borg\ticker\
+   ```
+2. If found, it uses the file name to determine when the last action was executed.
+3. If due, it renames the `.time` file to the current timestamp and performs actions.
+4. Only one `.time` file should exist at a time.
+5. Log rotation is handled automatically: if the log file exceeds 1MB, it is archived.
+
+### How It's Started
+
+BORG initializes the ticker automatically from your PowerShell profile if not already running.
+
+```powershell
+# Setup scheduler ticker for BORG
+$borgTicker = "$env:BORG_ROOT\scripts\win\system\ticker.ps1"
+$pidFile = "$env:APPDATA\borg\borg-schedule.pid"
+
+if (Test-Path $pidFile) {
+    try {
+        $existingPid = Get-Content $pidFile
+        $proc = Get-Process -Id $existingPid -ErrorAction Stop
+        if ($proc.ProcessName -match "powershell") {
+            return  # Already running
+        }
+    } catch {
+        Remove-Item $pidFile -Force  # Stale PID
+    }
+}
+
+# Launch ticker hidden in background
+Start-Process powershell `
+    -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$borgTicker`"" `
+     -WindowStyle Hidden
+```
+
+This design ensures the ticker is only launched once per session and runs silently in the background without requiring Windows Task Scheduler.
+
+---
+
 ## 🔒 Compatibility
 
 -   SQL Server 2022

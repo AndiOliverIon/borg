@@ -1,10 +1,35 @@
 # ticker.ps1
 . "$env:BORG_ROOT\config\globalfn.ps1"
 
+# Constants
+$timeFolder = Join-Path $env:APPDATA "Borg\ticker"
+
+# Ensure ticker folder exists
+New-Item -ItemType Directory -Force -Path $timeFolder | Out-Null
+
+# Rest of constants
+$logFile = Join-Path $timeFolder "ticker.log"
+$logArchive = Join-Path $timeFolder "ticker.archive.log"
+$logLimitBytes = 1MB
+$schedulePid = Join-Path $timeFolder 'schedule.pid'
+$loopStart = Get-Date
+
+# Logging
+function Log($msg) {
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    "[$timestamp] $msg" | Out-File -Append -FilePath $logFile -Encoding utf8
+    RotateLogIfNecessary
+}
+
+# Output info for debug
+Write-Host("Time folder: $($timeFolder)");
+Write-Host("Log file: $($logFile)");
+Write-Host("Log archive file: $($logArchive)");
+
 # Enforce single instance of ticker
 if (Test-Path $schedulePid) {
     $existingPid = Get-Content $schedulePid -Raw | ForEach-Object { $_.Trim() }
-
+    
     if ($existingPid -match '^\d+$') {
         $pidValue = [int]$existingPid
         if (Get-Process -Id $pidValue -ErrorAction SilentlyContinue) {
@@ -12,12 +37,6 @@ if (Test-Path $schedulePid) {
             exit
         }
     }
-}
-
-# Write helper
-function Log($msg) {
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    "[$timestamp] $msg" | Out-File -Append -FilePath $loggerPath -Encoding utf8
 }
 
 # Store our PID
@@ -28,68 +47,87 @@ catch {
     Log "$($_.Exception.Message)"
 }
 
-Log "Ticker started (PID=$PID)"
-function IsWithinWindow($item) {
-    $now = Get-Date
-    $from = [datetime]::ParseExact($item.from, 'HH:mm', $null).Date.AddHours($item.from.Split(':')[0]).AddMinutes($item.from.Split(':')[1])
-    $to = [datetime]::ParseExact($item.to, 'HH:mm', $null).Date.AddHours($item.to.Split(':')[0]).AddMinutes($item.to.Split(':')[1])
-
-    $todayFrom = $now.Date.AddHours($from.Hour).AddMinutes($from.Minute)
-    $todayTo = $now.Date.AddHours($to.Hour).AddMinutes($to.Minute)
-
-    return ($now -ge $todayFrom -and $now -le $todayTo)
+# Define the last time of the execution
+$existingTimeFile = Get-ChildItem -Path $timeFolder -Filter '*.time' | Sort-Object Name | Select-Object -Last 1
+if ($existingTimeFile) {
+    $lastExecution = [datetime]::ParseExact($existingTimeFile.BaseName, 'yyyyMMddHHmmss', $null)
+    Remove-Item -Force $existingTimeFile.FullName -ErrorAction SilentlyContinue
 }
-function GetTimeSpanFromInterval($interval) {
-    if ($interval -match '(\d+)([smhd])') {
-        $value = [int]$matches[1]
-        switch ($matches[2]) {
-            's' { return [timespan]::FromSeconds($value) }
-            'm' { return [timespan]::FromMinutes($value) }
-            'h' { return [timespan]::FromHours($value) }
-            'd' { return [timespan]::FromDays($value) }
+else {
+    $lastExecution = [datetime]::MinValue
+}
+
+# Cleanup only on process exit (e.g., Ctrl+C)
+Register-EngineEvent PowerShell.Exiting -Action {
+    Remove-Item -Force $schedulePid -ErrorAction SilentlyContinue
+} | Out-Null
+
+function RotateLogIfNecessary {
+    if (Test-Path $logFile) {
+        $logSize = (Get-Item $logFile).Length
+        if ($logSize -gt $logLimitBytes) {
+            Remove-Item -Force $logArchive -ErrorAction SilentlyContinue
+            Move-Item -Force $logFile $logArchive
         }
     }
-    throw "Invalid interval format: $interval"
 }
-function IsDue($item) {
-    try {
-        $interval = GetTimeSpanFromInterval $item.interval
-        $last = [datetime]::Parse($item.lastexecution)
-        $now = Get-Date
-        return ($now - $last -ge $interval)
+function ParseInterval($text) {
+    if ($text -match '^(\d+)([smhd])$') {
+        $v = [int]$matches[1]
+        switch ($matches[2]) {
+            's' { return [timespan]::FromSeconds($v) }
+            'm' { return [timespan]::FromMinutes($v) }
+            'h' { return [timespan]::FromHours($v) }
+            'd' { return [timespan]::FromDays($v) }
+        }
     }
-    catch {
-        Log "Failed to evaluate interval for $($item.name): $($_.Exception.Message)"
-        return $false
-    }
+    throw "Invalid interval: $text"
 }
 
+# Log "Bulshit"
+# Read-Host "DEBUG: Press Enter to continue, or Ctrl+C to exit"
+# Main loop
 while ($true) {
     $loopStart = Get-Date
     try {
         $json = Get-Content $storePath -Raw | ConvertFrom-Json
         $scheduleItems = $json.Scheduler | Where-Object { $_.enabled }
-
         foreach ($item in $scheduleItems) {
-            $name = $item.name
+            $name = $item.name            
+            $now = Get-Date
+            
+            # Time window
+            $from = $now.Date.Add([timespan]::Parse($item.from))
+            $to = $now.Date.Add([timespan]::Parse($item.to))
 
-            if (-not (IsWithinWindow $item)) {
-                Log "Skipped '$name' — outside allowed time window"
+            Write-Host("now: $now")
+            Write-Host("from: $from")
+            Write-Host("to: $to")
+            if ($now -lt $from -or $now -gt $to) {
+                Log "Skipped $name, outside of time window."
                 continue
             }
-
-            if (-not (IsDue $item)) {
-                Log "Skipped '$name' — not due yet"
-                continue
-            }
-
-            # Expand and log command
-            $command = $ExecutionContext.InvokeCommand.ExpandString($item.action)
-            #Log "Running action: $name with command: $command"
-
+            
+            # Due?
             try {
-                # Use pwsh with -Wait to avoid runaway process spawns
-                $psi = New-Object System.Diagnostics.ProcessStartInfo
+                $interval = ParseInterval $item.interval
+                if (($now - $lastExecution) -lt $interval) {
+                    Log "Skipped not due"
+                    continue
+                }
+                
+            }
+            catch {
+                Log "Interval error for $($name): $($_.Exception.Message)"
+                continue
+            }
+            
+            # Read-Host "DEBUG: Press Enter to continue, or Ctrl+C to exit"
+            # Run action
+            $command = $ExecutionContext.InvokeCommand.ExpandString($item.action)
+            Log "Running '$name': $command"
+            try {
+                $psi = [System.Diagnostics.ProcessStartInfo]::new()
                 $psi.FileName = "pwsh"
                 $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -Command `$ErrorActionPreference='Stop'; $command"
                 $psi.RedirectStandardOutput = $true
@@ -98,28 +136,17 @@ while ($true) {
                 $psi.CreateNoWindow = $true
 
                 $proc = [System.Diagnostics.Process]::Start($psi)
-                $output = $proc.StandardOutput.ReadToEnd()
-                $errorOutput = $proc.StandardError.ReadToEnd()
+                $out = $proc.StandardOutput.ReadToEnd()
+                $err = $proc.StandardError.ReadToEnd()
                 $proc.WaitForExit()
 
-                Log "Output for $($name):`n$output"
-                if ($errorOutput) {
-                    Log "Error output for $($name):`n$errorOutput"
-                }
+                Log "Output for '$name':`n$out"
+                if ($err) { Log "Error for '$name':`n$err" }
 
-                # Update execution time
-                $item.lastexecution = (Get-Date).ToString("s")
-                foreach ($sched in $json.Scheduler) {
-                    if ($sched.name -eq $name) {
-                        $sched.lastexecution = $item.lastexecution
-                        break
-                    }
-                }
-
-                $json | ConvertTo-Json -Depth 10 | Set-Content -Encoding UTF8 -Path $storePath
+                $lastExecution = Get-Date
             }
             catch {
-                Log "Failed to execute : $($_.Exception.Message)"
+                Log "Execution failed for '$name': $($_.Exception.Message)"
             }
         }
     }
@@ -130,7 +157,13 @@ while ($true) {
     $loopEnd = Get-Date
     $elapsed = ($loopEnd - $loopStart).TotalSeconds
     $delay = [Math]::Max(60 - [Math]::Floor($elapsed), 1)
-    Start-Sleep -Seconds $delay
-}
 
+    # Rotate .time file
+    Get-ChildItem -Path $timeFolder -Filter '*.time' | Remove-Item -Force -ErrorAction SilentlyContinue
+    $timestamp = (Get-Date).ToString('yyyyMMddHHmmss')
+    New-Item -ItemType File -Path (Join-Path $timeFolder "$timestamp.time") | Out-Null
+
+    Start-Sleep -Seconds $delay
+    #Start-Sleep -Seconds 5
+}
 

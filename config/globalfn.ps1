@@ -14,7 +14,6 @@ $dataRoot = Join-Path $borgRoot "data"
 $userStoreFolder = Join-Path $env:APPDATA 'borg'
 $storePath = Join-Path $userStoreFolder 'store.json'
 $loggerPath = Join-Path $userStoreFolder 'log.txt'
-$schedulePid = Join-Path $userStoreFolder 'schedule.pid'
 
 # 🔧 Initialize store.json if missing
 if (-not (Test-Path $storePath)) {
