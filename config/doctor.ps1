@@ -86,8 +86,29 @@ if (Test-Path $borgModulePath) {
             Write-Host "    - $($v.Name)"
         }
 
+        # Safely identify current version by walking up from the script path
         $currentScriptPath = $MyInvocation.MyCommand.Path
-        $currentVersion = Split-Path -Parent $currentScriptPath | Split-Path -Leaf
+        $currentFolder = Split-Path -Parent $currentScriptPath
+
+        $currentVersion = $null
+        while ($currentFolder -and -not $currentVersion) {
+            $folderName = Split-Path -Leaf $currentFolder
+            Write-Host "  🔍 Checking folder: $folderName"
+            if ($versions | Where-Object { $_.Name -eq $folderName }) {
+                $currentVersion = $folderName
+                break
+            }
+            $currentFolder = Split-Path -Parent $currentFolder
+        }
+
+        Write-Host "`n  [DEBUG] Known versions:"
+        $versions | ForEach-Object { Write-Host "   - $($_.Name)" }
+
+        # If we couldn't detect the current version, abort cleanup
+        if (-not $currentVersion) {
+            Write-Host "`n  ⚠ Could not confidently detect current version. Skipping cleanup." -ForegroundColor Yellow
+            return
+        }
 
         Write-Host "`n  Current version in use: $currentVersion"
 
