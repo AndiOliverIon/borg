@@ -16,6 +16,7 @@ It’s not trying to be more than it is — but if your workflow looks anything 
 -   Docker SQL Server orchestration with automatic upload & provisioning
 -   Handles `sqlcmd` ODBC TLS issues (ODBC Driver 18+ safe)
 - 🧩 Modular architecture: scripts organized into `central`, `docker`, `database`
+- ✍️ Easily add new user scripts with `borg run add`, and execute them via `borg run`
 - 💬 Clean terminal UI with emoji-enhanced logging
 - 📶 Toggle known Wi-Fi networks on/off with confirmation and success check
 ---
@@ -149,6 +150,12 @@ Example configuration:
   ]
 }
 ```
+To define your custom scripts folder, set the following variable in your PowerShell profile or globalfn.ps1:
+
+```powershell
+$CustomScriptsFolder = "$env:USERPROFILE\borg-scripts"
+
+---
 
 ## Known Issues
 Error: Profile cannot be loaded because running scripts is disabled on this system.
@@ -174,6 +181,9 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
+| `borg idea "<text>"`            | N/A                   | Add a new idea to your local list (default: todo) |
+| `borg idea list`            | N/A                       | View all ideas (fzf), toggle status (todo/done) |
+| `borg idea reset`            | N/A                      | Clear all ideas marked as done |
 | `borg io folder-clean`      | `fc`                      | Clean predefined folders: wipe contents of all folders listed in `store.json → CleanFolders` |
 | `borg jira latest`          | [days]                    | Shows recently updated issues that mention or are assigned to you (default: 7 days) |
 | `borg jira today`           | N/A                       | Shows your Jira worklogs for today, grouped by issue |
@@ -186,6 +196,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg process get`          | N/A                       | Get a friendly list of all processes that matches the name sent as parameter |
 | `borg process kill`         | N/A                       | Kills all processes, except the current one that matches the name sent as parameter |
 | `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
+| `borg run add`             | N/A                       | Add a `.ps1` script from current folder to your custom script folder, with overwrite confirmation |
 | `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
 | `borg sys restart`          | `sr`                      | Gracefully restarts the current station; useful for mobile-triggered restarts |
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
@@ -420,6 +431,8 @@ To clean it from your profile:
 - [x] Restart of the stations, especially to be used from mobile app
 - [x] Known wifi management up/down
 - [x] List and terminate processes using name-based matching
+- [x] Add scripts to custom scripts run with Borg by `borg run add`. Will allow to add scripts from current location
+- [x] Add lightweight idea logger with todo/done tracking (borg idea)
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
