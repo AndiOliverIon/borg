@@ -53,6 +53,9 @@ switch ($module) {
     'help' {
         & "$env:BORG_ROOT\help.ps1"
     }
+    'idea' {
+        & "$sysFolder\idea.ps1" $command
+    }
     'io' {
         switch ($command) {
             'folder-clean' { & "$ioFolder\folder-clean.ps1" $extraArgs }
@@ -110,7 +113,7 @@ switch ($module) {
         }        
     }
     'run' {
-        & "$env:BORG_ROOT\run.ps1"
+        & "$env:BORG_ROOT\run.ps1" $command
     }
     'store' {
         micro $storePath
