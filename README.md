@@ -408,7 +408,7 @@ To clean it from your profile:
 - [x] Ensure clean restore: On borg docker switch, automatically terminate any existing connections to the target database to prevent restore failures.
 - [x] Run user custom scripts
 - [x] Choice to remove automatically older versions of BORG;
-- [x] Borg doctor (will check for mandatory and optional third-party tools required for operation)
+- [x] Borg doctor (will check for mandatory and optional third-party tools required for operation *and** offers to clean up old installed versions)
 - [x] Restore from bacpac
 - [x] Kill process by port or name, optionally prompting for confirmation
 - [x] Obtain a .bacpac snapshot from a database selected via connection strings defined in `store.json → SqlServers`.

@@ -122,6 +122,9 @@ switch ($module) {
         }
     }
     default {
-        Write-Error "Unknown module command."
+        Write-Host ""
+        Write-Host "Unknown module or command: '$module $command'" -ForegroundColor Red
+        Write-Host "Run 'borg help' for usage info."
+        exit 1
     }
 }

@@ -69,3 +69,51 @@ Check-Tool -ToolName "micro" -IsMandatory:$false
 Write-Host "`n$separator" -ForegroundColor Cyan
 Write-Host "  Doctor check complete. Review above results." -ForegroundColor Cyan
 Write-Host $separator -ForegroundColor Cyan
+
+
+# --- Check for old versions ---
+Write-Host "`n  Checking for installed Borg versions..."
+
+$borgModulePath = Join-Path $env:USERPROFILE "Documents\PowerShell\Modules\Borg"
+if (Test-Path $borgModulePath) {
+    $versions = Get-ChildItem -Path $borgModulePath -Directory | Sort-Object Name
+    if ($versions.Count -le 1) {
+        Write-Host "  Only one version found. No cleanup needed." -ForegroundColor Green
+    }
+    else {
+        Write-Host "  Installed versions:" -ForegroundColor Yellow
+        foreach ($v in $versions) {
+            Write-Host "    - $($v.Name)"
+        }
+
+        $currentScriptPath = $MyInvocation.MyCommand.Path
+        $currentVersion = Split-Path -Parent $currentScriptPath | Split-Path -Leaf
+
+        Write-Host "`n  Current version in use: $currentVersion"
+
+        $toDelete = $versions | Where-Object { $_.Name -ne $currentVersion }
+        Write-Host "  Older versions that can be removed:"
+        foreach ($v in $toDelete) {
+            Write-Host "    - $($v.Name)" -ForegroundColor DarkGray
+        }
+
+        $choice = Read-Host "`n  Do you want to remove older versions? (y/n)"
+        if ($choice -eq 'y') {
+            foreach ($v in $toDelete) {
+                try {
+                    Remove-Item -Recurse -Force -Path $v.FullName
+                    Write-Host "  Removed: $($v.Name)" -ForegroundColor Green
+                }
+                catch {
+                    Write-Host "  Failed to remove $($v.Name): $($_.Exception.Message)" -ForegroundColor Red
+                }
+            }
+        }
+        else {
+            Write-Host "  Skipped cleanup." -ForegroundColor DarkYellow
+        }
+    }
+}
+else {
+    Write-Host "  Borg module folder not found at: $borgModulePath" -ForegroundColor Red
+}

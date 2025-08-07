@@ -131,14 +131,18 @@ while ($true) {
                 $psi.FileName = "pwsh"
     
                 # Detect if it's a script execution (starts with pwsh -File ...)
-                if ($command -match '^-File\s+"?(.+?\.ps1)"?\s*(.*)') {
-                    $scriptPath = $matches[1]
-                    $scriptArgs = $matches[2]
+                if ($command -match '\-File\s+("?)(.+?\.ps1)\1\s*(.*)') {
+                    $scriptPath = $matches[2]
+                    $scriptArgs = $matches[3].Trim()
 
-                    $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$scriptPath`" $scriptArgs"
+                    Log "Detected script execution: path=$scriptPath args=$scriptArgs"
+
+                    $quotedPath = '"' + $scriptPath + '"'
+                    $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $quotedPath $scriptArgs"
                 }
                 else {
                     # Treat as raw command
+                    Log "Executing raw command"
                     $psi.Arguments = "-NoLogo -NoProfile -NonInteractive -Command `"& { $command }`""
                 }
 
