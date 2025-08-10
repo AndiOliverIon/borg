@@ -22,6 +22,10 @@ if (-not $module) {
 }
 
 switch ($module) {
+    'agent' {
+        # & "$scriptsRoot\agent\bagent.ps1"
+        pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\borg\scripts\win\agent\bagent.ps1
+    }
     'bookmark' {
         & "$env:BORG_ROOT\bookmark.ps1"
     }
