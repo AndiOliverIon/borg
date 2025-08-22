@@ -54,6 +54,11 @@ switch ($module) {
             'upload' { & "$networkRoot\gdrive-upload.ps1" }
         }
     }
+    'git' {
+        switch ($command) {
+            'status' { & "$gitFolder\status.ps1" }
+        }
+    }
     'help' {
         & "$env:BORG_ROOT\help.ps1"
     }

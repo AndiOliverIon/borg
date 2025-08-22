@@ -106,6 +106,7 @@ function _Invoke-BorgEntry {
             "iofc"  = "io folder-clean"
             "ssd"   = "sys shutdown"
             "sr"    = "sys restart"
+            "gs"    = "git status"
         }
 
         $argsJoined = $module, $command

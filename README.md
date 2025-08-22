@@ -180,6 +180,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
 | `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
+| `borg git status`           | `borg gs`                 | Quick glance of the git status on current repository |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
 | `borg idea "<text>"`            | N/A                   | Add a new idea to your local list (default: todo) |
 | `borg idea list`            | N/A                       | View all ideas (fzf), toggle status (todo/done) |
@@ -491,6 +492,7 @@ To clean it from your profile:
 - [x] List and terminate processes using name-based matching
 - [x] Add scripts to custom scripts run with Borg by `borg run add`. Will allow to add scripts from current location
 - [x] Add lightweight idea logger with todo/done tracking (borg idea)
+- [x] Quick glance of git status on current repository
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
