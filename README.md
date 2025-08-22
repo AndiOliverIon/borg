@@ -205,6 +205,64 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 ---
 
+## 🧩 Contributing Plugins (Custom Scripts)
+
+BORG is designed to be extensible. You can add your own scripts — or use ones shared by others — without modifying the core system. These scripts behave like **plugins** and are managed through the `borg run` command.
+
+### 📂 Where to Place Plugins
+Custom scripts live in your `$CustomScriptsFolder`. By default, you can set this in your PowerShell profile or inside `globalfn.ps1`:
+
+```powershell
+$CustomScriptsFolder = "$env:USERPROFILE\borg-scripts"
+```
+
+Any `.ps1` file placed here automatically becomes available through `borg run`.
+
+---
+
+### ➕ Adding a Script
+From any folder, you can add a script to your custom scripts folder with:
+
+```powershell
+borg run add
+```
+
+This copies the chosen script into `$CustomScriptsFolder`, with overwrite confirmation if a file already exists.
+
+---
+
+### ▶️ Running a Script
+Use `borg run` to browse and execute your available custom scripts interactively via **fzf**.
+
+```powershell
+borg run
+```
+
+---
+
+### 🌍 Sharing Your Plugins
+If you’ve written a plugin that others might find useful, we encourage you to contribute it back!  
+
+You can:
+- Fork this repository, create a branch, and add your script(s) under the guidelines below.  
+- Submit a Pull Request for review.  
+
+This way, all plugins remain part of the main project and benefit the entire community.
+
+---
+
+### ✅ Guidelines for Writing Plugins
+- Scripts should be **PowerShell `.ps1` files**.  
+- Keep them **idempotent** where possible (safe to run multiple times).  
+- Follow borg’s **logging style** (use `Write-Host` with emoji/log prefixes if you want consistency).  
+- Accept input parameters where useful — don’t hardcode values.  
+
+---
+
+This system makes BORG more than just a toolkit — it becomes a **framework** you and others can extend as workflows evolve.
+
+---
+
 ##   How It Works
 
 BORG is a modular CLI automation toolkit. It works by chaining interactive PowerShell scripts and terminal tools to manage and orchestrate tasks like:
