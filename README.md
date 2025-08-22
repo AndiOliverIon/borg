@@ -180,6 +180,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
 | `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
+| `borg git status`           | `borg gs`                 | Quick glance of the git status on current repository |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
 | `borg idea "<text>"`            | N/A                   | Add a new idea to your local list (default: todo) |
 | `borg idea list`            | N/A                       | View all ideas (fzf), toggle status (todo/done) |
@@ -202,6 +203,64 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
  
+
+---
+
+## 🧩 Contributing Plugins (Custom Scripts)
+
+BORG is designed to be extensible. You can add your own scripts — or use ones shared by others — without modifying the core system. These scripts behave like **plugins** and are managed through the `borg run` command.
+
+### 📂 Where to Place Plugins
+Custom scripts live in your `$CustomScriptsFolder`. By default, you can set this in your PowerShell profile or inside `globalfn.ps1`:
+
+```powershell
+$CustomScriptsFolder = "$env:USERPROFILE\borg-scripts"
+```
+
+Any `.ps1` file placed here automatically becomes available through `borg run`.
+
+---
+
+### ➕ Adding a Script
+From any folder, you can add a script to your custom scripts folder with:
+
+```powershell
+borg run add
+```
+
+This copies the chosen script into `$CustomScriptsFolder`, with overwrite confirmation if a file already exists.
+
+---
+
+### ▶️ Running a Script
+Use `borg run` to browse and execute your available custom scripts interactively via **fzf**.
+
+```powershell
+borg run
+```
+
+---
+
+### 🌍 Sharing Your Plugins
+If you’ve written a plugin that others might find useful, we encourage you to contribute it back!  
+
+You can:
+- Fork this repository, create a branch, and add your script(s) under the guidelines below.  
+- Submit a Pull Request for review.  
+
+This way, all plugins remain part of the main project and benefit the entire community.
+
+---
+
+### ✅ Guidelines for Writing Plugins
+- Scripts should be **PowerShell `.ps1` files**.  
+- Keep them **idempotent** where possible (safe to run multiple times).  
+- Follow borg’s **logging style** (use `Write-Host` with emoji/log prefixes if you want consistency).  
+- Accept input parameters where useful — don’t hardcode values.  
+
+---
+
+This system makes BORG more than just a toolkit — it becomes a **framework** you and others can extend as workflows evolve.
 
 ---
 
@@ -433,6 +492,7 @@ To clean it from your profile:
 - [x] List and terminate processes using name-based matching
 - [x] Add scripts to custom scripts run with Borg by `borg run add`. Will allow to add scripts from current location
 - [x] Add lightweight idea logger with todo/done tracking (borg idea)
+- [x] Quick glance of git status on current repository
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations

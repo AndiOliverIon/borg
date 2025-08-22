@@ -17,7 +17,7 @@ Write-Host "   SQL Docker Restore Process Initiated" -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkCyan
 Write-Host ""
 Write-Host "Container: $ContainerName"
-Write-Host "Backup file:: $BackupFile"
+Write-Host "Backup file: $BackupFile"
 
 . "$env:BORG_ROOT\config\globalfn.ps1"
 
@@ -26,12 +26,12 @@ if (-not $ContainerName) {
     $ContainerName = $dockerContainer
 }
 
-#   No backup file provided → prompt for selection
+# No backup file provided → prompt for selection
 if (-not $BackupFile) {
-    Write-Host "📡 No backup file specified. Scanning '$backupPath' in container '$ContainerName'..." -ForegroundColor Yellow
+    Write-Host "📡 No backup file specified. Scanning '$dockerBackupPath' in container '$ContainerName'..." -ForegroundColor Yellow
 
     try {
-        $backupListCommand = "ls -1 $backupPath/*.bak"
+        $backupListCommand = "ls -1 $dockerBackupPath/*.bak"
         $backupList = docker exec $ContainerName bash -c $backupListCommand
 
         if ($LASTEXITCODE -ne 0) {
@@ -61,7 +61,7 @@ if (-not $BackupFile) {
         }
 
         $BackupFile = $selectedFile
-        $proposed = $BackupFile -split '_' | Select-Object -First 1
+        # Don't set $proposed here; we normalize once below.
     }
     catch {
         Write-Host "  Error retrieving backup list. Details: $_" -ForegroundColor Red
@@ -69,7 +69,7 @@ if (-not $BackupFile) {
     }
 }
 
-# 🧩 Composite backup handling
+# 🧩 Composite backup handling (e.g., MyDb_2025-08-10_1200.bak → MyDb.bak)
 if ($BackupFile -match '_') {
     $baseBackupFile = ($BackupFile -split '_')[0] + ".bak"
     $backupFilePath = "$dockerBackupPath/$baseBackupFile"
@@ -97,9 +97,12 @@ if ($BackupFile -match '_') {
 Write-Host "`n🎯 Selected backup file: '$BackupFile'" -ForegroundColor Green
 Write-Host "  Starting restore in container: '$ContainerName'" -ForegroundColor Cyan
 
-#   Execute restore
 try {
-    $executeCommand = "$dockerBackupPath/restore_database.sh '$BackupFile' '$SqlPassword' '$proposed'"
+    # ✅ Derive DB name deterministically from ($proposed ?? $BackupFile)
+    $dbNameSource = if ([string]::IsNullOrWhiteSpace($proposed)) { $BackupFile } else { $proposed }
+    $DbName = ([IO.Path]::GetFileNameWithoutExtension($dbNameSource) -split '_')[0]
+
+    $executeCommand = "$dockerBackupPath/restore_database.sh '$BackupFile' '$SqlPassword' '$DbName'"
     Write-Host "`n  Executing restore command:" -ForegroundColor Yellow
     if (-not $demoMode) {
         Write-Host "   $executeCommand" -ForegroundColor DarkGray

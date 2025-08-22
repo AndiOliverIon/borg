@@ -22,23 +22,28 @@ if [[ ! -f "$BACKUP_PATH" ]]; then
     exit 1
 fi
 
-# Determine final database name
-DB_NAME="${PROPOSED_DATABASE_NAME:-${BACKUP_FILE%%.*}}"
+# Determine final database name (strip extension robustly)
+BASE_FROM_FILE="${BACKUP_FILE%%.*}"
+if [[ -n "$PROPOSED_DATABASE_NAME" ]]; then
+  DB_NAME="${PROPOSED_DATABASE_NAME%.*}"
+else
+  DB_NAME="$BASE_FROM_FILE"
+fi
 
 echo "  Preparing SQL restore script for database: $DB_NAME"
 
 # Generate the restore SQL script
 cat >"$SQL_FILE" <<EOF
--- 🛑 Kill existing connections
+-- 🛑 Kill existing connections if DB exists
 IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'$DB_NAME')
 BEGIN
     EXEC('ALTER DATABASE [$DB_NAME] SET SINGLE_USER WITH ROLLBACK IMMEDIATE');
-END
+END;
 
 DECLARE @backupFile NVARCHAR(MAX) = N'$BACKUP_PATH';
-DECLARE @dbName NVARCHAR(MAX) = N'$DB_NAME';
-DECLARE @dataPath NVARCHAR(MAX) = N'$DATA_PATH';
-DECLARE @sql NVARCHAR(MAX) = N'RESTORE DATABASE [' + @dbName + N'] FROM DISK = ''' + @backupFile + N''' WITH ';
+DECLARE @dbName     NVARCHAR(MAX) = N'$DB_NAME';
+DECLARE @dataPath   NVARCHAR(MAX) = N'$DATA_PATH';
+DECLARE @sql        NVARCHAR(MAX) = N'RESTORE DATABASE [' + @dbName + N'] FROM DISK = ''' + @backupFile + N''' WITH ';
 
 DECLARE @files TABLE (
     LogicalName NVARCHAR(128),
@@ -68,6 +73,7 @@ DECLARE @files TABLE (
 INSERT INTO @files
 EXEC('RESTORE FILELISTONLY FROM DISK = ''' + @backupFile + '''');
 
+-- Build MOVE list based on logical names (kept stable to overwrite same files)
 SELECT @sql += STRING_AGG(
     'MOVE N''' + LogicalName + ''' TO N''' + @dataPath + '/' +
     REPLACE(LogicalName, ' ', '_') + 
@@ -80,18 +86,22 @@ PRINT '  Executing SQL:';
 PRINT @sql;
 EXEC (@sql);
 
---   Revert to multi-user
-EXEC('ALTER DATABASE [' + @dbName + '] SET MULTI_USER');
+-- Revert to multi-user
+IF EXISTS (SELECT 1 FROM sys.databases WHERE name = N'$DB_NAME')
+BEGIN
+    EXEC('ALTER DATABASE [' + @dbName + '] SET MULTI_USER');
+END;
 EOF
 
-# Execute the SQL script using encryption trust override
 echo "  Restoring database..."
-$SQLCMD -S localhost -U sa -P "$SA_PASSWORD" -C -N -i "$SQL_FILE"
+# -b: Terminate and return non-zero exit code on error
+$SQLCMD -S localhost -U sa -P "$SA_PASSWORD" -C -N -b -i "$SQL_FILE"
+exit_code=$?
 
-if [[ $? -eq 0 ]]; then
+if [[ $exit_code -eq 0 ]]; then
     echo "  Database '$DB_NAME' restored successfully."
     exit 0
 else
-    echo "  Restore failed."
-    exit 1
+    echo "  Restore failed. (sqlcmd exit code: $exit_code)"
+    exit $exit_code
 fi

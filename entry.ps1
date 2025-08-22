@@ -22,6 +22,10 @@ if (-not $module) {
 }
 
 switch ($module) {
+    'agent' {
+        pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass `
+            -File "$scriptsRoot\agent\bagent.ps1" $command
+    }
     'bookmark' {
         & "$env:BORG_ROOT\bookmark.ps1"
     }
@@ -48,6 +52,11 @@ switch ($module) {
     'gdrive' {
         switch ($command) {
             'upload' { & "$networkRoot\gdrive-upload.ps1" }
+        }
+    }
+    'git' {
+        switch ($command) {
+            'status' { & "$gitFolder\status.ps1" }
         }
     }
     'help' {
