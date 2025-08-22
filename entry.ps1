@@ -57,6 +57,7 @@ switch ($module) {
     'git' {
         switch ($command) {
             'status' { & "$gitFolder\status.ps1" }
+            'log' { & "$gitFolder\log.ps1" }
         }
     }
     'help' {
