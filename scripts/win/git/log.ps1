@@ -1,36 +1,23 @@
+
 <#
 .SYNOPSIS
-  Block-style, colored git log for Borg (last N commits).
-
-.DESCRIPTION
-  - Header: Repo, Branch (upstream, ↑/↓)
-  - Each commit shown as a readable block with colors
-  - Separators between commits
-  - Shows last 5 by default; override with -Count N
-
-.PARAMETER Count
-  How many commits to display (default: 10).
-
-.EXAMPLE
-  borg gl                 # last 5
-  borg gl -Count 25       # last 25
+  Block-style, colored git log for Borg (last N commits) with keyboard navigation.
 #>
 
 [CmdletBinding()]
 param(
+  [Parameter(Position=0)]
   [int]$Count = 5
 )
 
-# --- helpers ---
-function W-Info($m){ Write-Host $m -ForegroundColor Cyan }
-function W-Err($m){ Write-Host $m -ForegroundColor Red }
-function W-Warn($m){ Write-Host $m -ForegroundColor Yellow }
-function W-Dim($m){ Write-Host $m -ForegroundColor DarkGray }
-function W-Head($label, $value){
-  Write-Host ("{0,-8}: " -f $label) -NoNewline -ForegroundColor Cyan
-  Write-Host $value -ForegroundColor White
+# Allow positional "b gl 20" even if a wrapper passes raw args.
+if (-not $PSBoundParameters.ContainsKey('Count') -and $args.Count -ge 1) {
+  if ($args[0] -as [int]) { $Count = [int]$args[0] }
 }
-function W-Sep { Write-Host ("-"*80) -ForegroundColor DarkGray }
+
+# sanitize count
+if ($Count -lt 1) { $Count = 5 }
+if ($Count -gt 200) { $Count = 200 }
 
 function Wrap-Text([string]$text, [int]$width) {
   if ([string]::IsNullOrWhiteSpace($text)) { return @("") }
@@ -69,18 +56,13 @@ function Simplify-Deco([string]$d) {
   return ($out -join ", ")
 }
 
-# sanitize count
-if ($Count -lt 1) { $Count = 5 }
-if ($Count -gt 200) { $Count = 200 } # cap to avoid huge outputs
-
 # --- ensure git/repo ---
-if (-not (Get-Command git -ErrorAction SilentlyContinue)) { W-Err "git not found in PATH."; exit 1 }
-
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Write-Host "git not found in PATH." -ForegroundColor Red; exit 1 }
 $top = git rev-parse --show-toplevel 2>$null
-if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($top)) { W-Err "Not inside a git repository."; exit 2 }
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($top)) { Write-Host "Not inside a git repository." -ForegroundColor Red; exit 2 }
 Set-Location $top | Out-Null
 
-# --- header (branch/upstream/ab) from porcelain v2 -b ---
+# header info from porcelain v2 -b
 $porcelainB = git status --porcelain=v2 -b
 $branch = ""; $upstream = ""; $ahead = 0; $behind = 0
 foreach ($l in $porcelainB) {
@@ -90,21 +72,24 @@ foreach ($l in $porcelainB) {
 }
 if (-not $branch) { $branch = (git rev-parse --abbrev-ref HEAD).Trim() }
 
-Write-Host ""
-W-Head "Repo" $top
-$branchLine = $branch
-if ($upstream) { $branchLine += " (upstream: $upstream, ↑$ahead ↓$behind)" }
-W-Head "Branch" $branchLine
-Write-Host ""
-W-Sep
-
-# --- log data ---
-# fields: sha US subj US author US rel US deco US parents RS
+# --- collect commits ---
 $fmt = "%h%x1f%s%x1f%an%x1f%ad%x1f%D%x1f%P%x1e"
 $raw = git log --decorate=short --date=relative --pretty=format:"$fmt" -n $Count
 $records = ($raw -split "\x1e") | Where-Object { $_ -and $_.Trim() -ne "" }
 
-$wrapWidth = 92
+# --- pre-render blocks into colored lines ---
+$lines = New-Object System.Collections.Generic.List[object]
+
+try { $win = $Host.UI.RawUI.WindowSize } catch { $win = @{ Width = 100; Height = 30 } }
+$sepWidth = [Math]::Max(40, $win.Width - 0)
+$wrapWidth = [Math]::Max(40, $win.Width - 12)
+
+$lines.Add([pscustomobject]@{ Text = ("Repo    : {0}" -f $top); Color = 'Cyan' })
+$branchLine = $branch
+if ($upstream) { $branchLine += " (upstream: $upstream, ↑$ahead ↓$behind)" }
+$lines.Add([pscustomobject]@{ Text = ("Branch  : {0}" -f $branchLine); Color = 'Cyan' })
+$lines.Add([pscustomobject]@{ Text = ""; Color = 'White' })
+$lines.Add([pscustomobject]@{ Text = ("".PadRight($sepWidth,'-')); Color = 'DarkGray' })
 
 foreach ($rec in $records) {
   $f = $rec -split "\x1f"
@@ -119,37 +104,70 @@ foreach ($rec in $records) {
   if ($parents -and ($parents -split '\s+').Count -gt 1) { $isMerge = $true }
   $deco = Simplify-Deco $decoRaw
 
-  # Block
-  Write-Host "* " -NoNewline -ForegroundColor White
-  Write-Host $sha -ForegroundColor Cyan
-
-  Write-Host ("  Author : ") -NoNewline -ForegroundColor DarkGray
-  Write-Host $author -ForegroundColor Yellow
-
-  Write-Host ("  When   : ") -NoNewline -ForegroundColor DarkGray
-  Write-Host $rel -ForegroundColor Green
+  $lines.Add([pscustomobject]@{ Text = ("* {0}" -f $sha); Color = 'Cyan' })
+  $lines.Add([pscustomobject]@{ Text = ("  Author : {0}" -f $author); Color = 'Yellow' })
+  $lines.Add([pscustomobject]@{ Text = ("  When   : {0}" -f $rel); Color = 'Green' })
 
   $wrapped = Wrap-Text $subj $wrapWidth
   if ($wrapped.Count -le 1) {
-    Write-Host ("  Commit : ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $subj -ForegroundColor White
+    $lines.Add([pscustomobject]@{ Text = ("  Commit : {0}" -f $subj); Color = 'White' })
   } else {
-    Write-Host ("  Commit : ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $wrapped[0] -ForegroundColor White
+    $lines.Add([pscustomobject]@{ Text = ("  Commit : {0}" -f $wrapped[0]); Color = 'White' })
     foreach ($ln in $wrapped[1..($wrapped.Count-1)]) {
-      Write-Host ("           ") -NoNewline -ForegroundColor DarkGray
-      Write-Host $ln -ForegroundColor White
+      $lines.Add([pscustomobject]@{ Text = ("           {0}" -f $ln); Color = 'White' })
     }
   }
 
-  if ($deco) {
-    Write-Host ("  Refs   : ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $deco -ForegroundColor Magenta
-  }
-  if ($isMerge) {
-    Write-Host ("  Merge  : ") -NoNewline -ForegroundColor DarkGray
-    Write-Host "yes" -ForegroundColor Red
-  }
+  if ($deco) { $lines.Add([pscustomobject]@{ Text = ("  Refs   : {0}" -f $deco); Color = 'Magenta' }) }
+  if ($isMerge) { $lines.Add([pscustomobject]@{ Text = ("  Merge  : yes"); Color = 'Red' }) }
 
-  W-Sep
+  $lines.Add([pscustomobject]@{ Text = ("".PadRight($sepWidth,'-')); Color = 'DarkGray' })
 }
+
+function Render([int]$offset) {
+  Clear-Host
+  try { $win = $Host.UI.RawUI.WindowSize } catch { $win = @{ Width = 100; Height = 30 } }
+  $footer = "↑/↓ line · PgUp/PgDn page · Home/End · Q/Esc to quit"
+  $visible = $win.Height - 2
+  if ($visible -lt 5) { $visible = 5 }
+  $end = [Math]::Min($offset + $visible, $lines.Count)
+  for ($i = $offset; $i -lt $end; $i++) {
+    $ln = $lines[$i]
+    Write-Host $ln.Text -ForegroundColor $ln.Color
+  }
+  Write-Host ("".PadRight($win.Width,' ')) -NoNewline
+  $Host.UI.RawUI.CursorPosition = @{X=0;Y=($win.Height-1)}
+  Write-Host $footer -ForegroundColor DarkGray
+}
+
+$offset = 0
+Render -offset $offset
+
+$quit = $false
+while (-not $quit) {
+  $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+  $vk  = $key.VirtualKeyCode
+
+  switch ($vk) {
+    38 { if ($offset -gt 0) { $offset-- } ; Render -offset $offset }                                 # Up
+    40 { if ($offset -lt [Math]::Max(0, $lines.Count-1)) { $offset++ } ; Render -offset $offset }    # Down
+    33 { $jump = [Math]::Max(1, ($Host.UI.RawUI.WindowSize.Height - 4))
+         $offset = [Math]::Max(0, $offset - $jump) ; Render -offset $offset }                        # PageUp
+    34 { $jump = [Math]::Max(1, ($Host.UI.RawUI.WindowSize.Height - 4))
+         $offset = [Math]::Min([Math]::Max(0,$lines.Count-1), $offset + $jump) ; Render -offset $offset } # PageDown
+    36 { $offset = 0 ; Render -offset $offset }                                                      # Home
+    35 { $offset = [Math]::Max(0, $lines.Count-1) ; Render -offset $offset }                         # End
+
+    27 { $quit = $true }                                                                             # Esc
+    13 { $quit = $true }                                                                             # Enter
+    81 { $quit = $true }                                                                             # 'Q' key (VirtualKeyCode)
+    default {
+      # Some hosts only set Character for letters; support q/Q here too
+      if ($key.Character -eq 'q' -or $key.Character -eq 'Q') {
+        $quit = $true
+      }
+    }
+  }
+}
+
+Clear-Host
