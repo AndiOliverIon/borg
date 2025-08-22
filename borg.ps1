@@ -1,5 +1,6 @@
 # borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
-function _Invoke-BorgEntry {
+# borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
+function _InvokeBorgEntry {
     # Parse raw tokens (no named params on purpose)
     [string]$module = $null
     [string]$command = $null
@@ -83,15 +84,13 @@ function _Invoke-BorgEntry {
 
     # ===== Alias resolver (fixed) =====
     function Resolve-BorgAlias {
-        param(
-            [Parameter(Mandatory)]
-            [string[]]$Tokens
-        )
+        param([Parameter(Mandatory)][string[]]$Tokens)
 
         $map = @{
             # Two-word combos FIRST (highest precedence)
             "b gl" = "git log"
             "b gs" = "git status"
+            "b b"  = "bookmark"   # legacy muscle-memory: `b b` == `bookmark`
 
             # One-word aliases
             "b"     = "bookmark"
@@ -112,8 +111,8 @@ function _Invoke-BorgEntry {
             "gl"    = "git log"
         }
 
-        # Normalize token list
-        $Tokens = $Tokens | Where-Object { $_ -ne $null }
+        # Normalize (trim & drop empties)
+        $Tokens = @($Tokens | Where-Object { $_ -ne $null } | ForEach-Object { $_.ToString().Trim() }) 
         if ($Tokens.Count -eq 0) { return @() }
 
         $twoKey = if ($Tokens.Count -ge 2) { ("{0} {1}" -f $Tokens[0], $Tokens[1]).ToLower() } else { "" }
@@ -127,12 +126,10 @@ function _Invoke-BorgEntry {
             $repl = $map[$twoKey] -split ' '
             return $repl + $rest2
         }
-
         if ($map.ContainsKey($oneKey)) {
             $repl = $map[$oneKey] -split ' '
             return $repl + $rest1
         }
-
         return $Tokens
     }
 
@@ -142,9 +139,12 @@ function _Invoke-BorgEntry {
     if ($command)   { $tokens += $command }
     if ($extraArgs) { $tokens += $extraArgs }
 
-    # Resolve aliases and then re-split
+    # Resolve aliases
     $resolved = Resolve-BorgAlias -Tokens $tokens
+    # Re-trim in case a mapping produced spaces (paranoia)
+    $resolved = @($resolved | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ -ne "" })
 
+    # Re-split into module / command / extraArgs
     $module    = if ($resolved.Count -ge 1) { $resolved[0] } else { $null }
     $command   = if ($resolved.Count -ge 2) { $resolved[1] } else { $null }
     $extraArgs = if ($resolved.Count -gt 2) { $resolved[2..($resolved.Count - 1)] } else { @() }
@@ -154,4 +154,4 @@ function _Invoke-BorgEntry {
 }
 
 # Invoke with the original raw args
-_Invoke-BorgEntry @args
+_InvokeBorgEntry @args
