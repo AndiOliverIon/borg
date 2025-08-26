@@ -61,6 +61,7 @@ function Global:GetBorgStoreValue {
 $scriptsRoot = Join-Path $borgRoot "scripts\win"
 $dataRoot = Join-Path $borgRoot "data"
 $configRoot = Join-Path $borgRoot "config"
+$releaseNotesFolder = Join-Path $borgRoot "release-notes"
 
 # Host entry points
 $dockerFolder = Join-Path $scriptsRoot "docker"

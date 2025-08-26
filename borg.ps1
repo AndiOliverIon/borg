@@ -1,4 +1,65 @@
 # borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
+
+if (-not $env:BORG_ROOT) {
+    $env:BORG_ROOT = 'C:\borg'
+}
+
+if (-not $env:APPDATA -or -not (Test-Path $env:APPDATA)) {
+    $env:APPDATA = "C:\Users\$env:USERNAME\AppData\Roaming"
+}
+
+. "$env:BORG_ROOT\config\globalfn.ps1"
+
+function GetLatestReleaseNoteFile {
+    param([string]$Folder)
+
+    if (-not (Test-Path -LiteralPath $Folder)) { return $null }
+
+    # Accept: 0.2.31.md , 0.2.31md , 0.2.31.markdown , 0.2.31markdown
+    $pattern = '^(?<ver>\d+(?:\.\d+){1,3})(?:\.?md|\.?markdown)$'
+
+    $candidates = Get-ChildItem -LiteralPath $Folder -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match $pattern } |
+        ForEach-Object {
+            $ver = $null
+            if ([Version]::TryParse($Matches['ver'], [ref]$ver)) {
+                [pscustomobject]@{
+                    Version = $ver
+                    File    = $_
+                }
+            }
+        }
+
+    if (-not $candidates) { return $null }
+
+    # Highest semantic version wins
+    $candidates | Sort-Object Version -Descending | Select-Object -First 1
+}
+function ShowReleaseNotes {
+    param([string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+
+    Write-Host "`n===== Release Notes =====" -ForegroundColor Cyan
+
+    $lines = Get-Content -LiteralPath $Path
+    foreach ($line in $lines) {
+        if ($line -match '^\s*#\s*(.*)') {
+            Write-Host $line -ForegroundColor Yellow
+        }
+        elseif ($line -match '^\s*##\s*(.*)') {
+            Write-Host $line -ForegroundColor Green
+        }
+        elseif ($line -match '^\s*###\s*(.*)') {
+            Write-Host $line -ForegroundColor Magenta
+        }
+        else {
+            Write-Host "  $line" -ForegroundColor Gray
+        }
+    }
+
+    Write-Host "=========================`n" -ForegroundColor Cyan
+}
 function _InvokeBorgEntry {
     # Parse raw tokens (no named params on purpose)
     [string]$module = $null
@@ -72,7 +133,25 @@ function _InvokeBorgEntry {
     if ($args.Count -eq 1 -and $args[0] -eq 'update') {
         Write-Host "`n   Updating BORG module from PowerShell Gallery..." -ForegroundColor Cyan
         try {
-            Update-Module -Name Borg -Force -Scope CurrentUser -ErrorAction Stop
+            # Update-Module -Name Borg -Force -Scope CurrentUser -ErrorAction Stop
+
+            # --- Show latest local release note ---
+            $latestNote = GetLatestReleaseNoteFile -Folder $releaseNotesFolder
+            if ($latestNote) {
+                # Print file contents
+                ShowReleaseNotes -Path $latestNote.File.FullName
+
+                # Optional: offer to open in micro (comment out if you prefer pure console)
+                # Write-Host "`n  Open in micro? [Y/n]: " -NoNewline
+                # $key = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+                # if ($key.Character -eq 'y' -or $key.Character -eq 'Y' -or $key.Character -eq 13) {
+                #     micro $latestNote.File.FullName
+                # }
+            }
+            else {
+                Write-Host "  No local release notes found in: $releaseNotesFolder" -ForegroundColor DarkGray
+            }
+            
             Write-Host "  Update complete. Please restart your terminal to use the new version." -ForegroundColor Green
         }
         catch {
