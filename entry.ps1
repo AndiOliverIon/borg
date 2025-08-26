@@ -1,3 +1,11 @@
+# entry.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
+
+param(
+    [string]  $module,
+    [string]  $command,
+    [string[]]$extraArgs
+)
+
 if (-not $env:BORG_ROOT) {
     $env:BORG_ROOT = 'C:\borg'
 }
@@ -57,7 +65,7 @@ switch ($module) {
     'git' {
         switch ($command) {
             'status' { & "$gitFolder\status.ps1" }
-            'log' { & "$gitFolder\log.ps1" @extraArgs}
+            'log' { & "$gitFolder\log.ps1" @extraArgs }
         }
     }
     'help' {
@@ -112,6 +120,19 @@ switch ($module) {
             'bacpac' { & "$networkRoot\database\export-bacpac.ps1" }
             'wifi' { & "$networkRoot\wifi.ps1" $extraArgs }
         }
+    }
+    'note' {
+        if (-not $command) {
+            Write-Host "Usage: borg note <add|search|show|edit|rm> [...args]"
+            return
+        }
+
+        $arg1 = $null
+        $arg2 = $null
+        if ($extraArgs.Count -ge 1) { $arg1 = $extraArgs[0] }  # title, or query/id
+        if ($extraArgs.Count -ge 2) { $arg2 = $extraArgs[1] }  # description (for add)
+
+        & "$sysFolder\note.ps1" -Action $command -Arg1 $arg1 -Arg2 $arg2
     }
     'q' {
         & "$env:BORG_ROOT\q.ps1"

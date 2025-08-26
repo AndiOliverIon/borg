@@ -1,5 +1,4 @@
 # borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
-# borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
 function _InvokeBorgEntry {
     # Parse raw tokens (no named params on purpose)
     [string]$module = $null
@@ -91,7 +90,7 @@ function _InvokeBorgEntry {
             "b gl" = "git log"
             "b gs" = "git status"
             "b b"  = "bookmark"   # legacy muscle-memory: `b b` == `bookmark`
-
+            
             # One-word aliases
             "b"     = "bookmark"
             "db"    = "docker bash"
@@ -102,13 +101,14 @@ function _InvokeBorgEntry {
             "du"    = "docker upload"
             "ds"    = "docker switch"
             "dsnap" = "docker snapshot"
-            "n"     = "network"
+            "ne"     = "network"
             "js"    = "jump store"
             "iofc"  = "io folder-clean"
             "ssd"   = "sys shutdown"
             "sr"    = "sys restart"
             "gs"    = "git status"
             "gl"    = "git log"
+            "n"     = "note"
         }
 
         # Normalize (trim & drop empties)

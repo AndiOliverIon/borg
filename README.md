@@ -194,6 +194,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg network bacpac`       | N/A                       | Export a `.bacpac` snapshot from any SQL Server defined in `store.json → SqlServers`, saved to `SqlBackupDefault` folder |
 | `borg network kill`         | N/A                       | Kill processes by port (e.g., 80) or name (e.g., firefox), with optional interactive confirmation (`-c`) |
 | `borg network wifi`         | 'b n wifi'                | Toggle saved Wi-Fi profiles (connect/disconnect with fzf & verification) |
+| `borg note` | N/A | Minimal notes: title = filename, unique titles, stored in `%APPDATA%\Borg\notes`. `add`, `search`, `show`, `edit`, `rm`. `search`/`show` use **fzf**; **Enter prints description**. |
 | `borg process get`          | N/A                       | Get a friendly list of all processes that matches the name sent as parameter |
 | `borg process kill`         | N/A                       | Kills all processes, except the current one that matches the name sent as parameter |
 | `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
@@ -493,6 +494,7 @@ To clean it from your profile:
 - [x] Add scripts to custom scripts run with Borg by `borg run add`. Will allow to add scripts from current location
 - [x] Add lightweight idea logger with todo/done tracking (borg idea)
 - [x] Quick glance of git status on current repository
+- [x] Borg notes (notes that remains until deleted and are easy searchable)
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
