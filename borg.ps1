@@ -1,16 +1,15 @@
 # borg.ps1 — Safe launcher, compatible with Windows PowerShell 5.1
-function _Invoke-BorgEntry {
-    # Use raw args instead of named parameters
+function _InvokeBorgEntry {
+    # Parse raw tokens (no named params on purpose)
     [string]$module = $null
     [string]$command = $null
     [string[]]$extraArgs = @()
-
 
     if ($args.Count -ge 1) { $module = $args[0] }
     if ($args.Count -ge 2) { $command = $args[1] }
     if ($args.Count -ge 3) { $extraArgs = $args[2..($args.Count - 1)] }
 
-    # Check PowerShell version
+    # --- Runtime prerequisite checks (early exit on legacy PS) ---
     if ($PSVersionTable.PSVersion.Major -lt 7) {
         Write-Warning "BORG requires PowerShell 7.5.1 or later."
 
@@ -51,7 +50,7 @@ function _Invoke-BorgEntry {
         exit 1
     }
 
-    # --version
+    # --- Self version info ---
     if ($args -contains '--version' -or $args -contains '-v') {
         $moduleName = 'Borg'
         $installed = (Get-Module $moduleName -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1).Version
@@ -69,7 +68,7 @@ function _Invoke-BorgEntry {
         exit
     }
 
-    # update
+    # --- Self update shortcut ---
     if ($args.Count -eq 1 -and $args[0] -eq 'update') {
         Write-Host "`n   Updating BORG module from PowerShell Gallery..." -ForegroundColor Cyan
         try {
@@ -82,16 +81,17 @@ function _Invoke-BorgEntry {
         exit
     }
 
+    # ===== Alias resolver (fixed) =====
+    function Resolve-BorgAlias {
+        param([Parameter(Mandatory)][string[]]$Tokens)
 
-    function ResolveBorgAlias {
-        param(
-            [Parameter(Mandatory)]
-            [string]$module,
-
-            [string]$command
-        )
-        
         $map = @{
+            # Two-word combos FIRST (highest precedence)
+            "b gl" = "git log"
+            "b gs" = "git status"
+            "b b"  = "bookmark"   # legacy muscle-memory: `b b` == `bookmark`
+            
+            # One-word aliases
             "b"     = "bookmark"
             "db"    = "docker bash"
             "dr"    = "docker restore"
@@ -101,40 +101,57 @@ function _Invoke-BorgEntry {
             "du"    = "docker upload"
             "ds"    = "docker switch"
             "dsnap" = "docker snapshot"
-            "n"     = "network"
+            "ne"     = "network"
             "js"    = "jump store"
             "iofc"  = "io folder-clean"
             "ssd"   = "sys shutdown"
             "sr"    = "sys restart"
             "gs"    = "git status"
+            "gl"    = "git log"
+            "n"     = "note"
         }
 
-        $argsJoined = $module, $command
-        $twoWords = if ($argsJoined.Count -ge 2) { "$($argsJoined[0]) $($argsJoined[1])".ToLower() } else { "" }
-        $oneWord = if ($argsJoined.Count -ge 1) { $argsJoined[0].ToLower() } else { "" }
+        # Normalize (trim & drop empties)
+        $Tokens = @($Tokens | Where-Object { $_ -ne $null } | ForEach-Object { $_.ToString().Trim() }) 
+        if ($Tokens.Count -eq 0) { return @() }
 
-        if ($map.ContainsKey($twoWords)) {
-            #Write-Host "  Matched 2-word alias: $twoWords → $($map[$twoWords])"
-            $repl = $map[$twoWords] -split ' '
-            return $repl + $Args[2..($Args.Count - 1)]
-        }
+        $twoKey = if ($Tokens.Count -ge 2) { ("{0} {1}" -f $Tokens[0], $Tokens[1]).ToLower() } else { "" }
+        $oneKey = $Tokens[0].ToLower()
 
-        if ($map.ContainsKey($oneWord)) {
-            #Write-Host "  Matched 1-word alias: $oneWord → $($map[$oneWord])"
-            $repl = $map[$oneWord] -split ' '
-            return $repl + $Args[1..($Args.Count - 1)]
+        # Remainders
+        $rest2  = if ($Tokens.Count -gt 2) { $Tokens[2..($Tokens.Count-1)] } else { @() }
+        $rest1  = if ($Tokens.Count -gt 1) { $Tokens[1..($Tokens.Count-1)] } else { @() }
+
+        if ($twoKey -and $map.ContainsKey($twoKey)) {
+            $repl = $map[$twoKey] -split ' '
+            return $repl + $rest2
         }
-    
-        #Write-Host "  No alias match for: $argsJoined"
-        return $Args
+        if ($map.ContainsKey($oneKey)) {
+            $repl = $map[$oneKey] -split ' '
+            return $repl + $rest1
+        }
+        return $Tokens
     }
 
-    $resolved = ResolveBorgAlias $module $command
-    if ($resolved.Count -ge 2) {
-        $module = $resolved[0]
-        $command = $resolved[1]
-    }
-    # PowerShell 7+ confirmed — load main logic
+    # Build full token list from what the user typed
+    $tokens = @()
+    if ($module)    { $tokens += $module }
+    if ($command)   { $tokens += $command }
+    if ($extraArgs) { $tokens += $extraArgs }
+
+    # Resolve aliases
+    $resolved = Resolve-BorgAlias -Tokens $tokens
+    # Re-trim in case a mapping produced spaces (paranoia)
+    $resolved = @($resolved | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ -ne "" })
+
+    # Re-split into module / command / extraArgs
+    $module    = if ($resolved.Count -ge 1) { $resolved[0] } else { $null }
+    $command   = if ($resolved.Count -ge 2) { $resolved[1] } else { $null }
+    $extraArgs = if ($resolved.Count -gt 2) { $resolved[2..($resolved.Count - 1)] } else { @() }
+
+    # Hand off to main entry
     . "$PSScriptRoot\entry.ps1" -module $module -command $command -extraArgs $extraArgs
 }
-_Invoke-BorgEntry @args
+
+# Invoke with the original raw args
+_InvokeBorgEntry @args
