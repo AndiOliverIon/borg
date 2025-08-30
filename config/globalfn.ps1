@@ -54,7 +54,19 @@ function Global:GetBorgStoreValue {
     return $value
 }
 
-
+function CopyToClipboard([string]$Text) {
+  try {
+    $Text | Set-Clipboard
+    return $true
+  } catch {
+    try {
+      $Text | clip
+      return $true
+    } catch {
+      return $false
+    }
+  }
+}
 
 # Fixed entry points
 

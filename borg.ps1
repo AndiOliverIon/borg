@@ -133,20 +133,12 @@ function _InvokeBorgEntry {
     if ($args.Count -eq 1 -and $args[0] -eq 'update') {
         Write-Host "`n   Updating BORG module from PowerShell Gallery..." -ForegroundColor Cyan
         try {
-            # Update-Module -Name Borg -Force -Scope CurrentUser -ErrorAction Stop
+            Update-Module -Name Borg -Force -Scope CurrentUser -ErrorAction Stop
 
             # --- Show latest local release note ---
             $latestNote = GetLatestReleaseNoteFile -Folder $releaseNotesFolder
             if ($latestNote) {
-                # Print file contents
                 ShowReleaseNotes -Path $latestNote.File.FullName
-
-                # Optional: offer to open in micro (comment out if you prefer pure console)
-                # Write-Host "`n  Open in micro? [Y/n]: " -NoNewline
-                # $key = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
-                # if ($key.Character -eq 'y' -or $key.Character -eq 'Y' -or $key.Character -eq 13) {
-                #     micro $latestNote.File.FullName
-                # }
             }
             else {
                 Write-Host "  No local release notes found in: $releaseNotesFolder" -ForegroundColor DarkGray
