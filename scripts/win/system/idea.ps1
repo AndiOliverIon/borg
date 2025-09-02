@@ -20,73 +20,61 @@ function Add-Idea {
 }
 
 function List-Ideas {
-    # Write-Host "`n📌 [DEBUG] Starting List-Ideas" -ForegroundColor Cyan
-
     $linesRaw = Get-Content $logFile -Encoding UTF8
-    $lines = @($linesRaw)  # Force to array
-
-    # Write-Host "  ➤ Lines loaded: $($lines.Count)" -ForegroundColor Cyan
-
+    $lines = @($linesRaw)
     if (-not $lines -or $lines.Count -eq 0) {
         Write-Host "📭 No ideas logged yet." -ForegroundColor DarkGray
         return
     }
 
-    $selectedRaw = $lines | fzf --prompt "📌 Ideas > " --header "Enter to toggle todo/done"
-    if (-not $selectedRaw) {
-        # Write-Host "  ⚠ No selection made. Exiting." -ForegroundColor Yellow
+    # Build display: color by STATUS only (not by words in the text)
+    $display = for ($i = 0; $i -lt $lines.Count; $i++) {
+        $l = $lines[$i]
+        if ($l -match '^\[(?<ts>[^\]]+)\]\s+(?<status>todo|done)\s*\|\s*(?<text>.*)$') {
+            $colored = if ($matches['status'] -eq 'done') { "`e[32m$l`e[0m" } else { $l }
+            "{0}`t{1}" -f $colored, $i
+        } else {
+            # Fallback: unparsed line, no color
+            "{0}`t{1}" -f $l, $i
+        }
+    }
+
+    $selectedRaw = $display | fzf --ansi --delimiter "`t" --with-nth=1 `
+        --prompt "📌 Ideas > " --header "Enter to toggle todo/done"
+    if (-not $selectedRaw) { return }
+
+    $parts = $selectedRaw -split "`t", 2
+    if ($parts.Count -lt 2) {
+        Write-Host "❌ Could not parse selection." -ForegroundColor Red
         return
     }
+    $index = [int]$parts[1]
 
-    $selected = ($selectedRaw -join "") -as [string]
-    $normalizedSelected = $selected.Trim() -replace '\s+', ' '
+    $original = $lines[$index]
 
-    # Write-Host "  🔹 Selected (raw): [$selectedRaw]"
-    # Write-Host "  🔹 Selected (normalized): [$normalizedSelected]"
-
-    $index = -1
-    for ($i = 0; $i -lt $lines.Count; $i++) {
-        $current = $lines[$i]
-        $normalizedCurrent = $current.Trim() -replace '\s+', ' '
-
-        # Write-Host "    ↪ Comparing line :"
-        # Write-Host "       original  = [$current]"
-        # Write-Host "       normalized = [$normalizedCurrent]"
-
-        if ($normalizedCurrent -eq $normalizedSelected) {
-            $index = $i
-            # Write-Host "  ✅ Match found at index $i"
-            break
+    # Toggle only the STATUS token after the timestamp, before the '|'
+    if ($original -match '^\[[^\]]+\]\s+(?<status>todo|done)(\s*\|.*)$') {
+        $updated = if ($matches['status'] -eq 'todo') {
+            $original -replace '(^\[[^\]]+\]\s*)todo(\s*\|)', '${1}done${2}'
+        } else {
+            $original -replace '(^\[[^\]]+\]\s*)done(\s*\|)', '${1}todo${2}'
         }
+    } else {
+        $updated = $original
     }
 
-    if ($index -ge 0) {
-        $original = $lines[$index]
-        $updated = if ($original -match "\btodo\b") {
-            $original -replace "\btodo\b", "done"
-        }
-        elseif ($original -match "\bdone\b") {
-            $original -replace "\bdone\b", "todo"
-        }
-        else {
-            $original
-        }
+    $lines[$index] = $updated
+    Set-Content -Path $logFile -Value $lines -Encoding UTF8
 
-        # Write-Host "  🛠 Updating line:"
-        # Write-Host "     OLD: $original"
-        # Write-Host "     NEW: $updated"
-
-        $lines[$index] = $updated
-        Set-Content -Path $logFile -Value $lines -Encoding UTF8
-
-        $statusPart = ($updated -split '\|')[0].Trim()
-        Write-Host "🔁 Status toggled → $statusPart" -ForegroundColor Cyan
-    }
-    else {
-        Write-Host "❌ Could not find selected line in original list." -ForegroundColor Red
-    }
+    $statusPart = ($updated -split '\|')[0].Trim()
+    Write-Host "🔁 Status toggled → $statusPart" -ForegroundColor Cyan
 }
 
+function Reset-Ideas {
+    $remaining = Get-Content $logFile | Where-Object { $_ -notmatch '^\[[^\]]+\]\s+done\s*\|' }
+    Set-Content -Path $logFile -Value $remaining
+    Write-Host "🧹 Done ideas cleared." -ForegroundColor Green
+}
 
 
 function Reset-Ideas {
