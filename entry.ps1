@@ -155,6 +155,19 @@ switch ($module) {
             'restart' { & "$sysFolder\restart.ps1" $extraArgs }
         }
     }
+    'web' {
+        if (-not $command) {
+            & "$jumpFolder\web.ps1" -Action 'help'
+            return
+        }
+
+        $alias = $null
+        $url = $null
+        if ($extraArgs.Count -ge 1) { $alias = $extraArgs[0] }
+        if ($extraArgs.Count -ge 2) { $url = $extraArgs[1] }
+
+        & "$jumpFolder\web.ps1" -Action $command -Alias $alias -Url $url
+    }
     default {
         Write-Host ""
         Write-Host "Unknown module or command: '$module $command'" -ForegroundColor Red

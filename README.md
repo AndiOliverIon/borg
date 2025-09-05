@@ -203,7 +203,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg sys restart`          | `sr`                      | Gracefully restarts the current station; useful for mobile-triggered restarts |
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
- 
+| `borg web`                  | N/A                       | Manage and open web favorites (add/list/go/rm) via fzf; does not affect `borg jump`. |
 
 ---
 
