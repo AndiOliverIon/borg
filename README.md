@@ -495,6 +495,7 @@ To clean it from your profile:
 - [x] Add lightweight idea logger with todo/done tracking (borg idea)
 - [x] Quick glance of git status on current repository
 - [x] Borg notes (notes that remains until deleted and are easy searchable)
+- [x] Borg web quick jump to urls
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
