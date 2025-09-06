@@ -54,13 +54,26 @@ function Global:GetBorgStoreValue {
     return $value
 }
 
-
+function CopyToClipboard([string]$Text) {
+  try {
+    $Text | Set-Clipboard
+    return $true
+  } catch {
+    try {
+      $Text | clip
+      return $true
+    } catch {
+      return $false
+    }
+  }
+}
 
 # Fixed entry points
 
 $scriptsRoot = Join-Path $borgRoot "scripts\win"
 $dataRoot = Join-Path $borgRoot "data"
 $configRoot = Join-Path $borgRoot "config"
+$releaseNotesFolder = Join-Path $borgRoot "release-notes"
 
 # Host entry points
 $dockerFolder = Join-Path $scriptsRoot "docker"

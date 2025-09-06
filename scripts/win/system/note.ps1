@@ -91,28 +91,48 @@ function Require-Fzf {
   }
 }
 
-function Pick-Note([pscustomobject[]]$Items, [string]$Prompt='notes> ') {
+function Pick-NoteWithAction([pscustomobject[]]$Items, [string]$Prompt='notes> ') {
   Require-Fzf
   if (-not $Items -or $Items.Count -eq 0) { Write-Host 'No notes.'; return $null }
 
-  # Build tab-separated lines: Title<TAB>Created<TAB>Path
+  # Title<TAB>Created<TAB>Path  (Path is field {3} for preview)
   $lines = $Items | ForEach-Object { "{0}`t{1}`t{2}" -f $_.Title, $_.Created, $_.Path }
+
+  $previewCmd = 'powershell -NoProfile -Command "try { Get-Content -LiteralPath ''{3}'' -Raw } catch { Write-Output '''' }"'
 
   $fzfArgs = @(
     '--delimiter', "`t",
     '--with-nth=1,2',
     '--prompt', $Prompt,
     '--height', '80%',
-    '--layout', 'reverse'
+    '--layout', 'reverse',
+    '--ansi',
+    '--preview', $previewCmd,
+    '--preview-window', 'right,60%,border-rounded,wrap',
+    '--expect', 'enter,del,backspace'
   )
-  $selection = $lines | & fzf @fzfArgs
-  if ([string]::IsNullOrWhiteSpace($selection)) { return $null }
 
-  $parts = $selection -split "`t", 3
-  $selPath = $parts[2]
-  return ($Items | Where-Object { $_.Path -eq $selPath } | Select-Object -First 1)
+  $raw = $lines | & fzf @fzfArgs
+  if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+
+  # When --expect is used, first line is the key; subsequent line(s) are selected items
+  $parts = $raw -split "(`r`n|`n)"
+  $key   = ($parts[0] ?? '').Trim().ToLower()
+  $sel   = $parts | Where-Object { $_ -match "`t" } | Select-Object -First 1
+  if ([string]::IsNullOrWhiteSpace($sel)) { return $null }
+
+  $fields = $sel -split "`t", 3
+  $selPath = $fields[2]
+  $picked  = $Items | Where-Object { $_.Path -eq $selPath } | Select-Object -First 1
+
+  # Return both the key and the picked note
+  [pscustomobject]@{ Key = $key; Item = $picked }
 }
-
+function Pick-Note([pscustomobject[]]$Items, [string]$Prompt='notes> ') {
+  $result = Pick-NoteWithAction $Items $Prompt
+  if ($null -eq $result) { return $null }
+  return $result.Item
+}
 # ---------------- Core ops ----------------
 function Note-Add([string]$Title, [string]$Description) {
   $Title = Sanitize-Title $Title
@@ -144,36 +164,99 @@ function Note-Add([string]$Title, [string]$Description) {
 }
 
 function Note-Show([string]$TitleKey) {
-  if ([string]::IsNullOrWhiteSpace($TitleKey)) {
-    # Interactive picker of all notes
-    $picked = Pick-Note (Get-AllNotes) 'show> '
-    if ($null -ne $picked) {
-      $picked.Body
-    }
-    return
-  }
+  while ($true) {
+    # ---- Resolve which note to show ----
+    $note = $null
 
-  # Direct by title: exact filename match after sanitization
-  $path = Title-ToPath $TitleKey
-  if (-not (Test-Path -LiteralPath $path)) {
-    # fallback: try case-insensitive title match across all notes
-    $matches = Get-AllNotes | Where-Object { $_.Title -ieq $TitleKey -or $_.Title -ilike "*$TitleKey*" }
-    if ($matches.Count -gt 1) {
-      $picked = Pick-Note $matches 'show> '
-      if ($null -ne $picked) { $picked.Body }
-      return
-    } elseif ($matches.Count -eq 1) {
-      $path = $matches[0].Path
-    } else {
-      throw "Note not found by title: '$TitleKey'"
+    if ([string]::IsNullOrWhiteSpace($TitleKey)) {
+      # Interactive picker of all notes
+      $picked = Pick-Note (Get-AllNotes) 'show> '
+      if ($null -eq $picked) { return }
+
+      # Support both: wrapper returns note; WithAction returns @{Item=...}
+      $note = if ($picked.PSObject.Properties['Item']) { $picked.Item } else { $picked }
+    }
+    else {
+      # Direct by title
+      $path = Title-ToPath $TitleKey
+      if (-not (Test-Path -LiteralPath $path)) {
+        $matches = Get-AllNotes | Where-Object { $_.Title -ieq $TitleKey -or $_.Title -ilike "*$TitleKey*" }
+        if ($matches.Count -gt 1) {
+          $picked = Pick-Note $matches 'show> '
+          if ($null -eq $picked) { return }
+          $note = if ($picked.PSObject.Properties['Item']) { $picked.Item } else { $picked }
+        } elseif ($matches.Count -eq 1) {
+          $note = $matches[0]
+        } else {
+          throw "Note not found by title: '$TitleKey'"
+        }
+      } else {
+        $note = Load-Note $path
+        if ($null -eq $note) { throw "Note not found: '$TitleKey'" }
+      }
+    }
+
+    # ---- Display the note and present actions ----
+    Clear-Host
+    Write-Host ("=== {0} ===" -f $note.Title) -ForegroundColor Cyan
+    if ($note.Created) { Write-Host ("Created: {0}" -f $note.Created) -ForegroundColor DarkGray }
+    if ($note.Updated) { Write-Host ("Updated: {0}" -f $note.Updated) -ForegroundColor DarkGray }
+    Write-Host ''
+    Write-Host $note.Body
+    Write-Host ''
+    Write-Host "Options: [E]xit   [B]ack to list   [C]opy to clipboard"
+    $choice = (Read-Host 'Choose').Trim().ToLowerInvariant()
+
+    switch ($choice) {
+      { $_ -in @('e','exit','q','quit') } { return }
+      { $_ -in @('c','copy') } {
+        if (CopyToClipboard $note.Body) {
+          Write-Host 'Copied to clipboard.' -ForegroundColor Green
+        } else {
+          Write-Host 'Failed to copy to clipboard.' -ForegroundColor Red
+        }
+        # stay on the same note until user chooses B or E
+        continue
+      }
+      { $_ -in @('b','back') } {
+        # Go back to the list only makes sense when we came from a picker.
+        # For direct title, also reopen the list for convenience.
+        $TitleKey = $null
+        continue
+      }
+      default {
+        # Unknown input: re-prompt on same note
+        continue
+      }
     }
   }
-
-  $note = Load-Note $path
-  if ($null -eq $note) { throw "Note not found: '$TitleKey'" }
-  $note.Body
 }
 
+function Open-NoteByPath([string]$Path) {
+  if (-not (Test-Path -LiteralPath $Path)) { throw "Note file not found: $Path" }
+  $editor =
+    if     ($env:EDITOR)                                        { $env:EDITOR }
+    elseif (Get-Command 'code'   -ErrorAction SilentlyContinue) { 'code' }
+    elseif (Get-Command 'micro'  -ErrorAction SilentlyContinue) { 'micro' }
+    else                                                        { 'notepad.exe' }
+
+  $qpath = '"{0}"' -f $Path
+  if ($editor -ieq 'code')       { Start-Process -FilePath 'code'       -ArgumentList @('-g', $qpath) | Out-Null }
+  elseif ($editor -ieq 'micro')  { Start-Process -FilePath 'micro'      -ArgumentList @($qpath)       | Out-Null }
+  elseif ($editor -ieq 'notepad.exe') { Start-Process -FilePath 'notepad.exe' -ArgumentList $qpath   | Out-Null }
+  else                           { Start-Process -FilePath $editor      -ArgumentList $qpath          | Out-Null }
+}
+function Remove-NoteByPath([pscustomobject]$Note) {
+  $title = $Note.Title
+  $path  = $Note.Path
+  $ans = Read-Host "Delete note '$title'? (y/N)"
+  if ($ans -match '^(y|yes)$') {
+    Remove-Item -LiteralPath $path -Force
+    Write-Host "Removed note '$title'"
+  } else {
+    Write-Host "Cancelled."
+  }
+}
 function Note-Edit([string]$TitleKey) {
   if ([string]::IsNullOrWhiteSpace($TitleKey)) { throw 'Usage: borg note edit "<title>"' }
 
@@ -222,8 +305,25 @@ function Note-Search([string]$Query) {
   }
 
   if (-not $matches -or $matches.Count -eq 0) { Write-Host "No matches."; return }
-  $picked = Pick-Note $matches 'search> '
-  if ($null -ne $picked) { $picked.Body }
+
+  $picked = Pick-NoteWithAction $matches 'search> '
+  if ($null -eq $picked) { return }
+
+  $key = $picked.Key
+  $note = $picked.Item
+  if ($null -eq $note) { return }
+
+  switch ($key) {
+    # Enter (or no key captured) -> open in editor
+    ''       { Open-NoteByPath -Path $note.Path }
+    'enter'  { Open-NoteByPath -Path $note.Path }
+
+    # Delete or Backspace -> confirm & delete
+    'del'        { Remove-NoteByPath -Note $note }
+    'backspace'  { Remove-NoteByPath -Note $note }
+
+    default { Open-NoteByPath -Path $note.Path }
+  }
 }
 
 # ---------------- Dispatcher ----------------

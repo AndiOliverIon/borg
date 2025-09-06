@@ -203,7 +203,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg sys restart`          | `sr`                      | Gracefully restarts the current station; useful for mobile-triggered restarts |
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
- 
+| `borg web`                  | N/A                       | Manage and open web favorites (add/list/go/rm) via fzf; does not affect `borg jump`. |
 
 ---
 
@@ -495,6 +495,7 @@ To clean it from your profile:
 - [x] Add lightweight idea logger with todo/done tracking (borg idea)
 - [x] Quick glance of git status on current repository
 - [x] Borg notes (notes that remains until deleted and are easy searchable)
+- [x] Borg web quick jump to urls
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
