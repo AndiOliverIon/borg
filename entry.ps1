@@ -144,7 +144,11 @@ switch ($module) {
         }        
     }
     'run' {
-        & "$env:BORG_ROOT\run.ps1" $command
+         $argsCombined = @()
+        if ($command)   { $argsCombined += $command }   # script name if provided
+        if ($extraArgs) { $argsCombined += $extraArgs } # optional args (0..n)
+
+        & "$env:BORG_ROOT\run.ps1" -inputArgs $argsCombined
     }
     'store' {
         micro $storePath
