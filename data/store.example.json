@@ -56,5 +56,52 @@
             "lastexecution": "2025-08-03T09:35:00",
             "action": "borg network wifi AccessPointName"
         }
-    ]
+    ],
+    "AI": {
+        "Engine": "gpt",
+        "SystemPrompt": "You are a concise senior engineer. Prefer interfaces, avoid cascading ifs, respect team style; minimal intervention on C# '..' spread-like syntax; give actionable outputs.",
+        "Timezone": "Europe/Bucharest",
+        
+        "GptBaseUrl": "https://api.openai.com/v1",
+        "GptModel": "gpt-4o-mini",
+        "GptApiKey": "your api key",
+        "GptTemperature": 0.2,
+        "GptMaxOutputTokens": 1200,
+        
+        "ClaudeBaseUrl": "https://api.anthropic.com",
+        "ClaudeModel": "claude-opus-4-1-20250805",
+        "ClaudeApiKey": "your api key",
+        "ClaudeWebSearchEnabled": true,
+        "ClaudeTemperature": 0.2,
+        "ClaudeMaxOutputTokens": 1200,
+        
+        "MaxUploadMB": 25,
+        "AllowedExtensions": [
+            ".txt",
+            ".md",
+            ".json",
+            ".csv",
+            ".cs",
+            ".ts",
+            ".js",
+            ".ps1",
+            ".sh",
+            ".sql",
+            ".xml",
+            ".yml",
+            ".yaml",
+            ".html",
+            ".css",
+            ".log"
+        ],
+        "ChunkStrategy": "byTokens",
+        "TokensPerChunk": 1200,
+        "OverlapTokens": 150,
+        "StripSecrets": true,
+        "RedactKeys": [
+            "ApiKey",
+            "Password",
+            "Token"
+        ]
+    }
 }

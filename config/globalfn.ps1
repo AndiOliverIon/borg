@@ -83,6 +83,9 @@ $ioFolder = Join-Path $scriptsRoot "io"
 $sysFolder = Join-Path $scriptsRoot "system"
 $gitFolder = Join-Path $scriptsRoot "git"
 
+# AI entry points
+$aiFolder = Join-Path $scriptsRoot "ai"
+
 # Docker entry points
 $dockerSqlPath = "/var/opt/mssql"
 $dockerBackupPath = "$dockerSqlPath/backup"

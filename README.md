@@ -170,6 +170,8 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | Command                      | Alias(es)                | Description                                        |
 |-----------------------------|---------------------------|----------------------------------------------------|
 | `borg --version`            | N/A                       | Show installed and latest version                  |
+| `borg ai prompt`            | "<text>" [-f <file1> <file2> …] | Ask the configured AI (GPT/Claude). Supports file context with chunking.|
+| `borg ai setup`             | N/A | Let switch between gpt and claude |
 | `borg bookmark`             | `b`                       | Jump to bookmark defined in the store.json under the `Bookmarks` chapter via interactive fzf selection. |
 | `borg clean versions`       | N/A                       | Cleans up older BORG versions, keeping only the latest |
 | `borg doctor`               | N/A                       | Checks system environment for required tools, PowerShell version, and config health |
@@ -496,6 +498,7 @@ To clean it from your profile:
 - [x] Quick glance of git status on current repository
 - [x] Borg notes (notes that remains until deleted and are easy searchable)
 - [x] Borg web quick jump to urls
+- [x] Borg gpt prompt + files
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
