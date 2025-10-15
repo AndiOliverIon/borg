@@ -34,6 +34,43 @@ switch ($module) {
         pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass `
             -File "$scriptsRoot\agent\bagent.ps1" $command
     }
+    'ai' {
+        switch ($command) {
+            'setup' { & "$aiFolder\setup.ps1" }
+            'prompt' { 
+
+                # extraArgs looks like: ["<prompt text>", "-f", "<file1>", "<file2>", ...]
+                if (-not $extraArgs -or $extraArgs.Count -lt 1) {
+                    Write-Host "Usage: borg ai prompt <prompt text> [-f <file1> <file2> ...]" -ForegroundColor Yellow
+                    break
+                }
+
+                $promptArg = $extraArgs[0]
+                $filesArg = @()
+
+                # find -f / --files if present
+                $idx = [Array]::IndexOf($extraArgs, '-f')
+                if ($idx -lt 0) { $idx = [Array]::IndexOf($extraArgs, '--files') }
+                if ($idx -ge 0) {
+                    # everything after the flag are file paths
+                    for ($i = $idx + 1; $i -lt $extraArgs.Count; $i++) {
+                        if ($extraArgs[$i]) { $filesArg += $extraArgs[$i] }
+                    }
+                }
+                elseif ($extraArgs.Count -gt 1) {
+                    # optional: accept trailing args as files when no flag is used
+                    $filesArg = $extraArgs[1..($extraArgs.Count - 1)]
+                }
+
+                # build a NAMED splat (hashtable) so -Files binds correctly
+                $splat = @{ Prompt = $promptArg }
+                if ($filesArg.Count -gt 0) { $splat['Files'] = $filesArg }
+
+                & "$aiFolder\prompt.ps1" @splat
+
+            }
+        }
+    }
     'bookmark' {
         & "$env:BORG_ROOT\bookmark.ps1"
     }
@@ -144,8 +181,8 @@ switch ($module) {
         }        
     }
     'run' {
-         $argsCombined = @()
-        if ($command)   { $argsCombined += $command }   # script name if provided
+        $argsCombined = @()
+        if ($command) { $argsCombined += $command }   # script name if provided
         if ($extraArgs) { $argsCombined += $extraArgs } # optional args (0..n)
 
         & "$env:BORG_ROOT\run.ps1" -inputArgs $argsCombined
