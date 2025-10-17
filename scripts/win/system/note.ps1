@@ -100,7 +100,7 @@ function Pick-NoteWithAction([pscustomobject[]]$Items, [string]$Prompt='notes> '
 
   $previewCmd = 'powershell -NoProfile -Command "try { Get-Content -LiteralPath ''{3}'' -Raw } catch { Write-Output '''' }"'
 
-  $fzfArgs = @(
+$fzfArgs = @(
     '--delimiter', "`t",
     '--with-nth=1,2',
     '--prompt', $Prompt,
@@ -108,7 +108,8 @@ function Pick-NoteWithAction([pscustomobject[]]$Items, [string]$Prompt='notes> '
     '--layout', 'reverse',
     '--ansi',
     '--preview', $previewCmd,
-    '--preview-window', 'right,60%,border-rounded,wrap',
+    '--preview-window', 'hidden:border-rounded,wrap',  # keep preview available, but hidden
+    '--bind', 'alt-p:toggle-preview,ctrl-p:toggle-preview', # toggle if you want it
     '--expect', 'enter,del,backspace'
   )
 
