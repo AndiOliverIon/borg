@@ -28,31 +28,130 @@ if (-not (Test-Path $storePath)) {
 }
 
 $dataRoot = Join-Path $env:BORG_ROOT 'data'
-function Global:GetBorgStoreValue {
-    param(
-        [Parameter(Mandatory)]
-        [string]$Chapter,
 
-        [Parameter(Mandatory)]
-        [string]$Key
+# Cache (script scope)
+$script:__BorgStore_Cache = $null
+$script:__BorgStore_Mtime = $null
+
+function Global:Get-BorgStore {
+    [CmdletBinding()]
+    param(
+        [string]$Path = $storePath
+    )
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "Borg store not found at: $Path"
+    }
+
+    $mtime = (Get-Item -LiteralPath $Path).LastWriteTimeUtc
+    if ($null -eq $script:__BorgStore_Cache -or $mtime -ne $script:__BorgStore_Mtime) {
+        $script:__BorgStore_Cache = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json -Depth 100
+        $script:__BorgStore_Mtime = $mtime
+    }
+    return $script:__BorgStore_Cache
+}
+
+function Global:Clear-BorgStoreCache {
+    $script:__BorgStore_Cache = $null
+    $script:__BorgStore_Mtime = $null
+}
+
+function Resolve-EnvTokens {
+    param([Parameter(ValueFromPipeline)][object]$Value)
+    process {
+        if ($Value -is [string]) {
+            $s = $Value -replace '%(\w+)%', { [Environment]::GetEnvironmentVariable($args[0].Groups[1].Value) }
+            if ($s.StartsWith('~')) { $s = $s -replace '^~', $env:USERPROFILE }
+            return $s
+        }
+        return $Value
+    }
+}
+
+# Simple JSON path resolver: supports dotted props and [index] on arrays
+function Get-JsonPathValue {
+    param(
+        [Parameter(Mandatory)] [object]$Root,
+        [Parameter(Mandatory)] [string]$Path
+    )
+    $current = $Root
+    foreach ($segment in ($Path -split '\.')) {
+        if ([string]::IsNullOrWhiteSpace($segment)) { continue }
+
+        # Match "Name" or "Name[0]" or just "[2]"
+        if ($segment -match '^(?<prop>[^\[]*)(?<idx>\[\d+\])*$') {
+            $prop = $matches['prop']
+            $idxs = [System.Text.RegularExpressions.Regex]::Matches($segment, '\[(\d+)\]') | ForEach-Object { [int]$_.Groups[1].Value }
+
+            if ($prop) {
+                if ($current -is [System.Collections.IDictionary]) {
+                    if (-not $current.Contains($prop)) { return $null }
+                    $current = $current[$prop]
+                } else {
+                    # PSObject or normal object
+                    $p = $current.PSObject.Properties[$prop]
+                    if ($null -eq $p) { return $null }
+                    $current = $p.Value
+                }
+            }
+
+            foreach ($i in $idxs) {
+                if ($current -is [System.Collections.IList]) {
+                    if ($i -ge $current.Count) { return $null }
+                    $current = $current[$i]
+                } else {
+                    return $null
+                }
+            }
+        } else {
+            return $null
+        }
+    }
+    return $current
+}
+
+# === Enhanced (backward-compatible) accessor ===
+function Global:GetBorgStoreValue {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Chapter,
+        [Parameter(Mandatory)] [string]$Key,
+        [object]$Default = $null,
+        [switch]$ExpandEnv  # expands %APPDATA%, ~ on string results
     )
 
-    $json = Get-Content $storePath -Raw | ConvertFrom-Json
-    $section = $json.$Chapter    
+    $json = Get-BorgStore
+    $section = $json.$Chapter
 
     if (-not $section) {
+        if ($PSBoundParameters.ContainsKey('Default')) { return $Default }
         Write-Error "Chapter '$Chapter' not found"
         return $null
     }
 
-    $value = $section.PSObject.Properties[$Key].Value
-    if ($null -eq $value) {
-        Write-Error "Key '$Key' not found in chapter '$Chapter'"
-        return $null
+    # Back-compat fast-path: plain property (no dot or bracket usage)
+    $isSimple = ($Key -notmatch '[\.\[]')
+    if ($isSimple) {
+        $prop = $section.PSObject.Properties[$Key]
+        if ($null -eq $prop) {
+            if ($PSBoundParameters.ContainsKey('Default')) { return $Default }
+            Write-Error "Key '$Key' not found in chapter '$Chapter'"
+            return $null
+        }
+        $val = $prop.Value
+    } else {
+        # Nested path: e.g. "Folders[0].Local"
+        $val = Get-JsonPathValue -Root $section -Path $Key
+        if ($null -eq $val) {
+            if ($PSBoundParameters.ContainsKey('Default')) { return $Default }
+            Write-Error "Path '$Key' not found in chapter '$Chapter'"
+            return $null
+        }
     }
 
-    return $value
+    if ($ExpandEnv) { $val = $val | Resolve-EnvTokens }
+    return $val
 }
+
 
 function CopyToClipboard([string]$Text) {
   try {

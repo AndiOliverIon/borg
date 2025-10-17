@@ -19,16 +19,16 @@ function GetLatestReleaseNoteFile {
     $pattern = '^(?<ver>\d+(?:\.\d+){1,3})(?:\.?md|\.?markdown)$'
 
     $candidates = Get-ChildItem -LiteralPath $Folder -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match $pattern } |
-        ForEach-Object {
-            $ver = $null
-            if ([Version]::TryParse($Matches['ver'], [ref]$ver)) {
-                [pscustomobject]@{
-                    Version = $ver
-                    File    = $_
-                }
+    Where-Object { $_.Name -match $pattern } |
+    ForEach-Object {
+        $ver = $null
+        if ([Version]::TryParse($Matches['ver'], [ref]$ver)) {
+            [pscustomobject]@{
+                Version = $ver
+                File    = $_
             }
         }
+    }
 
     if (-not $candidates) { return $null }
 
@@ -60,6 +60,29 @@ function ShowReleaseNotes {
 
     Write-Host "=========================`n" -ForegroundColor Cyan
 }
+function Test-DockerRunning {
+    $dockerRunning = $false
+    try {
+        $null = docker info --format '{{.ServerVersion}}' 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $dockerRunning = $true
+        }
+    }
+    catch {
+        # ignored
+    }
+
+    if ($dockerRunning) {
+        # do nothing for the moment, a bit annoying while using.
+        # Write-Host "🐳  Docker is running." -ForegroundColor Cyan
+    }
+    else {
+        Write-Warning "⚠️  Docker daemon not detected. Some Borg Docker commands may be unavailable."
+    }
+
+    return $dockerRunning
+}
+
 function _InvokeBorgEntry {
     # Parse raw tokens (no named params on purpose)
     [string]$module = $null
@@ -103,13 +126,8 @@ function _InvokeBorgEntry {
         exit 1
     }
 
-    try {
-        docker info --format '{{.ServerVersion}}' | Out-Null
-    }
-    catch {
-        Write-Warning "Docker daemon does not appear to be running. Start Docker Desktop and try again."
-        exit 1
-    }
+    # Check if Docker is running (no console errors, no breaking flow)
+    Test-DockerRunning | Out-Null
 
     # --- Self version info ---
     if ($args -contains '--version' -or $args -contains '-v') {
@@ -158,9 +176,9 @@ function _InvokeBorgEntry {
 
         $map = @{
             # Two-word combos FIRST (highest precedence)
-            "b gl" = "git log"
-            "b gs" = "git status"
-            "b b"  = "bookmark"   # legacy muscle-memory: `b b` == `bookmark`
+            "b gl"  = "git log"
+            "b gs"  = "git status"
+            "b b"   = "bookmark"   # legacy muscle-memory: `b b` == `bookmark`
             
             # One-word aliases
             "b"     = "bookmark"
@@ -172,7 +190,7 @@ function _InvokeBorgEntry {
             "du"    = "docker upload"
             "ds"    = "docker switch"
             "dsnap" = "docker snapshot"
-            "ne"     = "network"
+            "ne"    = "network"
             "js"    = "jump store"
             "iofc"  = "io folder-clean"
             "ssd"   = "sys shutdown"
@@ -190,8 +208,8 @@ function _InvokeBorgEntry {
         $oneKey = $Tokens[0].ToLower()
 
         # Remainders
-        $rest2  = if ($Tokens.Count -gt 2) { $Tokens[2..($Tokens.Count-1)] } else { @() }
-        $rest1  = if ($Tokens.Count -gt 1) { $Tokens[1..($Tokens.Count-1)] } else { @() }
+        $rest2 = if ($Tokens.Count -gt 2) { $Tokens[2..($Tokens.Count - 1)] } else { @() }
+        $rest1 = if ($Tokens.Count -gt 1) { $Tokens[1..($Tokens.Count - 1)] } else { @() }
 
         if ($twoKey -and $map.ContainsKey($twoKey)) {
             $repl = $map[$twoKey] -split ' '
@@ -206,8 +224,8 @@ function _InvokeBorgEntry {
 
     # Build full token list from what the user typed
     $tokens = @()
-    if ($module)    { $tokens += $module }
-    if ($command)   { $tokens += $command }
+    if ($module) { $tokens += $module }
+    if ($command) { $tokens += $command }
     if ($extraArgs) { $tokens += $extraArgs }
 
     # Resolve aliases
@@ -216,8 +234,8 @@ function _InvokeBorgEntry {
     $resolved = @($resolved | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ -ne "" })
 
     # Re-split into module / command / extraArgs
-    $module    = if ($resolved.Count -ge 1) { $resolved[0] } else { $null }
-    $command   = if ($resolved.Count -ge 2) { $resolved[1] } else { $null }
+    $module = if ($resolved.Count -ge 1) { $resolved[0] } else { $null }
+    $command = if ($resolved.Count -ge 2) { $resolved[1] } else { $null }
     $extraArgs = if ($resolved.Count -gt 2) { $resolved[2..($resolved.Count - 1)] } else { @() }
 
     # Hand off to main entry

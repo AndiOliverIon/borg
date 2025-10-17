@@ -202,6 +202,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg run`                  | N/A                       | Browse and execute a script from the custom scripts folder using fzf |
 | `borg run add`             | N/A                       | Add a `.ps1` script from current folder to your custom script folder, with overwrite confirmation |
 | `borg store`                | N/A                       | Opens your `store.json` config in Micro            |
+| `borg sync`                 | `upload/download`         | Synchronizes predefined folders between your station and a shared network location. The upload action mirrors local folders to the network hub (overwriting the remote copy), while download retrieves the latest versions from the hub back into the local environment. Configured via the Sync section in store.json. |
 | `borg sys restart`          | `sr`                      | Gracefully restarts the current station; useful for mobile-triggered restarts |
 | `borg sys shutdown`         | `ssd`                     | Gracefully shuts down the current station; useful for mobile-triggered shutdowns |
 | `borg update`               | N/A                       | Update the BORG module from PowerShell Gallery     |
@@ -254,6 +255,59 @@ You can:
 This way, all plugins remain part of the main project and benefit the entire community.
 
 ---
+
+### 🔄 Synchronizing Configuration Across Stations
+
+The **Sync** system allows you to keep your Borg setup consistent across multiple stations — for example, between **Thanatos** and **MasterChief** — using a shared network folder as a central hub.
+
+#### How It Works
+The mechanism is defined under the `Sync` section in your `store.json` and includes:
+- A single **NetworkRoot**: the shared location (e.g., `\\SERVER\Share\BorgHub`) that acts as the central repository.
+- A list of **Folders**: each maps a local path on your station to a relative subfolder inside the `NetworkRoot`.
+
+When you run:
+```powershell
+borg sync upload
+```
+Borg mirrors your local folders to the shared network hub (overwriting the remote copies).  
+When you run:
+```powershell
+borg sync download
+```
+it mirrors the shared hub contents back to your local station.
+
+This makes it effortless to move between workstations while preserving notes, ideas, configurations, and custom scripts.
+
+#### Example `store.json` Section
+```jsonc
+"Sync": {
+  "General": {
+    "NetworkRoot": "\\someremote\somesharedfolder"
+  },
+  "Folders": [
+    {
+      "Name": "borg-appdata",
+      "Local": "%APPDATA%\\Borg",
+      "Remote": "appdata",
+      "Exclude": ["*.log", "temp\\**", "logs\\**"]
+    },
+    {
+      "Name": "custom-scripts",
+      "Local": "C:\\custom-scripts",
+      "Remote": "custom-scripts"
+    }
+  ]
+}
+```
+
+#### Notes
+- Borg uses **robocopy** internally for maximum reliability, one retry (`/R:1`) and zero wait (`/W:0`).
+- The operation includes deletions to maintain an exact mirror.
+- Exclude patterns help skip logs, temporary folders, or transient files.
+- No extra software is required — it runs entirely through PowerShell.
+
+---
+
 
 ### ✅ Guidelines for Writing Plugins
 - Scripts should be **PowerShell `.ps1` files**.  
@@ -499,6 +553,7 @@ To clean it from your profile:
 - [x] Borg notes (notes that remains until deleted and are easy searchable)
 - [x] Borg web quick jump to urls
 - [x] Borg gpt prompt + files
+- [x] Sync folders between stations in a local network
 ---
 
 ## 🖧 SSH Setup for Borg on Windows Stations
