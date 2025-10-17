@@ -29,6 +29,28 @@
         "SqlBackupDefault": "C:\\sql-backups",
         "CustomScripts": "C:\\custom-scripts"
     },
+    "Sync": {
+        "General": {
+            "NetworkRoot": "\\\\someremote\\somesharedfolder"
+        },
+        "Folders": [            
+            {
+                "Name": "custom-scripts",
+                "Local": "C:\\custom-scripts",
+                "Remote": "custom-scripts"
+            },
+            {
+                "Name": "otherfolder",
+                "Local": "c:\\other-folder",
+                "Remote": "other-folder",
+                "Exclude": [
+                    "*.log",
+                    "temp\\**",
+                    "logs\\**"
+                ]
+            }
+        ]
+    },
     "SqlServers": [
         {
             "Name": "ThanatosDocker",
@@ -61,20 +83,17 @@
         "Engine": "gpt",
         "SystemPrompt": "You are a concise senior engineer. Prefer interfaces, avoid cascading ifs, respect team style; minimal intervention on C# '..' spread-like syntax; give actionable outputs.",
         "Timezone": "Europe/Bucharest",
-        
         "GptBaseUrl": "https://api.openai.com/v1",
         "GptModel": "gpt-4o-mini",
         "GptApiKey": "your api key",
         "GptTemperature": 0.2,
         "GptMaxOutputTokens": 1200,
-        
         "ClaudeBaseUrl": "https://api.anthropic.com",
         "ClaudeModel": "claude-opus-4-1-20250805",
         "ClaudeApiKey": "your api key",
         "ClaudeWebSearchEnabled": true,
         "ClaudeTemperature": 0.2,
         "ClaudeMaxOutputTokens": 1200,
-        
         "MaxUploadMB": 25,
         "AllowedExtensions": [
             ".txt",

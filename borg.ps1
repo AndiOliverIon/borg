@@ -73,7 +73,8 @@ function Test-DockerRunning {
     }
 
     if ($dockerRunning) {
-        Write-Host "🐳  Docker is running." -ForegroundColor Cyan
+        # do nothing for the moment, a bit annoying while using.
+        # Write-Host "🐳  Docker is running." -ForegroundColor Cyan
     }
     else {
         Write-Warning "⚠️  Docker daemon not detected. Some Borg Docker commands may be unavailable."

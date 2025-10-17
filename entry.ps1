@@ -190,6 +190,13 @@ switch ($module) {
     'store' {
         micro $storePath
     }
+    'sync' {
+        switch ($command) {
+            'upload' { & "$sysFolder\sync.ps1" -Action upload }
+            'download' { & "$sysFolder\sync.ps1" -Action download }
+            default { Write-Warning "Unknown sync action. Use: upload | download" }
+        }
+    }
     'sys' {
         switch ($command) {
             'shutdown' { & "$sysFolder\shutdown.ps1" $extraArgs }
