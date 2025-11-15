@@ -92,6 +92,8 @@ switch ($module) {
             'download' { & "$dockerFolder\download.ps1" }
             'upload' { & "$dockerFolder\upload.ps1" }
             'query' { & "$dockerFolder\query.ps1" }
+            'start' { & "$dockerFolder\start.ps1" }
+            'stop' { & "$dockerFolder\stop.ps1" }
         }        
     }
     'gdrive' {

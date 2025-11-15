@@ -182,6 +182,8 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 | `borg docker snapshot <v>`  | `bds`, `borg d s`         | Create a snapshot from an active container         |
 | `borg docker switch`        | `bdsw`, `borg d sw`       | Restore one of the saved snapshots                 |
 | `borg docker upload`        | `bdu`, `borg d u`         | Upload a backup file from host to container        |
+| `borg docker start`         | `bdsa`, `borg d sta`      | Starts our working container                       |
+| `borg docker stop`          | `bdst`, `borg d sto`      | Stops our working container                        |
 | `borg git status`           | `borg gs`                 | Quick glance of the git status on current repository |
 | `borg gdrive upload`        | N/A                       | fzf at current location you can choose a file to upload |
 | `borg idea "<text>"`            | N/A                   | Add a new idea to your local list (default: todo) |

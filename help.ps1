@@ -5,13 +5,13 @@ USAGE:
     borg <module> <command> [options]
 
 DOCKER COMMANDS:
-    borg docker restore         (bdr | borg d r)     → Restore a `.bak` file into Docker SQL
-    borg docker snapshot        (bds | borg d s)     → Create a snapshot from current container
-    borg docker clean           (bdc | borg d c)     → Remove container + volume
+    borg docker restore         (bdr  | borg d r)     → Restore a `.bak` file into Docker SQL
+    borg docker snapshot        (bds  | borg d s)     → Create a snapshot from current container
+    borg docker clean           (bdc  | borg d c)     → Remove container + volume
     borg docker switch          (bdsw | borg d sw)   → Restore from snapshot (kills open connections)
-    borg docker download        (bdd | borg d d)     → Download snapshot from container to host
-    borg docker upload          (bdu | borg d u)     → Upload `.bak` file from host to container
-    borg docker query           (bdq | borg d q)     → Execute ad-hoc SQL queries inside container
+    borg docker download        (bdd  | borg d d)     → Download snapshot from container to host
+    borg docker upload          (bdu  | borg d u)     → Upload `.bak` file from host to container
+    borg docker query           (bdq  | borg d q)     → Execute ad-hoc SQL queries inside container
     borg docker shell                                → Open bash inside SQL container
 
 GDRIVE COMMANDS:
